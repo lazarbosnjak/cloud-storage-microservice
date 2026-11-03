@@ -4,8 +4,6 @@
 
 ## About
 
----
-
 The application is built as a multi-course project for Faculty of Technical Sciences, University of Novi Sad.
 
 It's built by students:
@@ -23,12 +21,12 @@ The project is designed to teach students the fundamentals of:
 
 ## Installation
 
----
+**Prerequisites:**
 
-**Requirements:**
+- Docker Compose - tested on [v5.6.1](https://docs.docker.com/compose/)
+- NodeJS - [v22.22.3 or newer](https://nodejs.org/en/download)
 
-- Docker Compose
-- NodeJS v24+ and npm
+**Clone and start:**
 
 ```bash
 git clone https://github.com/lazarbosnjak/cloud-storage-microservice.git
