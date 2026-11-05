@@ -1,6 +1,6 @@
-# Remote Pouch from Couch
+# Pouch
 
-**Remote Pouch from Couch** is a Google Drive-like cloud file storage application.
+**Pouch** is a Google Drive-like cloud file storage application.
 
 ## About
 
