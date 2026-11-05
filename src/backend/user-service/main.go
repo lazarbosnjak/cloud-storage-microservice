@@ -42,7 +42,7 @@ func main() {
 	go func() {
 		logger.Println("Server has started!")
 		if err := grpcServer.Serve(lis); err != nil {
-			logger.Fatalf("error during tcp startup: %s\n", err)
+			logger.Fatalf("grpc server error: %s\n", err)
 		}
 	}()
 
