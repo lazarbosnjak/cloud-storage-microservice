@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "proto/sharing";
+
+service Sharing {
+  rpc Ping(PingRequest) returns (PingReply) {}
+}
+
+message PingRequest {}
+
+message PingReply {
+  string message = 1;
+}
