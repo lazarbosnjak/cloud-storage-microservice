@@ -1,0 +1,16 @@
+
+syntax = "proto3";
+
+option go_package = "proto/notification";
+
+service Notification {
+  rpc Ping (PingRequest) returns (PingReply) {}
+}
+
+message PingRequest {
+  string fromName = 1;
+}
+
+message PingReply {
+  string message = 1;
+}
