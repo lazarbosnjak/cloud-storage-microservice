@@ -28,7 +28,8 @@ func (s *server) Ping(_ context.Context, in *pb.PingRequest) (*pb.PingReply, err
 func main() {
 	logger := log.New(os.Stdout, "[user-service] ", log.Ldate|log.Ltime)
 
-	// FIXME: port should come from an env
+	// TODO: replace port with an env
+	// port := os.Getenv("USER_SERVICE_PORT")
 	port := "8080"
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
 	if err != nil {
@@ -50,7 +51,23 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	<-sigChan
-	logger.Println("Gracefully shutting down...")
-	grpcServer.GracefulStop()
+
+	shutdownDone := make(chan struct{}, 1)
+
+	go func() {
+		logger.Println("Gracefully shutting down...")
+		grpcServer.GracefulStop()
+		shutdownDone <- struct{}{}
+	}()
+
+	// TODO: Change to env
+	const GracefulShutdownTimeout = time.Second * 3
+
+	select {
+	case <-shutdownDone:
+	case <-time.After(GracefulShutdownTimeout):
+		logger.Println("Graceful shutdown timeout reached. Shutting down forcefully...")
+		grpcServer.Stop()
+	}
 	logger.Println("Server has shut down.")
 }
