@@ -52,7 +52,23 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	<-sigChan
-	logger.Println("Gracefully shutting down...")
-	grpcServer.GracefulStop()
+
+	shutdownDone := make(chan bool, 1)
+
+	go func() {
+		logger.Println("Gracefully shutting down...")
+		grpcServer.GracefulStop()
+		shutdownDone <- true
+	}()
+
+	// TODO: Change to env
+	const GracefulShutdownTimeout = time.Second * 3
+
+	select {
+	case <-shutdownDone:
+	case <-time.After(GracefulShutdownTimeout):
+		logger.Println("Graceful shutdown timeout reached. Shutting down forcefully...")
+		grpcServer.Stop()
+	}
 	logger.Println("Server has shut down.")
 }
