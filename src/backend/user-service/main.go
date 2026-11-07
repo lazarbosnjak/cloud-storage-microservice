@@ -52,12 +52,12 @@ func main() {
 
 	<-sigChan
 
-	shutdownDone := make(chan bool, 1)
+	shutdownDone := make(chan struct{}, 1)
 
 	go func() {
 		logger.Println("Gracefully shutting down...")
 		grpcServer.GracefulStop()
-		shutdownDone <- true
+		shutdownDone <- struct{}{}
 	}()
 
 	// TODO: Change to env
