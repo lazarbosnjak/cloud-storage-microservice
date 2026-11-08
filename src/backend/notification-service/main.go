@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -13,6 +15,11 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+)
+
+var (
+	grpcServerPort          = os.Getenv("GRPC_PORT")
+	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
 )
 
 type server struct {
@@ -33,9 +40,7 @@ func (s *server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, e
 func main() {
 	logger := log.New(os.Stdout, "[notification-service] ", log.Ldate|log.Ltime)
 
-	port := "50051"
-
-	listener, err := net.Listen("tcp", ":"+port)
+	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
 		logger.Fatalf("Failed to start listener: %v", err)
 	}
@@ -45,7 +50,7 @@ func main() {
 	reflection.Register(grpcServer)
 
 	go func() {
-		logger.Printf("Notification gRPC server running on port %s", port)
+		logger.Printf("Notification gRPC server running on port %s", grpcServerPort)
 
 		if err := grpcServer.Serve(listener); err != nil {
 			logger.Printf("gRPC server stopped: %v", err)
@@ -59,7 +64,6 @@ func main() {
 	<-stop
 	logger.Println("Shutdown signal received")
 
-	// 10 sekundi da li treba?
 	shutdownDone := make(chan struct{})
 
 	go func() {
@@ -67,11 +71,17 @@ func main() {
 		close(shutdownDone)
 	}()
 
+	res, err := strconv.Atoi(gracefulShutdownTimeout)
+	if err != nil {
+		logger.Printf("can't convert gracefulShutdownTimeout to int: %v", err)
+	}
+	gracefulShutdownTimeout := time.Second * time.Duration(res)
+
 	select {
 	case <-shutdownDone:
 		logger.Println("Notification service gracefully stopped")
 
-	case <-time.After(10 * time.Second):
+	case <-time.After(gracefulShutdownTimeout):
 		logger.Println("Graceful shutdown timeout reached, forcing stop")
 		grpcServer.Stop()
 		<-shutdownDone

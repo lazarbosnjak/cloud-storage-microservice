@@ -17,6 +17,12 @@ services:
       dockerfile: ./sharing-service/Dockerfile
     env_file: ./sharing-service/.env
 
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./notification-service/Dockerfile
+    env_file: ./notification-service/.env
+
   analytics-service:
     build:
       context: .
