@@ -2,3 +2,29 @@
 
 @import 'tailwindcss';
 
+@theme {
+
+    /* Regular colors */
+    --color-brand-dark: "#050317";
+    --color-brand-light: "#FCFCFF";
+
+    /* Primary color hues */
+    --color-brand-primary: "#6351D1";
+    --color-brand-primary-500: var(--color-brand-primary);
+    --color-brand-primary-200: "#D1D1FE";
+    --color-brand-primary-300: "#A9A5FC";
+    --color-brand-primary-400: "#8478F3";
+
+    /* Secondary color hues */
+    --color-brand-secondary: "#DCFE00";
+    --color-brand-secondary-750: "#198187";
+    --color-brand-secondary-500: var(--color-brand-secondary);
+    --color-brand-secondary-250: "#D2FCFF";
+
+    /* Accent color hues */
+    --color-brand-accent: "#FD532C";
+    --color-brand-accent-750: "#830A68";
+    --color-brand-accent-500: var(--color-brand-accent);
+    --color-brand-accent-250: "#FEA5E1";
+
+}
