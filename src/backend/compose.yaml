@@ -11,6 +11,12 @@ services:
       dockerfile: ./file-service/Dockerfile
     env_file: ./file-service/.env
 
+  sharing-service:
+    build:
+      context: .
+      dockerfile: ./sharing-service/Dockerfile
+    env_file: ./sharing-service/.env
+
   analytics-service:
     build:
       context: .

@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -14,6 +15,11 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+)
+
+var (
+	grpcServerPort          = os.Getenv("GRPC_PORT")
+	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
 )
 
 type server struct {
@@ -26,13 +32,9 @@ func (s *server) Ping(_ context.Context, _ *pb.PingRequest) (*pb.PingReply, erro
 }
 
 func main() {
-	// TODO: replace port with an env
-	// port := os.Getenv("SHARING_SERVICE_PORT")
-
 	logger := log.New(os.Stdout, "[sharing-service] ", log.Ldate|log.Ltime)
 
-	port := "8080"
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
 		logger.Fatalf("could not listen: %v", err)
 	}
@@ -42,7 +44,7 @@ func main() {
 	reflection.Register(grpcServer)
 
 	go func() {
-		logger.Printf("Server started on port: %s\n", port)
+		logger.Printf("Server started on port: %s\n", grpcServerPort)
 		if err := grpcServer.Serve(lis); err != nil {
 			logger.Fatalf("grpcServer error: %v", err)
 		}
@@ -53,22 +55,25 @@ func main() {
 
 	<-sigChan
 
-	shutdownDone := make(chan bool, 1)
+	shutdownDone := make(chan struct{}, 1)
 
 	go func() {
 		logger.Println("Gracefully shutting down...")
 		grpcServer.GracefulStop()
-		shutdownDone <- true
+		shutdownDone <- struct{}{}
 	}()
 
-	// TODO: Change to env
-	const GracefulShutdownTimeout = time.Second * 3
+	res, err := strconv.Atoi(gracefulShutdownTimeout)
+	if err != nil {
+		logger.Printf("can't convert gracefulShutdownTimeout to int: %v", err)
+	}
+	gracefulShutdownTimeout := time.Second * time.Duration(res)
 
 	select {
-	case <-shutdownDone:
-	case <-time.After(GracefulShutdownTimeout):
+	case <-time.After(gracefulShutdownTimeout):
 		logger.Println("Graceful shutdown timeout reached. Shutting down forcefully...")
 		grpcServer.Stop()
+	case <-shutdownDone:
 	}
 	logger.Println("Server has shut down.")
 }
