@@ -5,6 +5,12 @@ services:
       dockerfile: ./user-service/Dockerfile
     env_file: ./user-service/.env
 
+  file-service:
+    build:
+      context: .
+      dockerfile: ./file-service/Dockerfile
+    env_file: ./file-service/.env
+
   analytics-service:
     build:
       context: .
