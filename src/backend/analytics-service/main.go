@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -14,6 +16,11 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+)
+
+var (
+	grpcServerPort          = os.Getenv("GRPC_PORT")
+	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
 )
 
 type server struct {
@@ -26,11 +33,9 @@ func (s *server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, e
 }
 
 func main() {
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	logger := log.New(os.Stdout, "[analytics server]", log.Ldate|log.Ltime)
-
-	port := "8080"
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -43,10 +48,10 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 
 	go func() {
-		logger.Printf("server starting on port %s", port)
+		logger.Info(fmt.Sprintf("server starting on port %s", grpcServerPort))
 		err := grpcServer.Serve(lis)
 		if err != nil {
-			logger.Printf("grpc could not serve on port %s", port)
+			logger.Error(fmt.Sprintf("grpc could not serve on port %s", grpcServerPort))
 		}
 	}()
 
@@ -57,18 +62,23 @@ func main() {
 	shutdownDone := make(chan struct{})
 
 	go func() {
-		logger.Printf("Gracefully shutting down...")
+		logger.Info("Gracefully shutting down...")
 		grpcServer.GracefulStop()
 		shutdownDone <- struct{}{}
 	}()
 
+	res, err := strconv.Atoi(gracefulShutdownTimeout)
+	if err != nil {
+		logger.Error(fmt.Sprintf("can't convert gracefulShutdownTimeout to int: %v", err))
+	}
+	gracefulShutdownTimeout := time.Second * time.Duration(res)
+
 	select {
-	case <-time.After(time.Second * 3):
-		logger.Printf("Timeout has passed. Forcefully shutting down server...")
+	case <-time.After(gracefulShutdownTimeout):
+		logger.Warn("Timeout has passed. Forcefully shutting down server...")
 		grpcServer.Stop()
 	case <-shutdownDone:
 	}
 
-	logger.Printf("Server has shut down.")
-
+	logger.Info("Server has shut down.")
 }
