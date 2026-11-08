@@ -28,3 +28,65 @@
     --color-brand-accent-250: "#FEA5E1";
 
 }
+
+/*
+    TYPOGRAPHY
+*/
+
+/* Heading typography */
+
+@font-face {
+    font-family: "ClashDisplay-Semibold";
+    src: url("/fonts/clash-display/ClashDisplay-Semibold.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "ClashDisplay-Medium";
+    src: url("/fonts/clash-display/ClashDisplay-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+/* Body typography */
+
+@font-face {
+    font-family: "Archivo-Light";
+    src: url("/fonts/archivo/Archivo-Light.woff2") format("woff2");
+    font-weight: 300;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Archivo-Regular";
+    src: url("/fonts/archivo/Archivo-Regular.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+/* Handwriting typography */
+
+@font-face {
+    font-family: "Caveat-Regular";
+    src: url("/fonts/caveat/Caveat-Regular.ttf") format("ttf");
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Caveat-Bold";
+    src: url("/fonts/caveat/Caveat-Bold.ttf") format("ttf");
+    font-weight: 700;
+    font-display: swap;
+    font-style: normal;
+}
+
+/*
+    END OF TYPOGRAPHY
+*/
