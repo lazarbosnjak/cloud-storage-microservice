@@ -1,0 +1,6 @@
+services:
+  analytics-service:
+    build:
+      context: .
+      dockerfile: ./analytics-service/Dockerfile
+    env_file: ./analytics-service/.env
