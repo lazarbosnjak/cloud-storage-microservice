@@ -1,4 +1,10 @@
 services:
+  user-service:
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    env_file: ./user-service/.env
+
   analytics-service:
     build:
       context: .
