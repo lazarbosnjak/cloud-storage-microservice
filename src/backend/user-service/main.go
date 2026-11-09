@@ -44,7 +44,7 @@ func main() {
 	pb.RegisterUserServer(grpcServer, &server{})
 	reflection.Register(grpcServer)
 	go func() {
-		logger.Info(fmt.Sprintf("serice starting on port: %s", grpcServerPort))
+		logger.Info(fmt.Sprintf("serice started on port: %s", grpcServerPort))
 		if err := grpcServer.Serve(lis); err != nil {
 			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
 		}
@@ -71,10 +71,10 @@ func main() {
 
 	select {
 	case <-time.After(gracefulShutdownTimeout):
-		logger.Warn("timeout has passed. Forcefully shutting down...")
+		logger.Warn("graceful shutdown timeout exceeded; forcefully shutting down...")
 		grpcServer.Stop()
 	case <-shutdownDone:
 	}
 
-	logger.Info("service is stopped.")
+	logger.Info("service stopped.")
 }

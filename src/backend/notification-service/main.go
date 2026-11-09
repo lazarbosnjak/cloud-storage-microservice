@@ -29,14 +29,6 @@ type server struct {
 func (s *server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
 	time.Sleep(time.Second * 5)
 	return &pb.PingReply{Message: "hello from notification-service"}, nil
-	/*select {
-	case <-time.After(5 * time.Second):
-		return &pb.PingReply{
-			Message: "hello from notification-service: " + in.FromName,
-		}, nil
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}*/
 }
 
 func main() {
@@ -53,7 +45,7 @@ func main() {
 	reflection.Register(grpcServer)
 
 	go func() {
-		logger.Info(fmt.Sprintf("service running on port: %s", grpcServerPort))
+		logger.Info(fmt.Sprintf("service started on port: %s", grpcServerPort))
 		if err := grpcServer.Serve(listener); err != nil {
 			logger.Error(fmt.Sprintf("grpc could not serve on port: %v", err))
 		}
@@ -81,10 +73,10 @@ func main() {
 
 	select {
 	case <-time.After(gracefulShutdownTimeout):
-		logger.Warn("timeout has passed. Forcefully shutting down...")
+		logger.Warn("graceful shutdown timeout exceeded; forcefully shutting down...")
 		grpcServer.Stop()
 	case <-shutdownDone:
 	}
 
-	logger.Info("service is stopped.")
+	logger.Info("service stopped.")
 }
