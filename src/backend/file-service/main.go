@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"net"
 	"os"
 	"os/signal"
@@ -28,15 +28,15 @@ type server struct {
 
 func (s *server) Ping(_ context.Context, _ *pb.PingRequest) (*pb.PingReply, error) {
 	time.Sleep(time.Second * 5)
-	return &pb.PingReply{Message: "Pong from file-service"}, nil
+	return &pb.PingReply{Message: "hello from file-service"}, nil
 }
 
 func main() {
-	logger := log.New(os.Stdout, "[file-service] ", log.Ldate|log.Ltime)
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
-		logger.Fatalf("error during tcp startup: %s\n", err)
+		logger.Error(fmt.Sprintf("failed to listen: %v", err))
 	}
 
 	grpcServer := grpc.NewServer()
@@ -44,9 +44,9 @@ func main() {
 	pb.RegisterFileServer(grpcServer, &server{})
 	reflection.Register(grpcServer)
 	go func() {
-		logger.Printf("Server has started on port: %s\n", grpcServerPort)
+		logger.Info(fmt.Sprintf("Server has started on port: %s", grpcServerPort))
 		if err := grpcServer.Serve(lis); err != nil {
-			logger.Fatalf("grpc server error: %s\n", err)
+			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
 		}
 	}()
 
@@ -58,22 +58,24 @@ func main() {
 	shutdownDone := make(chan struct{}, 1)
 
 	go func() {
-		logger.Println("Gracefully shutting down...")
+		logger.Info("gracefully shutting down...")
 		grpcServer.GracefulStop()
 		shutdownDone <- struct{}{}
 	}()
 
 	res, err := strconv.Atoi(gracefulShutdownTimeout)
 	if err != nil {
-		logger.Printf("can't convert gracefulShutdownTimeout to int: %v", err)
+		logger.Error(fmt.Sprintf("can't convert gracefulShutdownTimeout to int: %v", err))
 	}
 	gracefulShutdownTimeout := time.Second * time.Duration(res)
 
 	select {
 	case <-time.After(gracefulShutdownTimeout):
-		logger.Println("Graceful shutdown timeout reached. Shutting down forcefully...")
+		logger.Warn("timeout has passed. Forcefully shutting down...")
 		grpcServer.Stop()
 	case <-shutdownDone:
 	}
-	logger.Println("Server has shut down.")
+
+	logger.Info("service is stopped.")
+
 }

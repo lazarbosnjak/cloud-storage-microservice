@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"net"
 	"os"
@@ -29,7 +28,7 @@ type server struct {
 
 func (s *server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
 	time.Sleep(time.Second * 5)
-	return &pb.PingReply{Message: "Hello from analytics"}, nil
+	return &pb.PingReply{Message: "hello from analytics-service"}, nil
 }
 
 func main() {
@@ -37,7 +36,7 @@ func main() {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.Error(fmt.Sprintf("failed to listen: %v", err))
 	}
 
 	grpcServer := grpc.NewServer()
@@ -45,16 +44,14 @@ func main() {
 	pb.RegisterAnalyticsServer(grpcServer, &server{})
 	reflection.Register(grpcServer)
 
-	sigChan := make(chan os.Signal, 1)
-
 	go func() {
-		logger.Info(fmt.Sprintf("server starting on port %s", grpcServerPort))
-		err := grpcServer.Serve(lis)
-		if err != nil {
-			logger.Error(fmt.Sprintf("grpc could not serve on port %s", grpcServerPort))
+		logger.Info(fmt.Sprintf("serice starting on port: %s", grpcServerPort))
+		if err := grpcServer.Serve(lis); err != nil {
+			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
 		}
 	}()
 
+	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
 
 	<-sigChan
@@ -62,7 +59,7 @@ func main() {
 	shutdownDone := make(chan struct{})
 
 	go func() {
-		logger.Info("Gracefully shutting down...")
+		logger.Info("gracefully shutting down...")
 		grpcServer.GracefulStop()
 		shutdownDone <- struct{}{}
 	}()
@@ -75,10 +72,10 @@ func main() {
 
 	select {
 	case <-time.After(gracefulShutdownTimeout):
-		logger.Warn("Timeout has passed. Forcefully shutting down server...")
+		logger.Warn("timeout has passed. Forcefully shutting down...")
 		grpcServer.Stop()
 	case <-shutdownDone:
 	}
 
-	logger.Info("Server has shut down.")
+	logger.Info("service is stopped.")
 }
