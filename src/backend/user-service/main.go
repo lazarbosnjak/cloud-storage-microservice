@@ -44,7 +44,7 @@ func main() {
 	pb.RegisterUserServer(grpcServer, &server{})
 	reflection.Register(grpcServer)
 	go func() {
-		logger.Info(fmt.Sprintf("serice started on port: %s", grpcServerPort))
+		logger.Info(fmt.Sprintf("service started on port: %s", grpcServerPort))
 		if err := grpcServer.Serve(lis); err != nil {
 			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
 		}
