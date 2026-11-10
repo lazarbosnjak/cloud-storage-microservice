@@ -1,0 +1,40 @@
+services:
+  user-service:
+    image: user-service
+    container_name: user-service
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    env_file: ./user-service/.env
+
+  file-service:
+    image: file-service
+    container_name: file-service
+    build:
+      context: .
+      dockerfile: ./file-service/Dockerfile
+    env_file: ./file-service/.env
+
+  sharing-service:
+    image: sharing-service
+    container_name: sharing-service
+    build:
+      context: .
+      dockerfile: ./sharing-service/Dockerfile
+    env_file: ./sharing-service/.env
+
+  notification-service:
+    image: notification-service
+    container_name: notification-service
+    build:
+      context: .
+      dockerfile: ./notification-service/Dockerfile
+    env_file: ./notification-service/.env
+
+  analytics-service:
+    image: analytics-service
+    container_name: analytics-service
+    build:
+      context: .
+      dockerfile: ./analytics-service/Dockerfile
+    env_file: ./analytics-service/.env

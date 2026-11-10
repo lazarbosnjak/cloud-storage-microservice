@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -16,23 +17,26 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+var (
+	grpcServerPort          = os.Getenv("GRPC_PORT")
+	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
+)
+
 type server struct {
 	pb.UnimplementedAnalyticsServer
 }
 
 func (s *server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
 	time.Sleep(time.Second * 5)
-	return &pb.PingReply{Message: "Hello from analytics"}, nil
+	return &pb.PingReply{Message: "hello from analytics-service"}, nil
 }
 
 func main() {
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	logger := log.New(os.Stdout, "[analytics server]", log.Ldate|log.Ltime)
-
-	port := "8080"
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.Error(fmt.Sprintf("failed to listen: %v", err))
 	}
 
 	grpcServer := grpc.NewServer()
@@ -40,16 +44,14 @@ func main() {
 	pb.RegisterAnalyticsServer(grpcServer, &server{})
 	reflection.Register(grpcServer)
 
-	sigChan := make(chan os.Signal, 1)
-
 	go func() {
-		logger.Printf("server starting on port %s", port)
-		err := grpcServer.Serve(lis)
-		if err != nil {
-			logger.Printf("grpc could not serve on port %s", port)
+		logger.Info(fmt.Sprintf("service started on port: %s", grpcServerPort))
+		if err := grpcServer.Serve(lis); err != nil {
+			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
 		}
 	}()
 
+	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
 
 	<-sigChan
@@ -57,18 +59,23 @@ func main() {
 	shutdownDone := make(chan struct{})
 
 	go func() {
-		logger.Printf("Gracefully shutting down...")
+		logger.Info("gracefully shutting down...")
 		grpcServer.GracefulStop()
 		shutdownDone <- struct{}{}
 	}()
 
+	res, err := strconv.Atoi(gracefulShutdownTimeout)
+	if err != nil {
+		logger.Error(fmt.Sprintf("can't convert gracefulShutdownTimeout to int: %v", err))
+	}
+	gracefulShutdownTimeout := time.Second * time.Duration(res)
+
 	select {
-	case <-time.After(time.Second * 3):
-		logger.Printf("Timeout has passed. Forcefully shutting down server...")
+	case <-time.After(gracefulShutdownTimeout):
+		logger.Warn("graceful shutdown timeout exceeded; forcefully shutting down...")
 		grpcServer.Stop()
 	case <-shutdownDone:
 	}
 
-	logger.Printf("Server has shut down.")
-
+	logger.Info("service stopped.")
 }
