@@ -1,4 +1,14 @@
 services:
+  api-gateway:
+    image: api-gateway
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    env_file: ./api-gateway/.env
+    ports:
+      - 8090:8090
+
   user-service:
     image: user-service
     container_name: user-service
