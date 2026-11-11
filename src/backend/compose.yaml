@@ -1,3 +1,5 @@
+name: pouch
+
 services:
   user-service:
     image: user-service
@@ -6,6 +8,9 @@ services:
       context: .
       dockerfile: ./user-service/Dockerfile
     env_file: ./user-service/.env
+    depends_on:
+      mongo-user-service:
+        condition: service_healthy
 
   file-service:
     image: file-service
@@ -38,3 +43,21 @@ services:
       context: .
       dockerfile: ./analytics-service/Dockerfile
     env_file: ./analytics-service/.env
+
+  mongo-user-service:
+    image: mongo:9.0
+    container_name: mongodb-user-service
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file: ./user-service/.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - user_mongo_data:/data/db
+
+volumes:
+  user_mongo_data:
