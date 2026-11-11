@@ -1,6 +1,17 @@
 name: pouch
 
 services:
+  auth-service:
+    image: auth-service
+    container_name: auth-service
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    env_file: ./auth-service/.env
+    depends_on:
+      postgres-auth-service:
+        condition: service_healthy
+
   user-service:
     image: user-service
     container_name: user-service
@@ -59,5 +70,21 @@ services:
     volumes:
       - user_mongo_data:/data/db
 
+  postgres-auth-service:
+    image: postgres:18
+    container_name: postgres-auth-service
+    restart: always
+    ports:
+      - "5433:5432"
+    env_file: ./auth-service/.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql
+
 volumes:
+  auth_postgres_data:
   user_mongo_data:
