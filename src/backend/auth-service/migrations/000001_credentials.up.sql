@@ -1,5 +1,5 @@
 CREATE TABLE credentials (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    uuid UUID PRIMARY KEY DEFAULT uuidv7(),
     email TEXT UNIQUE NOT NULL CHECK (email = LOWER(email) AND email <> ''),
     password_hash TEXT NOT NULL,
     password_changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
