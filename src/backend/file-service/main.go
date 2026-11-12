@@ -13,6 +13,8 @@ import (
 
 	pb "proto/file"
 
+	"file-service/database"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -33,6 +35,15 @@ func (s *server) Ping(_ context.Context, _ *pb.PingRequest) (*pb.PingReply, erro
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+
+	//veza sa bazom
+	mongoClient, err := database.ConnectMongoDB(context.Background())
+	if err != nil {
+		logger.Error("failed to connect to MongoDB", "error", err)
+		os.Exit(1)
+	}
+
+	logger.Info("successfully connected to MongoDB")
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
 	if err != nil {
@@ -74,6 +85,15 @@ func main() {
 		logger.Warn("graceful shutdown timeout exceeded; forcefully shutting down...")
 		grpcServer.Stop()
 	case <-shutdownDone:
+	}
+
+	//zatvaranje konekcije pri gasenju servisa
+	mongoCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := mongoClient.Disconnect(mongoCtx); err != nil {
+		logger.Error("failed to disconnect from MongoDB", "error", err)
+	} else {
+		logger.Info("MongoDB connection closed successfully")
 	}
 
 	logger.Info("service stopped.")
