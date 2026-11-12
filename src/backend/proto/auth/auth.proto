@@ -4,10 +4,33 @@ option go_package = "proto/auth";
 
 service Auth{
     rpc Ping (PingRequest) returns (PingReply) {}
+    rpc Register (RegisterRequest) returns (RegisterResponse);
+    rpc SignIn (SignInRequest) returns (SignInResponse);
 }
 
 message PingRequest {}
 
 message PingReply {
     string message = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+    string name = 3;
+}
+
+message RegisterResponse {
+    string user_id = 1;
+}
+
+message SignInRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message SignInResponse {
+    string access_token = 1;
+    int64 expires_in_seconds = 2;
+    bool must_change_password = 3;
 }
