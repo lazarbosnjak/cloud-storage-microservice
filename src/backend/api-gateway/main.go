@@ -12,7 +12,12 @@ import (
 	"syscall"
 	"time"
 
+	"api-gateway/internal/application/user/ping"
+	"api-gateway/internal/infrastructure/clients/user"
+	grpcapi "api-gateway/internal/transport/grpc"
+
 	pb "proto/api-gateway"
+	userPb "proto/user"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -26,15 +31,6 @@ var (
 	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
 )
 
-type server struct {
-	pb.UnimplementedApiGatewayServer
-}
-
-func (s *server) Ping(_ context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
-	time.Sleep(time.Second * 5)
-	return &pb.PingReply{Message: "hello from api-gateway"}, nil
-}
-
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	ctx := context.Background()
@@ -46,7 +42,21 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterApiGatewayServer(grpcServer, &server{})
+	// TODO: put user-service addr in env
+	userConn, err := grpc.NewClient(
+		"user-service:50052",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		logger.Error(err.Error())
+	}
+	userRPCClient := userPb.NewUserClient(userConn)
+	userClient := user.NewGRPCClient(userRPCClient, logger)
+	pingUserHandler := ping.NewHandler(userClient)
+
+	server := grpcapi.NewServer(pingUserHandler)
+
+	pb.RegisterApiGatewayServer(grpcServer, server)
 	reflection.Register(grpcServer)
 	go func() {
 		logger.Info(fmt.Sprintf("gRPC server started on port: %s", grpcServerPort))

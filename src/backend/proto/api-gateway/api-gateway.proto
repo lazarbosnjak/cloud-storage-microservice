@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package api_gateway;
+
 option go_package = "proto/api_gateway";
 
 import "google/api/annotations.proto";
@@ -8,6 +10,12 @@ service ApiGateway {
   rpc Ping (PingRequest) returns (PingReply) {
     option (google.api.http) = {
       get: "/"
+    };
+  }
+
+  rpc PingUser (PingRequest) returns (PingReply) {
+    option (google.api.http) = {
+      get: "/user"
     };
   }
 }

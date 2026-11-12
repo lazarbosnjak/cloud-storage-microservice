@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApiGateway_Ping_FullMethodName = "/ApiGateway/Ping"
+	ApiGateway_Ping_FullMethodName     = "/api_gateway.ApiGateway/Ping"
+	ApiGateway_PingUser_FullMethodName = "/api_gateway.ApiGateway/PingUser"
 )
 
 // ApiGatewayClient is the client API for ApiGateway service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiGatewayClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
+	PingUser(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 }
 
 type apiGatewayClient struct {
@@ -47,11 +49,22 @@ func (c *apiGatewayClient) Ping(ctx context.Context, in *PingRequest, opts ...gr
 	return out, nil
 }
 
+func (c *apiGatewayClient) PingUser(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingReply)
+	err := c.cc.Invoke(ctx, ApiGateway_PingUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiGatewayServer is the server API for ApiGateway service.
 // All implementations must embed UnimplementedApiGatewayServer
 // for forward compatibility.
 type ApiGatewayServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
+	PingUser(context.Context, *PingRequest) (*PingReply, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedApiGatewayServer struct{}
 
 func (UnimplementedApiGatewayServer) Ping(context.Context, *PingRequest) (*PingReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedApiGatewayServer) PingUser(context.Context, *PingRequest) (*PingReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method PingUser not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
 func (UnimplementedApiGatewayServer) testEmbeddedByValue()                    {}
@@ -104,16 +120,38 @@ func _ApiGateway_Ping_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_PingUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).PingUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_PingUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).PingUser(ctx, req.(*PingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiGateway_ServiceDesc is the grpc.ServiceDesc for ApiGateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ApiGateway_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ApiGateway",
+	ServiceName: "api_gateway.ApiGateway",
 	HandlerType: (*ApiGatewayServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _ApiGateway_Ping_Handler,
+		},
+		{
+			MethodName: "PingUser",
+			Handler:    _ApiGateway_PingUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

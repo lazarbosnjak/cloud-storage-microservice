@@ -106,14 +106,14 @@ var File_api_gateway_proto protoreflect.FileDescriptor
 
 const file_api_gateway_proto_rawDesc = "" +
 	"\n" +
-	"\x11api-gateway.proto\x1a\x1cgoogle/api/annotations.proto\"\r\n" +
+	"\x11api-gateway.proto\x12\vapi_gateway\x1a\x1cgoogle/api/annotations.proto\"\r\n" +
 	"\vPingRequest\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage29\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\x9e\x01\n" +
 	"\n" +
-	"ApiGateway\x12+\n" +
-	"\x04Ping\x12\f.PingRequest\x1a\n" +
-	".PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/B\x13Z\x11proto/api_gatewayb\x06proto3"
+	"ApiGateway\x12C\n" +
+	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
+	"\bPingUser\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/userB\x13Z\x11proto/api_gatewayb\x06proto3"
 
 var (
 	file_api_gateway_proto_rawDescOnce sync.Once
@@ -129,14 +129,16 @@ func file_api_gateway_proto_rawDescGZIP() []byte {
 
 var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_api_gateway_proto_goTypes = []any{
-	(*PingRequest)(nil), // 0: PingRequest
-	(*PingReply)(nil),   // 1: PingReply
+	(*PingRequest)(nil), // 0: api_gateway.PingRequest
+	(*PingReply)(nil),   // 1: api_gateway.PingReply
 }
 var file_api_gateway_proto_depIdxs = []int32{
-	0, // 0: ApiGateway.Ping:input_type -> PingRequest
-	1, // 1: ApiGateway.Ping:output_type -> PingReply
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
+	0, // 1: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
+	1, // 2: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1, // 3: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
