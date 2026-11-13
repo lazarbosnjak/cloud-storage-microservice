@@ -13,6 +13,7 @@ import (
 )
 
 type AuthService interface {
+	Ping(ctx context.Context) (string, error)
 	Register(ctx context.Context, email string, password string) (string, error)
 }
 
@@ -23,6 +24,15 @@ type AuthHandler struct {
 
 func NewAuthHandler(service AuthService) *AuthHandler {
 	return &AuthHandler{service: service}
+}
+
+func (h *AuthHandler) Ping(ctx context.Context, req *auth.PingRequest) (*auth.PingReply, error) {
+	message, err := h.service.Ping(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to ping")
+	}
+
+	return &auth.PingReply{Message: message}, nil
 }
 
 func (h *AuthHandler) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {

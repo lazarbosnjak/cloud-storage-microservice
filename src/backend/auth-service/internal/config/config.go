@@ -24,8 +24,8 @@ type Postgres struct {
 }
 
 type Service struct {
-	GrpcPort                string
-	GracefulShutdownTimeout string
+	GRPCPort                string
+	GracefulShutdownTimeout int32
 }
 
 type Config struct {
@@ -74,6 +74,10 @@ func Load() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	gracefulShutdownTimeout, err := parseInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
+	if err != nil {
+		return Config{}, err
+	}
 
 	cfg := Config{
 		Postgres: Postgres{
@@ -90,8 +94,8 @@ func Load() (Config, error) {
 			HealthCheckPeriodInSeconds: time.Second * time.Duration(healthCheckPeriodInSeconds),
 		},
 		Service: Service{
-			GrpcPort:                get("GRPC_PORT"),
-			GracefulShutdownTimeout: get("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
+			GRPCPort:                get("GRPC_PORT"),
+			GracefulShutdownTimeout: gracefulShutdownTimeout,
 		},
 	}
 

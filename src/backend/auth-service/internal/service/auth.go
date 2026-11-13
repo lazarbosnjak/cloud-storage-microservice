@@ -37,6 +37,10 @@ type AuthService struct {
 	params *argon2id.Params
 }
 
+func (s *AuthService) Ping(ctx context.Context) (string, error) {
+	return "hello from auth-service!", nil
+}
+
 func NewAuthService(store CredentialStore) *AuthService {
 	return &AuthService{
 		store: store,

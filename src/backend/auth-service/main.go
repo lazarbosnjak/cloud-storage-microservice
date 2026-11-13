@@ -1,80 +1,92 @@
-package auth
+package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
 	pb "proto/auth"
 
+	"auth-service/internal/config"
+	"auth-service/internal/db"
+	"auth-service/internal/handler"
+	"auth-service/internal/repository"
+	"auth-service/internal/service"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-var (
-	grpcServerPort          = os.Getenv("GRPC_PORT")
-	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
-)
-
-type server struct {
-	pb.UnimplementedAuthServer
-}
-
-func (s *server) Ping(_ context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
-	time.Sleep(time.Second * 5)
-	return &pb.PingReply{Message: "Pong from auth-service"}, nil
-}
-
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
+	if err := run(); err != nil {
+		slog.Error("auth-service failed", "error", err)
+		os.Exit(1)
+	}
+
+	slog.Info("service stopped")
+
+}
+
+func run() error {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	cfg, err := config.Load()
 	if err != nil {
-		logger.Error(fmt.Sprintf("failed to listen: %v", err))
+		return err
+	}
+
+	pool, err := db.CreateNewPooling(ctx, cfg.Postgres)
+	if err != nil {
+		return err
+	}
+	defer pool.Close()
+
+	repo := repository.NewCredentialRepository(pool)
+	svc := service.NewAuthService(repo)
+	authHandler := handler.NewAuthHandler(svc)
+
+	lis, err := net.Listen("tcp", ":"+cfg.Service.GRPCPort)
+	if err != nil {
+		return err
 	}
 
 	grpcServer := grpc.NewServer()
-
-	pb.RegisterAuthServer(grpcServer, &server{})
+	pb.RegisterAuthServer(grpcServer, authHandler)
 	reflection.Register(grpcServer)
+
+	serveErr := make(chan error, 1)
 	go func() {
-		logger.Info(fmt.Sprintf("service started on port: %s", grpcServerPort))
-		if err := grpcServer.Serve(lis); err != nil {
-			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
-		}
+		slog.Info("service started", "port", cfg.Service.GRPCPort)
+		serveErr <- grpcServer.Serve(lis)
 	}()
-
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
-	<-sigChan
-
-	shutdownDone := make(chan struct{}, 1)
-
-	go func() {
-		logger.Info("gracefully shutting down...")
-		grpcServer.GracefulStop()
-		shutdownDone <- struct{}{}
-	}()
-
-	res, err := strconv.Atoi(gracefulShutdownTimeout)
-	if err != nil {
-		logger.Error(fmt.Sprintf("can't convert gracefulShutdownTimeout to int: %v", err))
-	}
-	gracefulShutdownTimeout := time.Second * time.Duration(res)
 
 	select {
-	case <-time.After(gracefulShutdownTimeout):
-		logger.Warn("graceful shutdown timeout exceeded; forcefully shutting down...")
-		grpcServer.Stop()
-	case <-shutdownDone:
+	case err := <-serveErr:
+		return err
+	case <-ctx.Done():
+		slog.Info("gracefully shutting down...")
 	}
 
-	logger.Info("service stopped.")
+	shutdownDone := make(chan struct{})
+	go func() {
+		grpcServer.GracefulStop()
+		close(shutdownDone)
+	}()
+
+	select {
+	case <-shutdownDone:
+	case <-time.After(time.Duration(cfg.Service.GracefulShutdownTimeout)):
+		slog.Warn("graceful shutdown timeout exceeded; forcing stop")
+		grpcServer.Stop()
+	}
+
+	return nil
 }
