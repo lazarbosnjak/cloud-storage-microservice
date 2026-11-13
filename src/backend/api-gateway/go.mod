@@ -3,12 +3,13 @@ module api-gateway
 go 1.26.10
 
 require (
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.33.0
+	golang.org/x/sync v0.25.0
 	google.golang.org/grpc v1.85.0
 	proto v0.0.1
 )
 
 require (
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.33.0 // indirect
 	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect

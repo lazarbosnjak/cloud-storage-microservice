@@ -1,18 +1,27 @@
 package grpc
 
 import (
+	"context"
 	pb "proto/api-gateway"
 
-	"api-gateway/internal/application/user/ping"
+	userping "api-gateway/internal/application/user/ping"
 )
 
-type server struct {
+type Server struct {
 	pb.UnimplementedApiGatewayServer
-	pingUserHandler *ping.Handler
+	Handlers *Handlers
 }
 
-func NewServer(pingUserHandler *ping.Handler) *server {
-	return &server{
-		pingUserHandler: pingUserHandler,
+type UserPingHandler interface {
+	Handle(ctx context.Context, _ userping.Query) (userping.Result, error)
+}
+
+type Handlers struct {
+	UserPingHandler UserPingHandler
+}
+
+func NewServer(handlers *Handlers) *Server {
+	return &Server{
+		Handlers: handlers,
 	}
 }

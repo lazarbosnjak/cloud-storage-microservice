@@ -1,30 +1,27 @@
 package ping
 
-import "context"
+import (
+	"context"
 
-type UserPinger interface {
-	Ping(ctx context.Context) (string, error)
-}
+	"api-gateway/internal/application/user"
+)
 
 type Result struct {
 	Message string
 }
 
 type Handler struct {
-	userPinger UserPinger
+	userClient user.Client
 }
 
-func NewHandler(userPinger UserPinger) *Handler {
+func NewHandler(userClient user.Client) *Handler {
 	return &Handler{
-		userPinger: userPinger,
+		userClient: userClient,
 	}
 }
 
-func (h *Handler) Handle(
-	ctx context.Context,
-	_ Query,
-) (Result, error) {
-	message, err := h.userPinger.Ping(ctx)
+func (h *Handler) Handle(ctx context.Context, _ Query) (Result, error) {
+	message, err := h.userClient.Ping(ctx)
 	if err != nil {
 		return Result{}, err
 	}
