@@ -26,7 +26,7 @@ func CreateNewPooling(ctx context.Context, c config.Postgres) (*pgxpool.Pool, er
 		return nil, fmt.Errorf("failed to create pool: %w", err)
 	}
 
-	pingCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	pingCtx, cancel := context.WithTimeout(ctx, 20*time.Second)
 	defer cancel()
 	if err := pool.Ping(pingCtx); err != nil {
 		pool.Close()

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/mail"
 	"runtime"
 	"strings"
@@ -28,7 +29,7 @@ const (
 )
 
 type CredentialStore interface {
-	Create(ctx context.Context, email string, passwordHash string) (string, error)
+	Create(ctx context.Context, email string, passwordHash string, userRole string) (string, error)
 	GetByEmail(ctx context.Context, email string) (*repository.Credential, error)
 }
 
@@ -55,6 +56,10 @@ func NewAuthService(store CredentialStore) *AuthService {
 }
 
 func (s *AuthService) Register(ctx context.Context, email string, password string) (string, error) {
+	return s.createAccount(ctx, email, password, repository.RoleUser)
+}
+
+func (s *AuthService) createAccount(ctx context.Context, email string, password string, userRole string) (string, error) {
 	email = normalizeEmail(email)
 	if err := validateEmail(email); err != nil {
 		return "", err
@@ -68,7 +73,7 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 		return "", fmt.Errorf("error while hashing password: %w", err)
 	}
 
-	id, err := s.store.Create(ctx, email, hash)
+	id, err := s.store.Create(ctx, email, hash, userRole)
 	if err != nil {
 		if errors.Is(err, repository.ErrEmailTaken) {
 			return "", ErrEmailTaken
@@ -77,6 +82,27 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 	}
 
 	return id, nil
+}
+
+func (s *AuthService) EnsureAdmin(ctx context.Context, email string, password string) error {
+	email = normalizeEmail(email)
+
+	existing, err := s.store.GetByEmail(ctx, email)
+	switch {
+	case err == nil:
+		if existing.UserRole != repository.RoleAdmin {
+			slog.Warn("admin bootstrap skipped: account exists with a different role")
+		}
+		return nil
+	case !errors.Is(err, repository.ErrNotFound):
+		return fmt.Errorf("error while checking admin: %w", err)
+	}
+
+	_, err = s.createAccount(ctx, email, password, repository.RoleAdmin)
+	if errors.Is(err, repository.ErrEmailTaken) {
+		return nil
+	}
+	return err
 }
 
 func normalizeEmail(email string) string {

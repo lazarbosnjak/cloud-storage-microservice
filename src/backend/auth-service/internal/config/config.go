@@ -26,6 +26,9 @@ type Postgres struct {
 type Service struct {
 	GRPCPort                string
 	GracefulShutdownTimeout int32
+
+	AdminEmail    string
+	AdminPassword string
 }
 
 type Config struct {
@@ -37,21 +40,20 @@ func Load() (Config, error) {
 	var missing []string
 
 	get := func(key string) string {
-		v := os.Getenv(key)
-		if v == "" {
+		val, ok := os.LookupEnv(key)
+		if !ok || val == "" {
 			missing = append(missing, key)
 		}
-		return v
+		return val
 	}
 
 	parseInt := func(key string) (int32, error) {
 		value := get(key)
-		i64, err := strconv.Atoi(value)
+		i32, err := strconv.ParseInt(value, 10, 32)
 		if err != nil {
 			return 0, fmt.Errorf("%s: parse %q as int: %w", key, value, err)
 		}
-		i32 := int32(i64)
-		return i32, nil
+		return int32(i32), nil
 	}
 
 	maxConns, err := parseInt("MAX_CONNECTIONS")
@@ -96,6 +98,8 @@ func Load() (Config, error) {
 		Service: Service{
 			GRPCPort:                get("GRPC_PORT"),
 			GracefulShutdownTimeout: gracefulShutdownTimeout,
+			AdminEmail:              get("ADMIN_EMAIL"),
+			AdminPassword:           get("ADMIN_PASSWORD"),
 		},
 	}
 

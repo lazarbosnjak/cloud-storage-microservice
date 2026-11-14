@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net"
 	"os"
@@ -49,9 +50,19 @@ func run() error {
 	}
 	defer pool.Close()
 
+	if err := db.RunMigrations(cfg.Postgres.GetDataSourceName()); err != nil {
+		return err
+	}
+
 	repo := repository.NewCredentialRepository(pool)
 	svc := service.NewAuthService(repo)
 	authHandler := handler.NewAuthHandler(svc)
+
+	if cfg.Service.AdminEmail != "" {
+		if err := svc.EnsureAdmin(ctx, cfg.Service.AdminEmail, cfg.Service.AdminPassword); err != nil {
+			return fmt.Errorf("error while bootstraping admin: %w", err)
+		}
+	}
 
 	lis, err := net.Listen("tcp", ":"+cfg.Service.GRPCPort)
 	if err != nil {
