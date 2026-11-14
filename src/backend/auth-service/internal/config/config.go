@@ -2,10 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -37,49 +37,6 @@ type Config struct {
 }
 
 func Load() (Config, error) {
-	var missing []string
-
-	get := func(key string) string {
-		val, ok := os.LookupEnv(key)
-		if !ok || val == "" {
-			missing = append(missing, key)
-		}
-		return val
-	}
-
-	parseInt := func(key string) (int32, error) {
-		value := get(key)
-		i32, err := strconv.ParseInt(value, 10, 32)
-		if err != nil {
-			return 0, fmt.Errorf("%s: parse %q as int: %w", key, value, err)
-		}
-		return int32(i32), nil
-	}
-
-	maxConns, err := parseInt("MAX_CONNECTIONS")
-	if err != nil {
-		return Config{}, err
-	}
-	minConns, err := parseInt("MIN_CONNECTIONS")
-	if err != nil {
-		return Config{}, err
-	}
-	maxConnLifetimeInMinutes, err := parseInt("MAX_CONNECTION_LIFETIME_IN_MINUTES")
-	if err != nil {
-		return Config{}, err
-	}
-	maxConnIdleTimeInMinutes, err := parseInt("MAX_CONNECTION_IDLE_TIME_IN_MINUTES")
-	if err != nil {
-		return Config{}, err
-	}
-	healthCheckPeriodInSeconds, err := parseInt("HEALTH_CHECK_PERIOD_IN_SECONDS")
-	if err != nil {
-		return Config{}, err
-	}
-	gracefulShutdownTimeout, err := parseInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
-	if err != nil {
-		return Config{}, err
-	}
 
 	cfg := Config{
 		Postgres: Postgres{
@@ -89,26 +46,41 @@ func Load() (Config, error) {
 			Host:     get("POSTGRES_HOST"),
 			Port:     get("POSTGRES_PORT"),
 
-			MaxConns:                   maxConns,
-			MinConns:                   minConns,
-			MaxConnLifetimeInMinutes:   time.Minute * time.Duration(maxConnLifetimeInMinutes),
-			MaxConnIdleTimeInMinutes:   time.Minute * time.Duration(maxConnIdleTimeInMinutes),
-			HealthCheckPeriodInSeconds: time.Second * time.Duration(healthCheckPeriodInSeconds),
+			MaxConns:                   getInt("MAX_CONNECTIONS"),
+			MinConns:                   getInt("MIN_CONNECTIONS"),
+			MaxConnLifetimeInMinutes:   time.Minute * time.Duration(getInt("MAX_CONNECTION_LIFETIME_IN_MINUTES")),
+			MaxConnIdleTimeInMinutes:   time.Minute * time.Duration(getInt("MAX_CONNECTION_IDLE_TIME_IN_MINUTES")),
+			HealthCheckPeriodInSeconds: time.Second * time.Duration(getInt("HEALTH_CHECK_PERIOD_IN_SECONDS")),
 		},
 		Service: Service{
-			GRPCPort:                get("GRPC_PORT"),
-			GracefulShutdownTimeout: gracefulShutdownTimeout,
+			GRPCPort:                get("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
+			GracefulShutdownTimeout: getInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
 		},
 	}
 
-	if len(missing) > 0 {
-		return Config{}, fmt.Errorf("Missing variables in authentication config: %s", strings.Join(missing, ", "))
-	}
-
 	return cfg, nil
 
+}
+
+func get(key string) string {
+	val, ok := os.LookupEnv(key)
+	if !ok || val == "" {
+		slog.Warn("reading env", key, "not found")
+		return ""
+	}
+
+	return val
+}
+
+func getInt(key string) int32 {
+	val := get(key)
+	i32, err := strconv.ParseInt(val, 10, 32)
+	if err != nil {
+		slog.Error("parsing to int", "value", val)
+	}
+	return int32(i32)
 }
 
 func (p Postgres) GetDataSourceName() string {
