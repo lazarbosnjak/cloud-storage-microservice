@@ -4,24 +4,24 @@ import (
 	"context"
 	"fmt"
 
-	"file-service/models"
+	"file-service/internal/domain/models"
+	"file-service/internal/domain/repository"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type FolderRepository struct {
+type folderRepository struct {
 	collection *mongo.Collection
 }
 
-func NewFolderRepository(db *mongo.Database) *FolderRepository {
-	return &FolderRepository{
+func NewFolderRepository(db *mongo.Database) repository.FolderRepository {
+	return &folderRepository{
 		collection: db.Collection("folders"),
 	}
 }
 
-// Create
-func (r *FolderRepository) Create(
+func (r *folderRepository) Create(
 	ctx context.Context,
 	folder *models.FolderMetadata,
 ) error {
@@ -37,8 +37,7 @@ func (r *FolderRepository) Create(
 	return nil
 }
 
-// GetByID
-func (r *FolderRepository) GetByID(
+func (r *folderRepository) GetByID(
 	ctx context.Context,
 	id string,
 ) (*models.FolderMetadata, error) {

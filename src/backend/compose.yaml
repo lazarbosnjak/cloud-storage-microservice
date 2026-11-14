@@ -25,9 +25,9 @@ services:
     env_file: ./file-service/.env
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
+      interval: ${MONGO_HEALTH_INTERVAL:-10s}
+      timeout: ${MONGO_HEALTH_TIMEOUT:-10s}
+      retries: ${MONGO_HEALTH_RETRIES:-10}
     volumes:
       - file_mongo_data:/data/db
 

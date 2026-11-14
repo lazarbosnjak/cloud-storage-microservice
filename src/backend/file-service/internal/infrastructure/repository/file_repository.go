@@ -4,23 +4,23 @@ import (
 	"context"
 	"fmt"
 
-	"file-service/models"
+	"file-service/internal/domain/models"
+	"file-service/internal/domain/repository"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type FileRepository struct {
+type fileRepository struct {
 	collection *mongo.Collection
 }
 
-func NewFileRepository(db *mongo.Database) *FileRepository {
-	return &FileRepository{
+func NewFileRepository(db *mongo.Database) repository.FileRepository {
+	return &fileRepository{
 		collection: db.Collection("files"),
 	}
 }
 
-// Create
-func (r *FileRepository) Create(
+func (r *fileRepository) Create(
 	ctx context.Context,
 	file *models.FileMetadata,
 ) error {
@@ -36,8 +36,7 @@ func (r *FileRepository) Create(
 	return nil
 }
 
-// GetByID
-func (r *FileRepository) GetByID(
+func (r *fileRepository) GetByID(
 	ctx context.Context,
 	id string,
 ) (*models.FileMetadata, error) {
