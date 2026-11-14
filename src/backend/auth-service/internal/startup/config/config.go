@@ -21,19 +21,36 @@ type Postgres struct {
 	MaxConnLifetimeInMinutes   time.Duration
 	MaxConnIdleTimeInMinutes   time.Duration
 	HealthCheckPeriodInSeconds time.Duration
+	PingTimeoutInSeconds       time.Duration
+}
+
+type Argon2id struct {
+	Memory      uint32
+	Iterations  uint32
+	Parallelism uint32
+	SaltLength  uint32
+	KeyLength   uint32
+}
+
+type CredentialPolicy struct {
+	MaxEmailLength    uint8
+	MinPasswordLength uint8
+	MaxPasswordLength uint8
 }
 
 type Service struct {
 	GRPCPort                string
-	GracefulShutdownTimeout int32
+	GracefulShutdownTimeout uint32
 
 	AdminEmail    string
 	AdminPassword string
 }
 
 type Config struct {
-	Postgres Postgres
-	Service  Service
+	Postgres         Postgres
+	Argon2id         Argon2id
+	CredentialPolicy CredentialPolicy
+	Service          Service
 }
 
 func Load() (Config, error) {
@@ -51,10 +68,23 @@ func Load() (Config, error) {
 			MaxConnLifetimeInMinutes:   time.Minute * time.Duration(getInt("MAX_CONNECTION_LIFETIME_IN_MINUTES")),
 			MaxConnIdleTimeInMinutes:   time.Minute * time.Duration(getInt("MAX_CONNECTION_IDLE_TIME_IN_MINUTES")),
 			HealthCheckPeriodInSeconds: time.Second * time.Duration(getInt("HEALTH_CHECK_PERIOD_IN_SECONDS")),
+			PingTimeoutInSeconds:       time.Second * time.Duration(getInt("PING_TIMEOUT_SECONDS")),
+		},
+		Argon2id: Argon2id{
+			Memory:      getUInt("ARGON2ID_MEMORY_KIBIBYTES"),
+			Iterations:  getUInt("ARGON2ID_ITERATIONS"),
+			Parallelism: getUInt("ARGON2ID_PARALLELISM"),
+			SaltLength:  getUInt("ARGON2ID_SALT_LENGTH"),
+			KeyLength:   getUInt("ARGON2ID_KEY_LENGTH"),
+		},
+		CredentialPolicy: CredentialPolicy{
+			MaxEmailLength:    uint8(getUInt("CREDENTIAL_MAX_EMAIL_LENGTH")),
+			MinPasswordLength: uint8(getUInt("CREDENTIAL_MIN_PASSWORD_LENGTH")),
+			MaxPasswordLength: uint8(getUInt("CREDENTIAL_MAX_PASSWORD_LENGTH")),
 		},
 		Service: Service{
-			GRPCPort:                get("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
-			GracefulShutdownTimeout: getInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
+			GRPCPort:                get("GRPC_PORT"),
+			GracefulShutdownTimeout: getUInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
 		},
@@ -72,6 +102,10 @@ func get(key string) string {
 	}
 
 	return val
+}
+
+func getUInt(key string) uint32 {
+	return uint32(getInt(key))
 }
 
 func getInt(key string) int32 {

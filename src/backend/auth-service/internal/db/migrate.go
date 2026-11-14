@@ -15,6 +15,7 @@ import (
 func RunMigrations(dsn string) error {
 	src, err := iofs.New(migrations.FS, ".")
 	if err != nil {
+		slog.Error("loading migrations", "error", err)
 		return fmt.Errorf("error while loading migrations: %w", err)
 	}
 
@@ -22,6 +23,7 @@ func RunMigrations(dsn string) error {
 
 	m, err := migrate.NewWithSourceInstance("iofs", src, url)
 	if err != nil {
+		slog.Error("initialize migrator", "error", err)
 		return fmt.Errorf("failed to init migrator: %w", err)
 	}
 	defer m.Close()
@@ -31,7 +33,8 @@ func RunMigrations(dsn string) error {
 			slog.Info("database schema up to date")
 			return nil
 		}
-		return fmt.Errorf("error while aplying migrations: %w", err)
+		slog.Error("applying migrations", "error", err)
+		return fmt.Errorf("error while applying migrations: %w", err)
 	}
 
 	slog.Info("database migrations applied")
