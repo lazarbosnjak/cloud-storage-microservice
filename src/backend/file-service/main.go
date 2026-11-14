@@ -1,81 +1,26 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log/slog"
-	"net"
 	"os"
-	"os/signal"
-	"strconv"
-	"syscall"
-	"time"
 
-	pb "proto/file"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"file-service/internal/startup"
+	"file-service/internal/startup/config"
 )
-
-var (
-	grpcServerPort          = os.Getenv("GRPC_PORT")
-	gracefulShutdownTimeout = os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
-)
-
-type server struct {
-	pb.UnimplementedFileServer
-}
-
-func (s *server) Ping(_ context.Context, _ *pb.PingRequest) (*pb.PingReply, error) {
-	time.Sleep(time.Second * 5)
-	return &pb.PingReply{Message: "hello from file-service"}, nil
-}
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
+	cfg, err := config.NewConfig()
 	if err != nil {
-		logger.Error(fmt.Sprintf("failed to listen: %v", err))
+		logger.Error("invalid configuration", "err", err)
+		os.Exit(1)
 	}
 
-	grpcServer := grpc.NewServer()
+	app := startup.NewServer(cfg, logger)
 
-	pb.RegisterFileServer(grpcServer, &server{})
-	reflection.Register(grpcServer)
-	go func() {
-		logger.Info(fmt.Sprintf("service started on port: %s", grpcServerPort))
-		if err := grpcServer.Serve(lis); err != nil {
-			logger.Error(fmt.Sprintf("grpc could not serve on port: %s", grpcServerPort))
-		}
-	}()
-
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
-	<-sigChan
-
-	shutdownDone := make(chan struct{}, 1)
-
-	go func() {
-		logger.Info("gracefully shutting down...")
-		grpcServer.GracefulStop()
-		shutdownDone <- struct{}{}
-	}()
-
-	res, err := strconv.Atoi(gracefulShutdownTimeout)
-	if err != nil {
-		logger.Error(fmt.Sprintf("can't convert gracefulShutdownTimeout to int: %v", err))
+	if err := app.Start(); err != nil {
+		logger.Error("service exited with error", "err", err)
+		os.Exit(1)
 	}
-	gracefulShutdownTimeout := time.Second * time.Duration(res)
-
-	select {
-	case <-time.After(gracefulShutdownTimeout):
-		logger.Warn("graceful shutdown timeout exceeded; forcefully shutting down...")
-		grpcServer.Stop()
-	case <-shutdownDone:
-	}
-
-	logger.Info("service stopped.")
-
 }
