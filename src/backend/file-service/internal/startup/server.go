@@ -45,18 +45,17 @@ func (s *Server) run() error {
 	)
 	defer stop()
 
-	mongoClient, err := database.ConnectMongoDB(ctx)
+	mongoClient, err := database.ConnectMongoDB(ctx, s.config)
 	if err != nil {
 		return fmt.Errorf("connect to MongoDB: %w", err)
 	}
 
 	s.logger.Info("successfully connected to MongoDB")
 
-	// MongoDB konekcija se zatvara pri izlasku iz run().
 	defer func() {
 		disconnectCtx, cancel := context.WithTimeout(
 			context.Background(),
-			10*time.Second,
+			s.config.MongoDisconnectTimeout,
 		)
 		defer cancel()
 
@@ -78,8 +77,13 @@ func (s *Server) run() error {
 
 	grpcServer := grpc.NewServer()
 
-	pingHandler := ping.NewHandler()
-	pb.RegisterFileServer(grpcServer, transportgrpc.NewServer(pingHandler))
+	pingHandler := ping.NewHandler(s.config.PingDelay)
+
+	pb.RegisterFileServer(
+		grpcServer,
+		transportgrpc.NewServer(pingHandler),
+	)
+
 	reflection.Register(grpcServer)
 
 	serveErrors := make(chan error, 1)

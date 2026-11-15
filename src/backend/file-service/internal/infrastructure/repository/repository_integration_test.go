@@ -11,6 +11,7 @@ import (
 
 	"file-service/internal/domain/models"
 	"file-service/internal/infrastructure/database"
+	"file-service/internal/startup/config"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -40,7 +41,12 @@ func setupTestDB(t *testing.T) (*mongo.Database, context.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	t.Cleanup(cancel)
 
-	client, err := database.ConnectMongoDB(ctx)
+	cfg, err := config.NewConfig()
+	if err != nil {
+		t.Fatalf("Invalid test configuration: %v", err)
+	}
+
+	client, err := database.ConnectMongoDB(ctx, cfg)
 	if err != nil {
 		t.Fatalf("MongoDB connection failed: %v", err)
 	}
