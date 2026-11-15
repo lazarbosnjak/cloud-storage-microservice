@@ -11,10 +11,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	gatewaygrpc "api-gateway/internal/api/grpc"
 	"api-gateway/internal/application/user/ping"
 	"api-gateway/internal/infrastructure/clients/user"
 	"api-gateway/internal/startup/config"
-	gatewaygrpc "api-gateway/internal/transport/grpc"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/sync/errgroup"
@@ -82,7 +82,11 @@ func (s *Server) run() error {
 	if err != nil {
 		return fmt.Errorf("create gateway client client: %w", err)
 	}
-	defer restConn.Close()
+	defer func() {
+		if err := restConn.Close(); err != nil {
+			s.logger.Error("close connection ")
+		}
+	}()
 
 	gwMux := runtime.NewServeMux()
 	if err := pb.RegisterApiGatewayHandler(ctx, gwMux, restConn); err != nil {
@@ -107,7 +111,7 @@ func (s *Server) run() error {
 	g.Go(func() error {
 		s.logger.Info("REST server started", "port", s.config.RestServerPort)
 		if err := gwServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			return fmt.Errorf("rest serve: %w", err)
+			return fmt.Errorf("rest server error: %w", err)
 		}
 		return nil
 	})

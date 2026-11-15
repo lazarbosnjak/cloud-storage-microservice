@@ -18,9 +18,7 @@ func NewGRPCClient(client userPb.UserClient, logger *slog.Logger) *GRPCClient {
 	}
 }
 
-func (c *GRPCClient) Ping(
-	ctx context.Context,
-) (string, error) {
+func (c *GRPCClient) Ping(ctx context.Context) (string, error) {
 	reply, err := c.client.Ping(ctx, &userPb.PingRequest{})
 	if err != nil {
 		c.logger.Error(err.Error())
