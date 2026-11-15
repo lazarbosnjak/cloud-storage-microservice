@@ -7,7 +7,7 @@ services:
       dockerfile: ./api-gateway/Dockerfile
     env_file: ./api-gateway/.env
     ports:
-      - 8090:8090
+      - "${API_GATEWAY_REST_PORT}:${API_GATEWAY_REST_PORT}"
 
   user-service:
     image: user-service
