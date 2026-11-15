@@ -1,13 +1,28 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 option go_package = "proto/file";
 
 service File {
   rpc Ping (PingRequest) returns (PingReply) {}
+  rpc CreateFolder (CreateFolderRequest) returns (CreateFolderReply) {}
 }
 
 message PingRequest {}
 
 message PingReply {
   string message = 1;
+}
+
+message CreateFolderRequest {
+  string name = 1;
+  string parent_id = 2;
+  string owner_id = 3;
+}
+
+message CreateFolderReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
 }

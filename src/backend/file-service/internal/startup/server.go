@@ -15,6 +15,9 @@ import (
 	"file-service/internal/startup/config"
 	transportgrpc "file-service/internal/transport/grpc"
 
+	"file-service/internal/application/folder"
+	infrarepo "file-service/internal/infrastructure/repository"
+
 	pb "proto/file"
 
 	"google.golang.org/grpc"
@@ -76,12 +79,15 @@ func (s *Server) run() error {
 	defer listener.Close()
 
 	grpcServer := grpc.NewServer()
+	db := mongoClient.Database(s.config.MongoDB)
 
+	folderRepository := infrarepo.NewFolderRepository(db)
+	createFolderHandler := folder.NewCreateHandler(folderRepository)
 	pingHandler := ping.NewHandler(s.config.PingDelay)
 
 	pb.RegisterFileServer(
 		grpcServer,
-		transportgrpc.NewServer(pingHandler),
+		transportgrpc.NewServer(pingHandler, createFolderHandler),
 	)
 
 	reflection.Register(grpcServer)
