@@ -14,6 +14,22 @@ services:
       context: .
       dockerfile: ./file-service/Dockerfile
     env_file: ./file-service/.env
+    depends_on:
+      mongo-file-service:
+        condition: service_healthy
+
+  mongo-file-service:
+    image: mongo:9.0
+    container_name: mongodb-file-service
+    restart: unless-stopped
+    env_file: ./file-service/.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: ${MONGO_HEALTH_INTERVAL:-10s}
+      timeout: ${MONGO_HEALTH_TIMEOUT:-10s}
+      retries: ${MONGO_HEALTH_RETRIES:-10}
+    volumes:
+      - file_mongo_data:/data/db
 
   sharing-service:
     image: sharing-service
@@ -38,3 +54,6 @@ services:
       context: .
       dockerfile: ./analytics-service/Dockerfile
     env_file: ./analytics-service/.env
+
+volumes:
+  file_mongo_data:
