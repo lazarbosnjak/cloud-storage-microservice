@@ -114,14 +114,13 @@ var File_user_proto protoreflect.FileDescriptor
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\")\n" +
+	"user.proto\x12\x04user\")\n" +
 	"\vPingRequest\x12\x1a\n" +
 	"\bfromName\x18\x01 \x01(\tR\bfromName\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2*\n" +
-	"\x04User\x12\"\n" +
-	"\x04Ping\x12\f.PingRequest\x1a\n" +
-	".PingReply\"\x00B\fZ\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage24\n" +
+	"\x04User\x12,\n" +
+	"\x04Ping\x12\x11.user.PingRequest\x1a\x0f.user.PingReply\"\x00B\fZ\n" +
 	"proto/userb\x06proto3"
 
 var (
@@ -138,12 +137,12 @@ func file_user_proto_rawDescGZIP() []byte {
 
 var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_user_proto_goTypes = []any{
-	(*PingRequest)(nil), // 0: PingRequest
-	(*PingReply)(nil),   // 1: PingReply
+	(*PingRequest)(nil), // 0: user.PingRequest
+	(*PingReply)(nil),   // 1: user.PingReply
 }
 var file_user_proto_depIdxs = []int32{
-	0, // 0: User.Ping:input_type -> PingRequest
-	1, // 1: User.Ping:output_type -> PingReply
+	0, // 0: user.User.Ping:input_type -> user.PingRequest
+	1, // 1: user.User.Ping:output_type -> user.PingReply
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

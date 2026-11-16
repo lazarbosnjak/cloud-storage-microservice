@@ -34,7 +34,7 @@ func (s *server) Ping(_ context.Context, in *pb.PingRequest) (*pb.PingReply, err
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcServerPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcServerPort))
 	if err != nil {
 		logger.Error(fmt.Sprintf("failed to listen: %v", err))
 	}
