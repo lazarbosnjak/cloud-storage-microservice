@@ -1,3 +1,5 @@
+name: pouch
+
 services:
   api-gateway:
     image: api-gateway
@@ -9,6 +11,17 @@ services:
     ports:
       - "${API_GATEWAY_REST_PORT}:${API_GATEWAY_REST_PORT}"
 
+  auth-service:
+    image: auth-service
+    container_name: auth-service
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    env_file: ./auth-service/.env
+    depends_on:
+      postgres-auth-service:
+        condition: service_healthy
+
   user-service:
     image: user-service
     container_name: user-service
@@ -16,6 +29,9 @@ services:
       context: .
       dockerfile: ./user-service/Dockerfile
     env_file: ./user-service/.env
+    depends_on:
+      mongo-user-service:
+        condition: service_healthy
 
   file-service:
     image: file-service
@@ -24,6 +40,22 @@ services:
       context: .
       dockerfile: ./file-service/Dockerfile
     env_file: ./file-service/.env
+    depends_on:
+      mongo-file-service:
+        condition: service_healthy
+
+  mongo-file-service:
+    image: mongo:9.0
+    container_name: mongodb-file-service
+    restart: unless-stopped
+    env_file: ./file-service/.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: ${MONGO_HEALTH_INTERVAL:-10s}
+      timeout: ${MONGO_HEALTH_TIMEOUT:-10s}
+      retries: ${MONGO_HEALTH_RETRIES:-10}
+    volumes:
+      - file_mongo_data:/data/db
 
   sharing-service:
     image: sharing-service
@@ -48,3 +80,38 @@ services:
       context: .
       dockerfile: ./analytics-service/Dockerfile
     env_file: ./analytics-service/.env
+
+  mongo-user-service:
+    image: mongo:9.0
+    container_name: mongodb-user-service
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file: ./user-service/.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - user_mongo_data:/data/db
+
+  postgres-auth-service:
+    image: postgres:18
+    container_name: postgres-auth-service
+    restart: always
+    ports:
+      - "5433:5432"
+    env_file: ./auth-service/.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql
+
+volumes:
+  auth_postgres_data:
+  user_mongo_data:
+  file_mongo_data:
