@@ -1,6 +1,16 @@
 name: pouch
 
 services:
+  api-gateway:
+    image: api-gateway
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    env_file: ./api-gateway/.env
+    ports:
+      - "${API_GATEWAY_REST_PORT}:${API_GATEWAY_REST_PORT}"
+
   auth-service:
     image: auth-service
     container_name: auth-service
