@@ -73,12 +73,15 @@ func TestFileRepositoryIntegration(t *testing.T) {
 	now := time.Now().UTC().Truncate(time.Millisecond)
 
 	file := &models.FileMetadata{
-		ID:        id,
-		Name:      "integration-test-file.txt",
-		ParentID:  "test-parent",
-		OwnerID:   "test-owner",
-		CreatedAt: now,
-		UpdatedAt: now,
+		ID:          id,
+		Name:        "integration-test-file.txt",
+		Size:        1024,
+		ContentType: "text/plain",
+		StorageKey:  "test-storage-key",
+		ParentID:    "test-parent",
+		OwnerID:     "test-owner",
+		CreatedAt:   now,
+		UpdatedAt:   now,
 	}
 
 	t.Cleanup(func() {
@@ -105,6 +108,9 @@ func TestFileRepositoryIntegration(t *testing.T) {
 
 	if saved.ID != file.ID ||
 		saved.Name != file.Name ||
+		saved.Size != file.Size ||
+		saved.ContentType != file.ContentType ||
+		saved.StorageKey != file.StorageKey ||
 		saved.ParentID != file.ParentID ||
 		saved.OwnerID != file.OwnerID ||
 		!saved.CreatedAt.Equal(file.CreatedAt) ||

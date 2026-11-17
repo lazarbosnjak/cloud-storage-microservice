@@ -9,6 +9,7 @@ import (
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
 	"file-service/internal/domain/models"
+	"file-service/internal/domain/repository"
 
 	pb "proto/file"
 
@@ -52,6 +53,28 @@ func (r *fakeFolderRepository) GetByID(
 	}
 
 	return f, nil
+}
+
+func (r *fakeFolderRepository) Rename(
+	ctx context.Context,
+	id string,
+	ownerID string,
+	name string,
+	updatedAt time.Time,
+) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	folder, ok := r.folders[id]
+	if !ok || folder.OwnerID != ownerID {
+		return repository.ErrNotFound
+	}
+
+	folder.Name = name
+	folder.UpdatedAt = updatedAt
+
+	return nil
 }
 
 func newTestServer() (*Server, *fakeFolderRepository) {
@@ -215,4 +238,24 @@ func TestGRPCCreateFolderDifferentOwner(t *testing.T) {
 	if status.Code(err) != codes.NotFound {
 		t.Fatalf("expected NotFound, got %v", err)
 	}
+}
+
+func (r *fakeFolderRepository) ListByParentID(
+	ctx context.Context,
+	parentID string,
+	ownerID string,
+) ([]*models.FolderMetadata, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	folders := make([]*models.FolderMetadata, 0)
+
+	for _, folder := range r.folders {
+		if folder.ParentID == parentID && folder.OwnerID == ownerID {
+			folders = append(folders, folder)
+		}
+	}
+
+	return folders, nil
 }

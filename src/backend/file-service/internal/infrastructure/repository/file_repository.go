@@ -3,10 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"file-service/internal/domain/models"
 	"file-service/internal/domain/repository"
 
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -52,4 +54,57 @@ func (r *fileRepository) GetByID(
 	}
 
 	return &file, nil
+}
+
+func (r *fileRepository) Rename(
+	ctx context.Context,
+	id string,
+	ownerID string,
+	name string,
+	updatedAt time.Time,
+) error {
+	result, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{
+			"_id":     id,
+			"ownerId": ownerID,
+		},
+		bson.M{
+			"$set": bson.M{
+				"name":      name,
+				"updatedAt": updatedAt,
+			},
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to rename file: %w", err)
+	}
+
+	if result.MatchedCount == 0 {
+		return repository.ErrNotFound
+	}
+
+	return nil
+}
+
+func (r *fileRepository) ListByParentID(
+	ctx context.Context,
+	parentID string,
+	ownerID string,
+) ([]*models.FileMetadata, error) {
+	cursor, err := r.collection.Find(ctx, bson.M{
+		"parentFolderId": parentID,
+		"ownerId":        ownerID,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list files: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var files []*models.FileMetadata
+	if err := cursor.All(ctx, &files); err != nil {
+		return nil, fmt.Errorf("failed to decode files: %w", err)
+	}
+
+	return files, nil
 }
