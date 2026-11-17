@@ -4,7 +4,10 @@ go 1.26.10
 
 require google.golang.org/grpc v1.85.0
 
-require proto v0.0.1
+require (
+	golang.org/x/sync v0.24.0
+	proto v0.0.1
+)
 
 require (
 	golang.org/x/net v0.62.0 // indirect
