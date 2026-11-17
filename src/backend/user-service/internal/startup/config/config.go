@@ -14,6 +14,8 @@ type mongoConfig struct {
 	Database           string
 	InitDBRootUsername string
 	InitDBRootPassword string
+	PingTimeout        time.Duration
+	DisconnectTimeout  time.Duration
 }
 
 type Config struct {
@@ -25,20 +27,22 @@ type Config struct {
 }
 
 func NewConfig(logger *slog.Logger) *Config {
-	grpcPort := getEnv("GRPC_PORT", logger)
+	grpcPort := getEnv("GRPC_PORT")
+	gracefulShutdownTimeout := toTimeDuration(
+		getEnv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
+		time.Second)
 
-	mongoInitDBRootUsername := getEnv("MONGO_INITDB_ROOT_USERNAME", logger)
-	mongoInitDBRootPassword := getEnv("MONGO_INITDB_ROOT_PASSWORD", logger)
-	mongoHost := getEnv("MONGO_HOST", logger)
-	mongoPort := getEnv("MONGO_PORT", logger)
-	mongoDatabase := getEnv("MONGO_DB", logger)
-
-	res, err := strconv.Atoi(os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"))
-	if err != nil || res == 0 {
-		logger.Error("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS env missing or not a number")
-		os.Exit(1)
-	}
-	gracefulShutdownTimeout := time.Second * time.Duration(res)
+	mongoInitDBRootUsername := getEnv("MONGO_INITDB_ROOT_USERNAME")
+	mongoInitDBRootPassword := getEnv("MONGO_INITDB_ROOT_PASSWORD")
+	mongoHost := getEnv("MONGO_HOST")
+	mongoPort := getEnv("MONGO_PORT")
+	mongoDatabase := getEnv("MONGO_DB")
+	mongoPingTimeout := toTimeDuration(
+		getEnv("MONGO_PING_TIMEOUT_SECONDS"),
+		time.Second)
+	mongoDisconnectTimeout := toTimeDuration(
+		getEnv("MONGO_DISCONNECT_TIMEOUT_SECONDS"),
+		time.Second)
 
 	mongo := mongoConfig{
 		Host:               mongoHost,
@@ -46,6 +50,8 @@ func NewConfig(logger *slog.Logger) *Config {
 		Database:           mongoDatabase,
 		InitDBRootUsername: mongoInitDBRootUsername,
 		InitDBRootPassword: mongoInitDBRootPassword,
+		PingTimeout:        mongoPingTimeout,
+		DisconnectTimeout:  mongoDisconnectTimeout,
 	}
 
 	return &Config{
@@ -56,12 +62,22 @@ func NewConfig(logger *slog.Logger) *Config {
 	}
 }
 
-func getEnv(name string, logger *slog.Logger) string {
+func getEnv(name string) string {
 	env := os.Getenv(name)
 	if env == "" {
-		logger.Error(fmt.Sprintf("%s env missing", name))
+		slog.Error(fmt.Sprintf("%s env missing", name))
 		os.Exit(1)
 	}
 
 	return env
+}
+
+func toTimeDuration(s string, unit time.Duration) time.Duration {
+	res, err := strconv.Atoi(os.Getenv(s))
+	if err != nil || res == 0 {
+		slog.Error(fmt.Sprintf("%s env missing or not a number", s))
+		os.Exit(1)
+	}
+
+	return time.Duration(res) * unit
 }
