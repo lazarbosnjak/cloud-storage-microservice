@@ -6,6 +6,9 @@ service Auth{
     rpc Ping (PingRequest) returns (PingReply) {}
     rpc Register (RegisterRequest) returns (RegisterResponse);
     rpc SignIn (SignInRequest) returns (SignInResponse);
+    rpc Refresh (RefreshRequest) returns (RefreshResponse);
+    rpc SignOut (SignOutRequest) returns (SignOutResponse);
+    rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
 }
 
 message PingRequest {}
@@ -33,4 +36,29 @@ message SignInResponse {
     string access_token = 1;
     int64 expires_in_seconds = 2;
     bool must_change_password = 3;
+    string refresh_token = 4;
 }
+
+message RefreshRequest {
+    string refresh_token = 1;
+}
+
+message RefreshResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+    int64 expires_in_seconds = 3;
+}
+
+message SignOutRequest {
+    string refresh_token = 1;
+}
+
+message SignOutResponse {}
+
+message ChangePasswordRequest {
+    string email = 1;
+    string current_password = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordResponse {}
