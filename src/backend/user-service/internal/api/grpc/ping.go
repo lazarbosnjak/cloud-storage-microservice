@@ -8,6 +8,7 @@ import (
 )
 
 func (s *Server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
+	// TODO: move handler creation to a different file
 	handler := ping.NewHandler()
 	message := handler.Handle(ctx)
 
