@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"log/slog"
 
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
@@ -36,6 +37,7 @@ func (s *Server) Ping(
 ) (*pb.PingReply, error) {
 	message, err := s.pingHandler.Handle(ctx)
 	if err != nil {
+		slog.Error("Ping RPC failed", "err", err)
 		return nil, err
 	}
 
@@ -49,6 +51,7 @@ func (s *Server) CreateFolder(
 	req *pb.CreateFolderRequest,
 ) (*pb.CreateFolderReply, error) {
 	if req == nil {
+		slog.Warn("CreateFolder RPC rejected: nil request")
 		return nil, status.Error(codes.InvalidArgument, "request cannot be nil")
 	}
 
@@ -77,6 +80,7 @@ func (s *Server) CreateFolder(
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())
 
 		default:
+			slog.Error("CreateFolder RPC failed", "err", err)
 			return nil, status.Error(codes.Internal, "failed to create folder")
 		}
 	}

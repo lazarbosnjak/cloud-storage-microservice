@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"file-service/internal/domain/models"
 	"file-service/internal/domain/repository"
@@ -26,11 +27,13 @@ func (r *folderRepository) Create(
 	folder *models.FolderMetadata,
 ) error {
 	if folder == nil {
+		slog.Warn("cannot save nil folder metadata")
 		return fmt.Errorf("folder metadata cannot be nil")
 	}
 
 	_, err := r.collection.InsertOne(ctx, folder)
 	if err != nil {
+		slog.Error("failed to insert folder metadata into MongoDB", "err", err)
 		return fmt.Errorf("failed to save folder metadata: %w", err)
 	}
 
@@ -49,6 +52,7 @@ func (r *folderRepository) GetByID(
 	).Decode(&folder)
 
 	if err != nil {
+		slog.Error("failed to retrieve folder metadata from MongoDB", "err", err)
 		return nil, fmt.Errorf("failed to get folder metadata: %w", err)
 	}
 
