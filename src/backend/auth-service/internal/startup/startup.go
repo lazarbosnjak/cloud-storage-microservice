@@ -6,6 +6,7 @@ import (
 	"auth-service/internal/repository"
 	"auth-service/internal/service"
 	"auth-service/internal/startup/config"
+	"auth-service/internal/token"
 	"context"
 	"fmt"
 	"log/slog"
@@ -59,9 +60,15 @@ func run() error {
 		return err
 	}
 
+	//Getting token issuer that uses jwt
+	issuer, err := token.NewIssuer(cfg.Token)
+	if err != nil {
+		return err
+	}
+
 	//Connecting everything
 	repo := repository.NewCredentialRepository(pool)
-	svc := service.NewAuthService(repo, cfg)
+	svc := service.NewAuthService(repo, cfg, issuer)
 	authHandler := handler.NewAuthHandler(svc)
 
 	//Adding a default admin account. Used mainly in testing purposes

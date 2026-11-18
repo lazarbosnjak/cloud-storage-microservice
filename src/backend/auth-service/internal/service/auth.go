@@ -12,6 +12,7 @@ import (
 	"auth-service/internal/domain"
 	"auth-service/internal/repository"
 	"auth-service/internal/startup/config"
+	"auth-service/internal/token"
 
 	"github.com/alexedwards/argon2id"
 	"google.golang.org/grpc/codes"
@@ -24,6 +25,10 @@ var (
 	ErrEmailTaken   = errors.New("email already taken")
 	ErrDefault      = errors.New("there was an error")
 )
+
+type TokenIssuer interface {
+	IssueAccessToken(userID string, role domain.Role, sessionID string) (token.AccessToken, error)
+}
 
 type CredentialPolicy struct {
 	MaxEmailLength    uint8
@@ -46,7 +51,7 @@ func (s *AuthService) Ping(ctx context.Context) (string, error) {
 	return "hello from auth-service!", nil
 }
 
-func NewAuthService(store CredentialStore, cfg config.Config) *AuthService {
+func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer) *AuthService {
 	return &AuthService{
 		store: store,
 		policy: CredentialPolicy{

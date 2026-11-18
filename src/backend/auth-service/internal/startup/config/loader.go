@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
@@ -65,5 +66,7 @@ func (l *loader) err() error {
 	if len(l.problems) == 0 {
 		return nil
 	}
-	return fmt.Errorf("invalid configuration: %s", strings.Join(l.problems, "; "))
+	err := fmt.Errorf("invalid configuration: %s", strings.Join(l.problems, "; "))
+	slog.Error("invalid configuration", "error", strings.Join(l.problems, "; "))
+	return err
 }
