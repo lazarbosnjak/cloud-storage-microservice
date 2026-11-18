@@ -1,0 +1,47 @@
+package auth
+
+import (
+	"context"
+	"log/slog"
+	authPb "proto/auth"
+
+	"api-gateway/internal/application/auth"
+)
+
+type GRPCClient struct {
+	client authPb.AuthClient
+	logger *slog.Logger
+}
+
+func NewGRPCClient(client authPb.AuthClient, logger *slog.Logger) *GRPCClient {
+	return &GRPCClient{
+		client: client,
+		logger: logger,
+	}
+}
+
+func (c *GRPCClient) Ping(ctx context.Context) (string, error) {
+	reply, err := c.client.Ping(ctx, &authPb.PingRequest{})
+	if err != nil {
+		c.logger.Error(err.Error())
+		return "", err
+	}
+
+	return reply.Message, nil
+}
+
+func (c *GRPCClient) Register(ctx context.Context, dto auth.RegisterUserDTO) error {
+	req := &authPb.RegisterRequest{
+		Email:     dto.Email,
+		Password:  dto.Password,
+		FirstName: dto.FirstName,
+		LastName:  dto.LastName,
+	}
+
+	_, err := c.client.Register(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
