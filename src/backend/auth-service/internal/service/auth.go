@@ -36,17 +36,33 @@ type CredentialStore interface {
 	GetByEmail(ctx context.Context, email string) (*domain.Credential, error)
 }
 
+type CreateUserDTO struct {
+	ID        string
+	Email     string
+	FirstName string
+	LastName  string
+}
+
+type UserClient interface {
+	CreateUser(ctx context.Context, user CreateUserDTO) error
+}
+
 type AuthService struct {
 	store  CredentialStore
 	policy CredentialPolicy
 	params *argon2id.Params
+
+	UserClient UserClient
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
 	return "hello from auth-service!", nil
 }
 
-func NewAuthService(store CredentialStore, cfg config.Config) *AuthService {
+func NewAuthService(
+	store CredentialStore, cfg config.Config,
+	userClient UserClient,
+) *AuthService {
 	return &AuthService{
 		store: store,
 		policy: CredentialPolicy{
@@ -61,6 +77,7 @@ func NewAuthService(store CredentialStore, cfg config.Config) *AuthService {
 			SaltLength:  cfg.Argon2id.SaltLength,
 			KeyLength:   cfg.Argon2id.KeyLength,
 		},
+		UserClient: userClient,
 	}
 }
 
@@ -83,6 +100,14 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 		}
 	}
 
+	// TODO: ADD rpc to user-service
+	user := &CreateUserDTO{
+		ID:        id,
+		Email:     email,
+		FirstName: "Lazar",
+		LastName:  "Bosnjak",
+	}
+	s.UserClient.CreateUser(ctx, user)
 	return id, nil
 }
 
