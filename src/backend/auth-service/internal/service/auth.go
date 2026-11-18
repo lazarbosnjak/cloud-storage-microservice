@@ -36,6 +36,13 @@ type CredentialStore interface {
 	GetByEmail(ctx context.Context, email string) (*domain.Credential, error)
 }
 
+type RegisterUserDTO struct {
+	Email     string
+	Password  string
+	FirstName string
+	LastName  string
+}
+
 type CreateUserDTO struct {
 	ID        string
 	Email     string
@@ -44,8 +51,10 @@ type CreateUserDTO struct {
 }
 
 type UserClient interface {
-	CreateUser(ctx context.Context, user CreateUserDTO) error
+	CreateUser(ctx context.Context, user *CreateUserDTO) error
 }
+
+// FIXME: move cfg to struct instead of constructor func
 
 type AuthService struct {
 	store  CredentialStore
@@ -81,8 +90,8 @@ func NewAuthService(
 	}
 }
 
-func (s *AuthService) Register(ctx context.Context, email string, password string) (string, error) {
-	id, err := s.createAccount(ctx, email, password, domain.RoleUser)
+func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (string, error) {
+	id, err := s.createAccount(ctx, user.Email, user.Password, domain.RoleUser)
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrInvalidEmail):
@@ -100,14 +109,18 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 		}
 	}
 
-	// TODO: ADD rpc to user-service
-	user := &CreateUserDTO{
+	createUserDTO := &CreateUserDTO{
 		ID:        id,
-		Email:     email,
-		FirstName: "Lazar",
-		LastName:  "Bosnjak",
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	}
-	s.UserClient.CreateUser(ctx, user)
+	err = s.UserClient.CreateUser(ctx, createUserDTO)
+	if err != nil {
+		slog.Error("error creating user", "err", err)
+		return "", status.Error(codes.Unavailable, "error creating user")
+	}
+
 	return id, nil
 }
 

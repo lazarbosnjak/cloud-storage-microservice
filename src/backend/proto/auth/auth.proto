@@ -17,12 +17,11 @@ message PingReply {
 message RegisterRequest {
     string email = 1;
     string password = 2;
-    string name = 3;
+    string firstName = 3;
+    string lastName = 4;
 }
 
-message RegisterResponse {
-    string user_id = 1;
-}
+message RegisterResponse {}
 
 message SignInRequest {
     string email = 1;
