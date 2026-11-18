@@ -42,16 +42,33 @@ type CredentialStore interface {
 }
 
 type AuthService struct {
-	store  CredentialStore
-	policy CredentialPolicy
-	params *argon2id.Params
+	store     CredentialStore
+	policy    CredentialPolicy
+	params    *argon2id.Params
+	tokens    TokenIssuer
+	dummyHash string
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
 	return "hello from auth-service!", nil
 }
 
-func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer) *AuthService {
+func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer) (*AuthService, error) {
+
+	params := &argon2id.Params{
+		Memory:      cfg.Argon2id.Memory * 1024,
+		Iterations:  cfg.Argon2id.Iterations,
+		Parallelism: uint8(cfg.Argon2id.Parallelism),
+		SaltLength:  cfg.Argon2id.SaltLength,
+		KeyLength:   cfg.Argon2id.KeyLength,
+	}
+
+	dummy, err := argon2id.CreateHash("pouch-dummy-password", params)
+	if err != nil {
+		slog.Error("create dummy hash", "error", err)
+		return nil, fmt.Errorf("create dummy hash: %w", err)
+	}
+
 	return &AuthService{
 		store: store,
 		policy: CredentialPolicy{
@@ -59,14 +76,10 @@ func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer
 			MinPasswordLength: cfg.CredentialPolicy.MinPasswordLength,
 			MaxPasswordLength: cfg.CredentialPolicy.MaxPasswordLength,
 		},
-		params: &argon2id.Params{
-			Memory:      cfg.Argon2id.Memory * 1024,
-			Iterations:  cfg.Argon2id.Iterations,
-			Parallelism: uint8(cfg.Argon2id.Parallelism),
-			SaltLength:  cfg.Argon2id.SaltLength,
-			KeyLength:   cfg.Argon2id.KeyLength,
-		},
-	}
+		params:    params,
+		tokens:    tokens,
+		dummyHash: dummy,
+	}, nil
 }
 
 func (s *AuthService) Register(ctx context.Context, email string, password string) (string, error) {

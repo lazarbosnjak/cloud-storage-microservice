@@ -68,7 +68,10 @@ func run() error {
 
 	//Connecting everything
 	repo := repository.NewCredentialRepository(pool)
-	svc := service.NewAuthService(repo, cfg, issuer)
+	svc, err := service.NewAuthService(repo, cfg, issuer)
+	if err != nil {
+		return err
+	}
 	authHandler := handler.NewAuthHandler(svc)
 
 	//Adding a default admin account. Used mainly in testing purposes
