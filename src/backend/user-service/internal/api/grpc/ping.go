@@ -4,7 +4,7 @@ import (
 	"context"
 	pb "proto/user"
 
-	"user-service/internal/application/ping"
+	"user-service/internal/application/user/ping"
 )
 
 func (s *Server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {

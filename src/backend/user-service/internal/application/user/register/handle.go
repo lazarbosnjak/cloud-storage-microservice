@@ -11,7 +11,7 @@ type RegisterUser interface {
 }
 
 type Query struct {
-	UserID    string
+	ID        string
 	Email     string
 	FirstName string
 	LastName  string
@@ -29,8 +29,7 @@ func NewHandler(repository RegisterUser) *Handler {
 
 func (h *Handler) Register(ctx context.Context, query Query) error {
 	user := domain.User{
-		MongoID:   "",
-		ID:        query.UserID,
+		ID:        query.ID,
 		Email:     query.Email,
 		FirstName: query.FirstName,
 		LastName:  query.LastName,

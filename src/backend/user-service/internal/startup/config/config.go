@@ -73,7 +73,7 @@ func getEnv(name string) string {
 }
 
 func toTimeDuration(s string, unit time.Duration) time.Duration {
-	res, err := strconv.Atoi(os.Getenv(s))
+	res, err := strconv.Atoi(s)
 	if err != nil || res == 0 {
 		slog.Error(fmt.Sprintf("%s env missing or not a number", s))
 		os.Exit(1)

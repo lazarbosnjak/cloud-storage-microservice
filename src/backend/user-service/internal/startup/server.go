@@ -9,6 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"user-service/internal/application/user/register"
+	"user-service/internal/infrastructure/mongodb"
 	"user-service/internal/startup/config"
 
 	"golang.org/x/sync/errgroup"
@@ -40,7 +42,7 @@ func (s *Server) run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	grpcAPIServer := s.newAPIServer()
+	grpcAPIServer := s.newAPIServer(ctx)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterUserServer(grpcServer, grpcAPIServer)
@@ -91,6 +93,15 @@ func (s *Server) shutdown(grpcServer *grpc.Server) {
 	}
 }
 
-func (s *Server) newAPIServer() pb.UserServer {
-	return usergrpc.NewServer()
+func (s *Server) newAPIServer(ctx context.Context) pb.UserServer {
+	mongoClient, err := mongodb.NewClient(ctx, s.config)
+	if err != nil {
+		s.logger.Error("error creating newAPIServer", "err", err.Error())
+		os.Exit(1)
+	}
+
+	userRepo := mongodb.NewUserRepository(mongoClient.Database(s.config.Mongo.Database), s.logger)
+	createUserHandler := register.NewHandler(userRepo)
+
+	return usergrpc.NewServer(createUserHandler)
 }
