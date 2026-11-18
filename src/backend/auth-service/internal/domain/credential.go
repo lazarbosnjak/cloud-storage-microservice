@@ -28,6 +28,7 @@ type Credential struct {
 	PasswordChangedAt time.Time
 	FailedAttempts    string
 	LockedUntil       *time.Time
+	LastFailedAt      *time.Time
 	EmailVerified     bool
 	CreatedAt         time.Time
 }

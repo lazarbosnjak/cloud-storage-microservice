@@ -51,9 +51,14 @@ type Config struct {
 	Argon2id         Argon2id
 	CredentialPolicy CredentialPolicy
 	Service          Service
+
+	Token   Token
+	Lockout Lockout
 }
 
 func Load() (Config, error) {
+
+	l := &loader{}
 
 	cfg := Config{
 		Postgres: Postgres{
@@ -88,6 +93,12 @@ func Load() (Config, error) {
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
 		},
+		Token:   loadToken(l),
+		Lockout: loadLockout(l),
+	}
+
+	if err := l.err(); err != nil {
+		return Config{}, err
 	}
 
 	return cfg, nil

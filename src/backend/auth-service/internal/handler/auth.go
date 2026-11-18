@@ -16,7 +16,7 @@ type AuthService interface {
 }
 
 type AuthHandler struct {
-	auth.UnimplementedAuthServer
+	auth.AuthServer
 	service AuthService
 }
 
