@@ -4,7 +4,7 @@ import (
 	"context"
 	pb "proto/user"
 
-	"user-service/internal/application/user/register"
+	createuser "user-service/internal/application/user/create"
 )
 
 type Server struct {
@@ -13,7 +13,7 @@ type Server struct {
 }
 
 type CreateUserHandler interface {
-	Register(ctx context.Context, query register.Query) error
+	Register(ctx context.Context, query createuser.Query) error
 }
 
 type Handlers struct{}

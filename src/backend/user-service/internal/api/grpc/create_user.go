@@ -5,11 +5,11 @@ import (
 	"fmt"
 	pb "proto/user"
 
-	"user-service/internal/application/user/register"
+	createuser "user-service/internal/application/user/create"
 )
 
 func (s *Server) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserReply, error) {
-	query := &register.Query{
+	query := &createuser.Query{
 		ID:        in.Id,
 		Email:     in.Email,
 		FirstName: in.FirstName,
