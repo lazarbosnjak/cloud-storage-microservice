@@ -32,10 +32,11 @@ func (c *GRPCClient) Ping(ctx context.Context) (string, error) {
 
 func (c *GRPCClient) Register(ctx context.Context, dto auth.RegisterUserDTO) error {
 	req := &authPb.RegisterRequest{
-		Email:     dto.Email,
-		Password:  dto.Password,
-		FirstName: dto.FirstName,
-		LastName:  dto.LastName,
+		Email:            dto.Email,
+		Password:         dto.Password,
+		RepeatedPassword: dto.RepeatedPassword,
+		FirstName:        dto.FirstName,
+		LastName:         dto.LastName,
 	}
 
 	_, err := c.client.Register(ctx, req)

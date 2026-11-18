@@ -19,10 +19,11 @@ import (
 )
 
 var (
-	ErrInvalidEmail = errors.New("invalid email address")
-	ErrPassword     = errors.New("password does not meet requirements")
-	ErrEmailTaken   = errors.New("email already taken")
-	ErrDefault      = errors.New("there was an error")
+	ErrInvalidEmail     = errors.New("invalid email address")
+	ErrPassword         = errors.New("password does not meet requirements")
+	ErrEmailTaken       = errors.New("email already taken")
+	ErrPasswordMismatch = errors.New("password and repeated password do not match")
+	ErrDefault          = errors.New("there was an error")
 )
 
 type CredentialPolicy struct {
@@ -37,10 +38,11 @@ type CredentialStore interface {
 }
 
 type RegisterUserDTO struct {
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
+	Email            string
+	Password         string
+	RepeatedPassword string
+	FirstName        string
+	LastName         string
 }
 
 type CreateUserDTO struct {
@@ -91,6 +93,10 @@ func NewAuthService(
 }
 
 func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (string, error) {
+	if user.RepeatedPassword != user.Password {
+		return "", status.Error(codes.InvalidArgument, ErrPasswordMismatch.Error())
+	}
+
 	id, err := s.createAccount(ctx, user.Email, user.Password, domain.RoleUser)
 	if err != nil {
 		switch {
@@ -123,6 +129,10 @@ func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (strin
 
 	return id, nil
 }
+
+// TODO:
+// - pass RegisterUserDTO instead of email and password
+// - move repeated password matching to createAccount()
 
 func (s *AuthService) createAccount(ctx context.Context, email string, password string, userRole domain.Role) (string, error) {
 	email = normalizeEmail(email)

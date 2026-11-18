@@ -9,10 +9,11 @@ import (
 
 func (s *Server) AuthRegister(ctx context.Context, in *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	command := register.Command{
-		Email:     in.Email,
-		Password:  in.Password,
-		FirstName: in.FirstName,
-		LastName:  in.LastName,
+		Email:            in.GetEmail(),
+		Password:         in.GetPassword(),
+		RepeatedPassword: in.GetRepeatedPassword(),
+		FirstName:        in.GetFirstName(),
+		LastName:         in.GetLastName(),
 	}
 
 	res := &auth.RegisterResponse{}

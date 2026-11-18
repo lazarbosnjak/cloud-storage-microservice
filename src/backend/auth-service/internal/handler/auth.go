@@ -38,10 +38,11 @@ func (h *AuthHandler) Ping(ctx context.Context, req *auth.PingRequest) (*auth.Pi
 
 func (h *AuthHandler) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	user := service.RegisterUserDTO{
-		Email:     req.GetEmail(),
-		Password:  req.GetPassword(),
-		FirstName: req.GetFirstName(),
-		LastName:  req.GetLastName(),
+		Email:            req.GetEmail(),
+		Password:         req.GetPassword(),
+		RepeatedPassword: req.GetRepeatedPassword(),
+		FirstName:        req.GetFirstName(),
+		LastName:         req.GetLastName(),
 	}
 	_, err := h.service.Register(ctx, user)
 	if err != nil {

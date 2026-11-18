@@ -102,13 +102,14 @@ func (x *PingReply) GetMessage() string {
 }
 
 type RegisterRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	FirstName     string                 `protobuf:"bytes,3,opt,name=firstName,proto3" json:"firstName,omitempty"`
-	LastName      string                 `protobuf:"bytes,4,opt,name=lastName,proto3" json:"lastName,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Email            string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password         string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	RepeatedPassword string                 `protobuf:"bytes,3,opt,name=repeatedPassword,proto3" json:"repeatedPassword,omitempty"`
+	FirstName        string                 `protobuf:"bytes,4,opt,name=firstName,proto3" json:"firstName,omitempty"`
+	LastName         string                 `protobuf:"bytes,5,opt,name=lastName,proto3" json:"lastName,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *RegisterRequest) Reset() {
@@ -151,6 +152,13 @@ func (x *RegisterRequest) GetEmail() string {
 func (x *RegisterRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *RegisterRequest) GetRepeatedPassword() string {
+	if x != nil {
+		return x.RepeatedPassword
 	}
 	return ""
 }
@@ -322,15 +330,16 @@ var File_auth_proto protoreflect.FileDescriptor
 const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"auth.proto\"\r\n" +
+	"auth.proto\x12\x04auth\"\r\n" +
 	"\vPingRequest\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"}\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xa9\x01\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1c\n" +
-	"\tfirstName\x18\x03 \x01(\tR\tfirstName\x12\x1a\n" +
-	"\blastName\x18\x04 \x01(\tR\blastName\"\x12\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12*\n" +
+	"\x10repeatedPassword\x18\x03 \x01(\tR\x10repeatedPassword\x12\x1c\n" +
+	"\tfirstName\x18\x04 \x01(\tR\tfirstName\x12\x1a\n" +
+	"\blastName\x18\x05 \x01(\tR\blastName\"\x12\n" +
 	"\x10RegisterResponse\"A\n" +
 	"\rSignInRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
@@ -338,12 +347,11 @@ const file_auth_proto_rawDesc = "" +
 	"\x0eSignInResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
 	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds\x120\n" +
-	"\x14must_change_password\x18\x03 \x01(\bR\x12mustChangePassword2\x86\x01\n" +
-	"\x04Auth\x12\"\n" +
-	"\x04Ping\x12\f.PingRequest\x1a\n" +
-	".PingReply\"\x00\x12/\n" +
-	"\bRegister\x12\x10.RegisterRequest\x1a\x11.RegisterResponse\x12)\n" +
-	"\x06SignIn\x12\x0e.SignInRequest\x1a\x0f.SignInResponseB\fZ\n" +
+	"\x14must_change_password\x18\x03 \x01(\bR\x12mustChangePassword2\xa4\x01\n" +
+	"\x04Auth\x12,\n" +
+	"\x04Ping\x12\x11.auth.PingRequest\x1a\x0f.auth.PingReply\"\x00\x129\n" +
+	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x123\n" +
+	"\x06SignIn\x12\x13.auth.SignInRequest\x1a\x14.auth.SignInResponseB\fZ\n" +
 	"proto/authb\x06proto3"
 
 var (
@@ -360,20 +368,20 @@ func file_auth_proto_rawDescGZIP() []byte {
 
 var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_auth_proto_goTypes = []any{
-	(*PingRequest)(nil),      // 0: PingRequest
-	(*PingReply)(nil),        // 1: PingReply
-	(*RegisterRequest)(nil),  // 2: RegisterRequest
-	(*RegisterResponse)(nil), // 3: RegisterResponse
-	(*SignInRequest)(nil),    // 4: SignInRequest
-	(*SignInResponse)(nil),   // 5: SignInResponse
+	(*PingRequest)(nil),      // 0: auth.PingRequest
+	(*PingReply)(nil),        // 1: auth.PingReply
+	(*RegisterRequest)(nil),  // 2: auth.RegisterRequest
+	(*RegisterResponse)(nil), // 3: auth.RegisterResponse
+	(*SignInRequest)(nil),    // 4: auth.SignInRequest
+	(*SignInResponse)(nil),   // 5: auth.SignInResponse
 }
 var file_auth_proto_depIdxs = []int32{
-	0, // 0: Auth.Ping:input_type -> PingRequest
-	2, // 1: Auth.Register:input_type -> RegisterRequest
-	4, // 2: Auth.SignIn:input_type -> SignInRequest
-	1, // 3: Auth.Ping:output_type -> PingReply
-	3, // 4: Auth.Register:output_type -> RegisterResponse
-	5, // 5: Auth.SignIn:output_type -> SignInResponse
+	0, // 0: auth.Auth.Ping:input_type -> auth.PingRequest
+	2, // 1: auth.Auth.Register:input_type -> auth.RegisterRequest
+	4, // 2: auth.Auth.SignIn:input_type -> auth.SignInRequest
+	1, // 3: auth.Auth.Ping:output_type -> auth.PingReply
+	3, // 4: auth.Auth.Register:output_type -> auth.RegisterResponse
+	5, // 5: auth.Auth.SignIn:output_type -> auth.SignInResponse
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

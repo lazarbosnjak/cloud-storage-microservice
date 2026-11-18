@@ -7,10 +7,11 @@ import (
 )
 
 type Command struct {
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
+	Email            string
+	Password         string
+	RepeatedPassword string
+	FirstName        string
+	LastName         string
 }
 
 type Handler struct {
@@ -25,10 +26,11 @@ func NewHandler(client auth.Client) *Handler {
 
 func (h *Handler) Handle(ctx context.Context, command Command) error {
 	user := auth.RegisterUserDTO{
-		Email:     command.Email,
-		Password:  command.Password,
-		FirstName: command.FirstName,
-		LastName:  command.LastName,
+		Email:            command.Email,
+		Password:         command.Password,
+		RepeatedPassword: command.RepeatedPassword,
+		FirstName:        command.FirstName,
+		LastName:         command.LastName,
 	}
 
 	err := h.client.Register(ctx, user)
