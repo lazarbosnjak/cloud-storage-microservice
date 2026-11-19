@@ -23,6 +23,8 @@ services:
         condition: service_healthy
     secrets:
       - jwt_private_key
+    ports:
+      - "50057:50057"
 
   user-service:
     image: user-service

@@ -90,7 +90,7 @@ func run() error {
 	}
 
 	//Setting up grpc server and allowing direct access to external network via grpc
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(handler.LoggingInterceptor))
 	pb.RegisterAuthServer(grpcServer, authHandler)
 	reflection.Register(grpcServer)
 

@@ -7,7 +7,7 @@ import (
 	"errors"
 	"log/slog"
 
-	auth "proto/auth"
+	pb "proto/auth"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +20,7 @@ type AuthService interface {
 }
 
 type AuthHandler struct {
-	auth.AuthServer
+	pb.AuthServer
 	service AuthService
 }
 
@@ -28,23 +28,23 @@ func NewAuthHandler(service AuthService) *AuthHandler {
 	return &AuthHandler{service: service}
 }
 
-func (h *AuthHandler) Ping(ctx context.Context, req *auth.PingRequest) (*auth.PingReply, error) {
+func (h *AuthHandler) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingReply, error) {
 	message, err := h.service.Ping(ctx)
 	if err != nil {
 		slog.Error("unable to ping")
 		return nil, status.Errorf(codes.Internal, "unable to ping")
 	}
 
-	return &auth.PingReply{Message: message}, nil
+	return &pb.PingReply{Message: message}, nil
 }
 
-func (h *AuthHandler) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
+func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	id, _ := h.service.Register(ctx, req.GetEmail(), req.GetPassword())
 
-	return &auth.RegisterResponse{UserId: id}, nil
+	return &pb.RegisterResponse{UserId: id}, nil
 }
 
-func (h *AuthHandler) SignIn(ctx context.Context, req *auth.SignInRequest) (*auth.SignInResponse, error) {
+func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
 	res, err := h.service.SignIn(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
 		if errors.Is(err, domain.ErrInvalidCredentials) {
@@ -54,7 +54,7 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *auth.SignInRequest) (*aut
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
-	return &auth.SignInResponse{
+	return &pb.SignInResponse{
 		AccessToken:        res.AccessToken,
 		ExpiresInSeconds:   int64(res.ExpiresIn.Seconds()),
 		MustChangePassword: res.MustChangePassword,

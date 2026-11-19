@@ -51,7 +51,7 @@ func (r *CredentialRepository) Create(ctx context.Context, email string, passwor
 func (r *CredentialRepository) GetByEmail(ctx context.Context, email string) (*domain.Credential, error) {
 	const query = `
 		SELECT id, email, password_hash, user_role, password_changed_at, failed_attempts,
-		locked_until, last_failed_at email_verified, created_at
+		locked_until, last_failed_at, email_verified, created_at
 		FROM credentials
 		WHERE email = $1`
 
