@@ -12,6 +12,7 @@ import (
 
 	"auth-service/internal/db"
 	"auth-service/internal/handler"
+	"auth-service/internal/infrastructure/mailhog"
 	"auth-service/internal/repository"
 	"auth-service/internal/service"
 	"auth-service/internal/startup/config"
@@ -81,7 +82,8 @@ func run() error {
 	// Connecting everything
 	repo := repository.NewCredentialRepository(pool)
 	userGRPCClient := handler.NewGRPCUserClient(userConn)
-	svc := service.NewAuthService(repo, cfg, userGRPCClient)
+	mailhogServer := mailhog.NewServer(cfg)
+	svc := service.NewAuthService(repo, cfg, userGRPCClient, mailhogServer)
 	authHandler := handler.NewAuthHandler(svc)
 
 	// Adding a default admin account. Used mainly in testing purposes
