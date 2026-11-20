@@ -31,4 +31,5 @@ type Credential struct {
 	LastFailedAt      *time.Time
 	EmailVerified     bool
 	CreatedAt         time.Time
+	IsEnabled         bool
 }

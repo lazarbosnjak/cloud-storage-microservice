@@ -40,7 +40,7 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, fmt.Errorf("compare password: %w", err)
 	}
 
-	if cred == nil || !match {
+	if cred == nil || !match || !cred.IsEnabled {
 		return SignInResult{}, domain.ErrInvalidCredentials
 	}
 
