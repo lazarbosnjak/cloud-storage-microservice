@@ -29,6 +29,7 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, fmt.Errorf("get credential: %w", err)
 	}
 
+	// dummyHash is just holding random hash in case there are no users registered. Why? Because it "wastes time" preventing time driven attacks
 	hash := s.dummyHash
 	if cred != nil {
 		hash = cred.PasswordHash
@@ -43,7 +44,7 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, domain.ErrInvalidCredentials
 	}
 
-	at, err := s.tokens.IssueAccessToken(cred.ID, cred.UserRole, "")
+	at, err := s.tokens.IssueAccessToken(cred.ID, cred.UserRole, "") // Currently empty session id is passed since we haven't implemented refresh tokens yet.
 	if err != nil {
 		return SignInResult{}, fmt.Errorf("issue access token: %w", err)
 	}

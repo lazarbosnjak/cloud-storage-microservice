@@ -15,17 +15,15 @@ func LoggingInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo
 	start := time.Now()
 	slog.Info("rpc started", "method", info.FullMethod)
 
-	defer func() {
-		if r := recover(); r != nil {
-			slog.Error("panic in handler", "method", info.FullMethod, "panic", r, "stack", string(debug.Stack()))
-			err = status.Error(codes.Internal, "internal error")
-		}
-		slog.Info("rpc finished",
-			"method", info.FullMethod,
-			"code", status.Code(err).String(),
-			"duration", time.Since(start),
-		)
-	}()
+	if r := recover(); r != nil {
+		slog.Error("panic in handler", "method", info.FullMethod, "panic", r, "stack", string(debug.Stack()))
+		err = status.Error(codes.Internal, "internal error")
+	}
+	slog.Info("rpc finished",
+		"method", info.FullMethod,
+		"code", status.Code(err).String(),
+		"duration", time.Since(start),
+	)
 
 	return next(ctx, req)
 }

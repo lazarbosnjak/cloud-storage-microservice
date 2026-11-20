@@ -74,20 +74,20 @@ func (i *Issuer) IssueAccessToken(userID string, role domain.Role, sessionID str
 	}
 
 	claims := AccessClaims{
-		Role:      role.String(),
-		SessionID: sessionID,
+		Role:      role.String(), // we keep a role to minimize auth calls. if we didn't, gateway would verify and validate token, but have to call auth anyways to get authorizations.
+		SessionID: sessionID,     // session id is pointing to refresh token family. Refresh token family ensures that same user can have different sessions. We can always use this to revoke sessions.
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    i.issuer,
-			Subject:   userID,
+			Subject:   userID, // this is id from user service. Used to minimize auth calls.
 			Audience:  jwt.ClaimStrings{i.audience},
-			IssuedAt:  jwt.NewNumericDate(now),
-			ExpiresAt: jwt.NewNumericDate(now.Add(i.ttl)),
-			ID:        jti,
+			IssuedAt:  jwt.NewNumericDate(now),            // time token is issued at
+			ExpiresAt: jwt.NewNumericDate(now.Add(i.ttl)), // time token expires
+			ID:        jti,                                // jti is unique identifier for each token. It's optional and prevents having one user having two identical tokens. It can also be used for future features.
 		},
 	}
 
 	tok := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	tok.Header["kid"] = i.keyID
+	tok.Header["kid"] = i.keyID // keyID is just public key gateway could use to verify token. We can always put it in auth service with a trade-off being, we would need to call auth-service each time we need public key (on every request)
 
 	signed, err := tok.SignedString(i.key)
 	if err != nil {

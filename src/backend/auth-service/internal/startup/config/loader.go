@@ -25,6 +25,7 @@ func (l *loader) required(key string) string {
 	return v
 }
 
+// def stands for "default". If key is not found or value of the key is empty, function will return default
 func (l *loader) str(key string, def string) string {
 	v, ok := os.LookupEnv(key)
 	if !ok || v == "" {
@@ -33,6 +34,7 @@ func (l *loader) str(key string, def string) string {
 	return v
 }
 
+// def stands for "default". If key is not found or value of the key is empty, function will return default
 func (l *loader) duration(key string, def time.Duration) time.Duration {
 	raw, ok := os.LookupEnv(key)
 	if !ok || raw == "" {
@@ -49,6 +51,7 @@ func (l *loader) duration(key string, def time.Duration) time.Duration {
 	return d
 }
 
+// def stands for "default". If key is not found or value of the key is empty, function will return default
 func (l *loader) integer(key string, def int) int {
 	raw, ok := os.LookupEnv(key)
 	if !ok || raw == "" {

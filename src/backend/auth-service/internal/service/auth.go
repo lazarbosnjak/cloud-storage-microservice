@@ -63,6 +63,7 @@ func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer
 		KeyLength:   cfg.Argon2id.KeyLength,
 	}
 
+	// Dummy hash is used to "waste time" in order to prevent time based hacks
 	dummy, err := argon2id.CreateHash("pouch-dummy-password", params)
 	if err != nil {
 		slog.Error("create dummy hash", "error", err)
