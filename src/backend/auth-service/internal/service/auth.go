@@ -19,10 +19,11 @@ import (
 )
 
 var (
-	ErrInvalidEmail = errors.New("invalid email address")
-	ErrPassword     = errors.New("password does not meet requirements")
-	ErrEmailTaken   = errors.New("email already taken")
-	ErrDefault      = errors.New("there was an error")
+	ErrInvalidEmail     = errors.New("invalid email address")
+	ErrPassword         = errors.New("password does not meet requirements")
+	ErrEmailTaken       = errors.New("email already taken")
+	ErrPasswordMismatch = errors.New("password and repeated password do not match")
+	ErrDefault          = errors.New("there was an error")
 )
 
 type CredentialPolicy struct {
@@ -36,17 +37,43 @@ type CredentialStore interface {
 	GetByEmail(ctx context.Context, email string) (*domain.Credential, error)
 }
 
+type RegisterUserDTO struct {
+	Email            string
+	Password         string
+	RepeatedPassword string
+	FirstName        string
+	LastName         string
+}
+
+type CreateUserDTO struct {
+	ID        string
+	Email     string
+	FirstName string
+	LastName  string
+}
+
+type UserClient interface {
+	CreateUser(ctx context.Context, user *CreateUserDTO) error
+}
+
+// FIXME: move cfg to struct instead of constructor func
+
 type AuthService struct {
 	store  CredentialStore
 	policy CredentialPolicy
 	params *argon2id.Params
+
+	UserClient UserClient
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
 	return "hello from auth-service!", nil
 }
 
-func NewAuthService(store CredentialStore, cfg config.Config) *AuthService {
+func NewAuthService(
+	store CredentialStore, cfg config.Config,
+	userClient UserClient,
+) *AuthService {
 	return &AuthService{
 		store: store,
 		policy: CredentialPolicy{
@@ -61,11 +88,16 @@ func NewAuthService(store CredentialStore, cfg config.Config) *AuthService {
 			SaltLength:  cfg.Argon2id.SaltLength,
 			KeyLength:   cfg.Argon2id.KeyLength,
 		},
+		UserClient: userClient,
 	}
 }
 
-func (s *AuthService) Register(ctx context.Context, email string, password string) (string, error) {
-	id, err := s.createAccount(ctx, email, password, domain.RoleUser)
+func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (string, error) {
+	if user.RepeatedPassword != user.Password {
+		return "", status.Error(codes.InvalidArgument, ErrPasswordMismatch.Error())
+	}
+
+	id, err := s.createAccount(ctx, user.Email, user.Password, domain.RoleUser)
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrInvalidEmail):
@@ -83,8 +115,24 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 		}
 	}
 
+	createUserDTO := &CreateUserDTO{
+		ID:        id,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+	err = s.UserClient.CreateUser(ctx, createUserDTO)
+	if err != nil {
+		slog.Error("error creating user", "err", err)
+		return "", status.Error(codes.Unavailable, "error creating user")
+	}
+
 	return id, nil
 }
+
+// TODO:
+// - pass RegisterUserDTO instead of email and password
+// - move repeated password matching to createAccount()
 
 func (s *AuthService) createAccount(ctx context.Context, email string, password string, userRole domain.Role) (string, error) {
 	email = normalizeEmail(email)

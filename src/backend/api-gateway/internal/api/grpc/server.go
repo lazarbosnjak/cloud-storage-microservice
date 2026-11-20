@@ -1,9 +1,9 @@
 package grpc
 
 import (
-	"context"
 	pb "proto/api-gateway"
 
+	authregister "api-gateway/internal/application/auth/register"
 	userping "api-gateway/internal/application/user/ping"
 )
 
@@ -12,12 +12,9 @@ type Server struct {
 	Handlers *Handlers
 }
 
-type UserPingHandler interface {
-	Handle(ctx context.Context, _ userping.Query) (userping.Result, error)
-}
-
 type Handlers struct {
-	UserPingHandler UserPingHandler
+	UserPingHandler     *userping.Handler
+	AuthRegisterHandler *authregister.Handler
 }
 
 func NewServer(handlers *Handlers) *Server {

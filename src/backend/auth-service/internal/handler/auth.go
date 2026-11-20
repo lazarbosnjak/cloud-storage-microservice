@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 
+	"auth-service/internal/service"
+
 	auth "proto/auth"
 
 	"google.golang.org/grpc/codes"
@@ -12,7 +14,7 @@ import (
 
 type AuthService interface {
 	Ping(ctx context.Context) (string, error)
-	Register(ctx context.Context, email string, password string) (string, error)
+	Register(ctx context.Context, user service.RegisterUserDTO) (string, error)
 }
 
 type AuthHandler struct {
@@ -35,7 +37,19 @@ func (h *AuthHandler) Ping(ctx context.Context, req *auth.PingRequest) (*auth.Pi
 }
 
 func (h *AuthHandler) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
-	id, _ := h.service.Register(ctx, req.GetEmail(), req.GetPassword())
+	user := service.RegisterUserDTO{
+		Email:            req.GetEmail(),
+		Password:         req.GetPassword(),
+		RepeatedPassword: req.GetRepeatedPassword(),
+		FirstName:        req.GetFirstName(),
+		LastName:         req.GetLastName(),
+	}
+	_, err := h.service.Register(ctx, user)
+	if err != nil {
+		// TODO: Figure out better error message?
+		// Need to test
+		return nil, err
+	}
 
-	return &auth.RegisterResponse{UserId: id}, nil
+	return &auth.RegisterResponse{}, nil
 }

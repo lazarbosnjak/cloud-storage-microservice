@@ -12,7 +12,9 @@ import (
 	"syscall"
 
 	gatewaygrpc "api-gateway/internal/api/grpc"
+	"api-gateway/internal/application/auth/register"
 	"api-gateway/internal/application/user/ping"
+	"api-gateway/internal/infrastructure/clients/auth"
 	"api-gateway/internal/infrastructure/clients/user"
 	"api-gateway/internal/startup/config"
 
@@ -23,6 +25,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	pb "proto/api-gateway"
+	authPb "proto/auth"
 	userPb "proto/user"
 )
 
@@ -61,7 +64,20 @@ func (s *Server) run() error {
 		}
 	}()
 
-	grpcAPIServer := s.newAPIServer(userConn)
+	authConn, err := grpc.NewClient(
+		s.config.AuthServiceGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("create auth gRPC connection: %w", err)
+	}
+	defer func() {
+		if err := authConn.Close(); err != nil {
+			s.logger.Error("close connection ")
+		}
+	}()
+
+	grpcAPIServer := s.newAPIServer(userConn, authConn)
 
 	// gRPC server
 	grpcServer := grpc.NewServer()
@@ -149,11 +165,18 @@ func (s *Server) shutdown(gwServer *http.Server, grpcServer *grpc.Server) {
 	}
 }
 
-func (s *Server) newAPIServer(userConn *grpc.ClientConn) pb.ApiGatewayServer {
+func (s *Server) newAPIServer(
+	userConn *grpc.ClientConn,
+	authConn *grpc.ClientConn,
+) pb.ApiGatewayServer {
 	userClient := user.NewGRPCClient(userPb.NewUserClient(userConn), s.logger)
 	userPingHandler := ping.NewHandler(userClient)
 
+	authClient := auth.NewGRPCClient(authPb.NewAuthClient(authConn), s.logger)
+	authRegisterHandler := register.NewHandler(authClient)
+
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
-		UserPingHandler: userPingHandler,
+		UserPingHandler:     userPingHandler,
+		AuthRegisterHandler: authRegisterHandler,
 	})
 }

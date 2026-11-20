@@ -44,6 +44,8 @@ type Service struct {
 
 	AdminEmail    string
 	AdminPassword string
+
+	UserServiceGRPCAddr string
 }
 
 type Config struct {
@@ -54,7 +56,6 @@ type Config struct {
 }
 
 func Load() (Config, error) {
-
 	cfg := Config{
 		Postgres: Postgres{
 			User:     get("POSTGRES_USER"),
@@ -87,11 +88,11 @@ func Load() (Config, error) {
 			GracefulShutdownTimeout: getUInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
+			UserServiceGRPCAddr:     get("USER_SERVICE_GRPC_ADDR"),
 		},
 	}
 
 	return cfg, nil
-
 }
 
 func get(key string) string {
