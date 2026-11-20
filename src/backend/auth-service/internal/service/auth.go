@@ -58,7 +58,7 @@ type UserClient interface {
 
 // TODO: Move to separate file
 type EmailSender interface {
-	SendVerifyRegistrationMail(to []string, verificationLink string)
+	SendVerifyRegistrationMail(to []string, verificationLink string) error
 }
 
 // FIXME: move cfg to struct instead of constructor func
@@ -135,7 +135,10 @@ func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (strin
 		return "", status.Error(codes.Unavailable, "error creating user")
 	}
 
-	s.EmailSender.SendVerifyRegistrationMail([]string{user.Email}, "verificationLink")
+	err = s.EmailSender.SendVerifyRegistrationMail([]string{user.Email}, "verificationLink")
+	if err != nil {
+		return "", err
+	}
 
 	return id, nil
 }

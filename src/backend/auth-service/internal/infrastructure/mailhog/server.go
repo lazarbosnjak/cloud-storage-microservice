@@ -1,12 +1,23 @@
 package mailhog
 
 import (
+	"bytes"
+	"embed"
+	"errors"
 	"fmt"
+	"html/template"
 	"log/slog"
 	"net/smtp"
 
 	"auth-service/internal/startup/config"
 )
+
+//go:embed templates/*.template.html
+var templateFS embed.FS
+
+var templates = template.Must(template.ParseFS(templateFS, "templates/*.template.html"))
+
+var ErrExecutingTemplate = errors.New("error executing html template")
 
 type Server struct {
 	config config.Config
@@ -18,16 +29,7 @@ func NewServer(config config.Config) *Server {
 	}
 }
 
-func (s *Server) SendVerifyRegistrationMail(to []string, verificationLink string) {
-	subject := "[POUCH] Verify registration"
-
-	// TODO: Add HTML template to body
-	body := verificationLink
-
-	s.sendMail(subject, body, to)
-}
-
-func (s *Server) sendMail(subject, body string, to []string) {
+func (s *Server) sendMail(subject, body string, to []string) error {
 	username := s.config.SMTP.Username
 	password := s.config.SMTP.Password
 	host := s.config.SMTP.Host
@@ -46,6 +48,7 @@ func (s *Server) sendMail(subject, body string, to []string) {
 	message := fmt.Sprintf("From: %s\r\n", username)
 	message += fmt.Sprintf("To: %s\r\n", to)
 	message += fmt.Sprintf("Subject: %s\r\n", subject)
+	message += "Content-Type: text/html; charset=\"UTF-8\"\r\n"
 	message += fmt.Sprintf("\r\n%s\r\n", body)
 
 	err := smtp.SendMail(
@@ -56,7 +59,18 @@ func (s *Server) sendMail(subject, body string, to []string) {
 		[]byte(message),
 	)
 	if err != nil {
-		slog.Error("nmp", "err", err)
-		return
+		slog.Error("error sending mail", "err", err)
+		return err
 	}
+
+	return nil
+}
+
+func (s *Server) renderTemplate(name string, data any) (string, error) {
+	var body bytes.Buffer
+	if err := templates.ExecuteTemplate(&body, name, data); err != nil {
+		return "", fmt.Errorf("%w %q: %w", ErrExecutingTemplate, name, err)
+	}
+
+	return body.String(), nil
 }
