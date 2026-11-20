@@ -51,12 +51,12 @@ func (r *CredentialRepository) Create(ctx context.Context, email string, passwor
 func (r *CredentialRepository) GetByEmail(ctx context.Context, email string) (*domain.Credential, error) {
 	const query = `
 		SELECT id, email, password_hash, user_role, password_changed_at, failed_attempts,
-		locked_until, last_failed_at, email_verified, created_at
+		locked_until, last_failed_at, email_verified, created_at, is_enabled
 		FROM credentials
 		WHERE email = $1`
 
 	var c domain.Credential
-	err := r.pool.QueryRow(ctx, query, email).Scan(&c.ID, &c.Email, &c.PasswordHash, &c.UserRole, &c.PasswordChangedAt, &c.FailedAttempts, &c.LockedUntil, &c.LastFailedAt, &c.EmailVerified, &c.CreatedAt)
+	err := r.pool.QueryRow(ctx, query, email).Scan(&c.ID, &c.Email, &c.PasswordHash, &c.UserRole, &c.PasswordChangedAt, &c.FailedAttempts, &c.LockedUntil, &c.LastFailedAt, &c.EmailVerified, &c.CreatedAt, &c.IsEnabled)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound

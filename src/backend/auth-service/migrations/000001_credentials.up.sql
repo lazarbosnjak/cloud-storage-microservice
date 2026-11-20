@@ -7,7 +7,8 @@ CREATE TABLE credentials (
     failed_attempts INTEGER NOT NULL DEFAULT 0 CHECK (failed_attempts >= 0),
     locked_until TIMESTAMPTZ NULL,
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 COMMENT ON COLUMN credentials.user_role IS '1 = admin, 2 = user';
