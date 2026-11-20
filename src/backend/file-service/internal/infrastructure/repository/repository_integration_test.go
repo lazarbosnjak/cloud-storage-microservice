@@ -13,6 +13,8 @@ import (
 	"file-service/internal/infrastructure/database"
 	"file-service/internal/startup/config"
 
+	domainrepo "file-service/internal/domain/repository"
+
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -185,7 +187,7 @@ func TestFileRepositoryGetByIDNotFound(t *testing.T) {
 
 	file, err := repo.GetByID(ctx, id)
 
-	if !errors.Is(err, mongo.ErrNoDocuments) {
+	if !errors.Is(err, domainrepo.ErrNotFound) {
 		t.Fatalf("Expected mongo.ErrNoDocuments, got: %v", err)
 	}
 
@@ -193,7 +195,7 @@ func TestFileRepositoryGetByIDNotFound(t *testing.T) {
 		t.Fatalf("Expected nil file, got: %+v", file)
 	}
 
-	t.Log("Non-existing file correctly returns mongo.ErrNoDocuments")
+	t.Log("Non-existing file correctly returns repository.ErrNotFound")
 }
 
 func TestFolderRepositoryGetByIDNotFound(t *testing.T) {
@@ -204,7 +206,7 @@ func TestFolderRepositoryGetByIDNotFound(t *testing.T) {
 
 	folder, err := repo.GetByID(ctx, id)
 
-	if !errors.Is(err, mongo.ErrNoDocuments) {
+	if !errors.Is(err, domainrepo.ErrNotFound) {
 		t.Fatalf("Expected mongo.ErrNoDocuments, got: %v", err)
 	}
 
@@ -212,5 +214,5 @@ func TestFolderRepositoryGetByIDNotFound(t *testing.T) {
 		t.Fatalf("Expected nil folder, got: %+v", folder)
 	}
 
-	t.Log("Non-existing folder correctly returns mongo.ErrNoDocuments")
+	t.Log("Non-existing folder correctly returns repository.ErrNotFound")
 }

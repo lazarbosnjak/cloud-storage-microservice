@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
+	"file-service/internal/application/file"
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
 	"file-service/internal/domain/models"
@@ -49,7 +49,7 @@ func (r *fakeFolderRepository) GetByID(
 
 	f, ok := r.folders[id]
 	if !ok {
-		return nil, errors.New("folder not found")
+		return nil, repository.ErrNotFound
 	}
 
 	return f, nil
@@ -78,12 +78,18 @@ func (r *fakeFolderRepository) Rename(
 }
 
 func newTestServer() (*Server, *fakeFolderRepository) {
-	repo := newFakeFolderRepository()
+	folderRepo := newFakeFolderRepository()
+	fileRepo := newFakeGRPCFileRepository()
 
 	return NewServer(
 		ping.NewHandler(5*time.Second),
-		folder.NewCreateHandler(repo),
-	), repo
+		folder.NewCreateHandler(folderRepo),
+		file.NewRenameHandler(fileRepo),
+		folder.NewRenameHandler(folderRepo),
+		folder.NewListContentsHandler(folderRepo, fileRepo),
+		file.NewGetHandler(fileRepo),
+		folder.NewGetHandler(folderRepo),
+	), folderRepo
 }
 
 func TestGRPCCreateRootFolder(t *testing.T) {

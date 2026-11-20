@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -53,6 +54,10 @@ func (r *folderRepository) GetByID(
 	).Decode(&folder)
 
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, repository.ErrNotFound
+		}
+
 		slog.Error("failed to retrieve folder metadata from MongoDB", "err", err)
 		return nil, fmt.Errorf("failed to get folder metadata: %w", err)
 	}

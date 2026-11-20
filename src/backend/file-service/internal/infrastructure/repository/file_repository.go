@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -50,9 +51,11 @@ func (r *fileRepository) GetByID(
 	).Decode(&file)
 
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, repository.ErrNotFound
+		}
 		return nil, fmt.Errorf("failed to get file metadata: %w", err)
 	}
-
 	return &file, nil
 }
 
