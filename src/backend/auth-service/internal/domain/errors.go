@@ -7,4 +7,5 @@ var (
 	ErrEmailTaken         = errors.New("email already registered")
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrInvalidToken       = errors.New("invalid token")
+	ErrAccountLocked      = errors.New("account temporarly locked")
 )

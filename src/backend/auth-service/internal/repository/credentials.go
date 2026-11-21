@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"auth-service/internal/domain"
 
@@ -65,4 +66,33 @@ func (r *CredentialRepository) GetByEmail(ctx context.Context, email string) (*d
 		return nil, fmt.Errorf("failed to get by email: %w", err)
 	}
 	return &c, nil
+}
+
+func (r *CredentialRepository) UpdateFailedAttempts(ctx context.Context, userID string, failedAttempts uint8, lockedUntil *time.Time) error {
+	const query = `
+		UPDATE credentials
+		SET failed_attempts = $2, last_failed_at = NOW(), locked_until = $3
+		WHERE id = $1
+	`
+
+	if _, err := r.pool.Exec(ctx, query, userID, failedAttempts, lockedUntil); err != nil {
+		slog.Error("update failed attempts", "error", err)
+		return fmt.Errorf("error updating failed attempts: %w", err)
+	}
+	return nil
+}
+
+func (r *CredentialRepository) ResetFailedAttempts(ctx context.Context, userID string) error {
+	const query = `
+		UPDATE credentials
+		SET failed_attempts = 0, locked_until = NULL
+		WHERE id = $1
+	`
+
+	if _, err := r.pool.Exec(ctx, query, userID); err != nil {
+		slog.Error("reset failed attempts", "error", err)
+		return fmt.Errorf("error resetting failed attempts: %w", err)
+	}
+
+	return nil
 }

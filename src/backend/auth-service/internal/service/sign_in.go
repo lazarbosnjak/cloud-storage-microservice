@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"math"
 	"time"
 
 	"github.com/alexedwards/argon2id"
@@ -29,6 +31,14 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, fmt.Errorf("get credential: %w", err)
 	}
 
+	now := time.Now()
+
+	if cred != nil && cred.LockedUntil != nil && cred.LockedUntil.After(now) {
+		// Uncoment line below for testing purposes. We avoid sending this info since that would tell hacker that account exists
+		// return SignInResult{}, domain.ErrAccountLocked
+		return SignInResult{}, domain.ErrInvalidCredentials
+	}
+
 	// dummyHash is just holding random hash in case there are no users registered. Why? Because it "wastes time" preventing time driven attacks
 	hash := s.dummyHash
 	if cred != nil {
@@ -40,8 +50,35 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, fmt.Errorf("compare password: %w", err)
 	}
 
-	if cred == nil || !match || !cred.IsEnabled {
+	if cred == nil {
 		return SignInResult{}, domain.ErrInvalidCredentials
+	}
+
+	if !match {
+		streak := s.nextStreak(cred.FailedAttempts, cred.LastFailedAt, now)
+
+		var lockedUntil *time.Time
+		if d, locked := s.lockoutFor(streak); locked {
+			deadline := now.Add(d)
+			lockedUntil = &deadline
+
+			slog.Warn("account locked", "user_id", cred.ID, "streak", streak, "locked_until", deadline)
+		}
+
+		if err := s.store.UpdateFailedAttempts(ctx, cred.ID, streak, lockedUntil); err != nil {
+			slog.Error("update failed attempts", "error", err)
+		}
+		return SignInResult{}, domain.ErrInvalidCredentials
+	}
+
+	if !cred.IsEnabled {
+		return SignInResult{}, domain.ErrInvalidCredentials
+	}
+
+	if cred.FailedAttempts > 0 || cred.LockedUntil != nil {
+		if err := s.store.ResetFailedAttempts(ctx, cred.ID); err != nil {
+			slog.Error("reset failed attempts", "error", err)
+		}
 	}
 
 	at, err := s.tokens.IssueAccessToken(cred.ID, cred.UserRole, "") // Currently empty session id is passed since we haven't implemented refresh tokens yet.
@@ -54,4 +91,30 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		ExpiresIn:   at.ExpiresIn,
 	}, nil
 
+}
+
+func (s *AuthService) nextStreak(prev uint8, LastFailedAt *time.Time, now time.Time) uint8 {
+	if prev == math.MaxUint8 {
+		return math.MaxUint8
+	}
+	if LastFailedAt == nil || now.Sub(*LastFailedAt) >= s.config.Lockout.ResetWindow {
+		return 1
+	}
+	return prev + 1
+}
+
+func (s *AuthService) lockoutFor(streak uint8) (time.Duration, bool) {
+	treshold := uint8(s.config.Lockout.Treshold)
+	if streak < treshold {
+		return 0, false
+	}
+
+	d := s.config.Lockout.BaseDuration
+	for i := int(streak - treshold); i > 0 && d < s.config.Lockout.MaxDuration; i-- {
+		d *= 2
+	}
+	if d > s.config.Lockout.MaxDuration {
+		d = s.config.Lockout.MaxDuration
+	}
+	return d, true
 }

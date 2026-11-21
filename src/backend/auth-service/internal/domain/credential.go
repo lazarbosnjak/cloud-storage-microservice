@@ -26,7 +26,7 @@ type Credential struct {
 	PasswordHash      string
 	UserRole          Role
 	PasswordChangedAt time.Time
-	FailedAttempts    string
+	FailedAttempts    uint8
 	LockedUntil       *time.Time
 	LastFailedAt      *time.Time
 	EmailVerified     bool

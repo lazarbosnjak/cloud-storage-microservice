@@ -50,6 +50,11 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.Si
 		if errors.Is(err, domain.ErrInvalidCredentials) {
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
 		}
+
+		// We are deliberately avoiding throwing this error in service layer since it can tell the hacker that account exists.
+		if errors.Is(err, domain.ErrAccountLocked) {
+			return nil, status.Error(codes.ResourceExhausted, "account temporarly locked, try again later")
+		}
 		slog.ErrorContext(ctx, "sign in failed", "error", err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}

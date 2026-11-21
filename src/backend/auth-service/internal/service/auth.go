@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/mail"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"auth-service/internal/domain"
@@ -39,9 +40,12 @@ type CredentialPolicy struct {
 type CredentialStore interface {
 	Create(ctx context.Context, email string, passwordHash string, userRole domain.Role) (string, error)
 	GetByEmail(ctx context.Context, email string) (*domain.Credential, error)
+	UpdateFailedAttempts(ctx context.Context, userID string, failedAttempts uint8, lockedUntil *time.Time) error
+	ResetFailedAttempts(ctx context.Context, userID string) error
 }
 
 type AuthService struct {
+	config    config.Config
 	store     CredentialStore
 	policy    CredentialPolicy
 	params    *argon2id.Params
@@ -71,7 +75,8 @@ func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer
 	}
 
 	return &AuthService{
-		store: store,
+		config: cfg,
+		store:  store,
 		policy: CredentialPolicy{
 			MaxEmailLength:    cfg.CredentialPolicy.MaxEmailLength,
 			MinPasswordLength: cfg.CredentialPolicy.MinPasswordLength,
