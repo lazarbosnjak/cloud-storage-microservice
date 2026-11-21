@@ -16,6 +16,7 @@ import (
 	"auth-service/internal/repository"
 	"auth-service/internal/service"
 	"auth-service/internal/startup/config"
+	"auth-service/internal/token"
 
 	pb "proto/auth"
 
@@ -65,7 +66,12 @@ func run() error {
 		return err
 	}
 
-	// Dependencies
+	// Getting token issuer that uses jwt
+	issuer, err := token.NewIssuer(cfg.Token)
+	if err != nil {
+		return err
+	}
+
 	userConn, err := grpc.NewClient(
 		cfg.Service.UserServiceGRPCAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -80,10 +86,14 @@ func run() error {
 	}()
 
 	// Connecting everything
+	refreshRepo := repository.NewRefreshTokenRepository(pool)
 	repo := repository.NewCredentialRepository(pool)
 	userGRPCClient := handler.NewGRPCUserClient(userConn)
 	mailhogServer := mailhog.NewServer(cfg)
-	svc := service.NewAuthService(repo, cfg, userGRPCClient, mailhogServer)
+	svc, err := service.NewAuthService(repo, refreshRepo, cfg, issuer, userGRPCClient, mailhogServer)
+	if err != nil {
+		return err
+	}
 	authHandler := handler.NewAuthHandler(svc)
 
 	// Adding a default admin account. Used mainly in testing purposes
@@ -102,9 +112,32 @@ func run() error {
 	}
 
 	// Setting up grpc server and allowing direct access to external network via grpc
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(handler.LoggingInterceptor))
 	pb.RegisterAuthServer(grpcServer, authHandler)
 	reflection.Register(grpcServer)
+
+	runCleanup := func(ctx context.Context) {
+		ticker := time.NewTicker(cfg.Token.CleanupInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				runCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				n, err := svc.CleanupExpiredRefreshTokens(runCtx)
+				cancel()
+				if err != nil {
+					slog.Error("refresh token cleanup failed", "error", err)
+					continue
+				}
+				if n > 0 {
+					slog.Info("refresh token cleanup", "deleted_rows", n)
+				}
+			}
+		}
+	}
+	go runCleanup(ctx)
 
 	// Rest of the code is mainly starting services correctly and gracefully shutting them down if
 	serveErr := make(chan error, 1)
