@@ -12,6 +12,7 @@ import (
 	"strings"
 	"syscall"
 
+	"api-gateway/internal/api/gateway"
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	"api-gateway/internal/application/auth/login"
 	"api-gateway/internal/application/auth/register"
@@ -115,6 +116,7 @@ func (s *Server) run() error {
 
 	gwMux := runtime.NewServeMux(
 		cookieSetter,
+		runtime.WithErrorHandler(gateway.ProblemErrorHandler),
 	)
 	if err := pb.RegisterApiGatewayHandler(ctx, gwMux, restConn); err != nil {
 		return fmt.Errorf("register gateway handler: %w", err)
