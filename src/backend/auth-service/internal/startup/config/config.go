@@ -36,6 +36,7 @@ type CredentialPolicy struct {
 	MaxEmailLength    uint8
 	MinPasswordLength uint8
 	MaxPasswordLength uint8
+	MaxPasswordAge    time.Duration
 }
 
 type Service struct {
@@ -54,9 +55,13 @@ type Config struct {
 	CredentialPolicy CredentialPolicy
 	Service          Service
 	SMTP             SMTP
+	Token            Token
+	Lockout          Lockout
 }
 
 func Load() (Config, error) {
+	l := &loader{}
+
 	cfg := Config{
 		Postgres: Postgres{
 			User:     get("POSTGRES_USER"),
@@ -83,6 +88,7 @@ func Load() (Config, error) {
 			MaxEmailLength:    uint8(getUInt("CREDENTIAL_MAX_EMAIL_LENGTH")),
 			MinPasswordLength: uint8(getUInt("CREDENTIAL_MIN_PASSWORD_LENGTH")),
 			MaxPasswordLength: uint8(getUInt("CREDENTIAL_MAX_PASSWORD_LENGTH")),
+			MaxPasswordAge:    l.duration("CREDENTIAL_MAX_PASSWORD_AGE", 60*24*time.Hour),
 		},
 		Service: Service{
 			GRPCPort:                get("GRPC_PORT"),
@@ -97,6 +103,12 @@ func Load() (Config, error) {
 			Host:     get("SMPT_HOST"),
 			Port:     get("SMPT_PORT"),
 		},
+		Token:   loadToken(l),
+		Lockout: loadLockout(l),
+	}
+
+	if err := l.err(); err != nil {
+		return Config{}, err
 	}
 
 	return cfg, nil

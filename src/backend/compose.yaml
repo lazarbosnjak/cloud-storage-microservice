@@ -21,6 +21,10 @@ services:
     depends_on:
       postgres-auth-service:
         condition: service_healthy
+    secrets:
+      - jwt_private_key
+    ports:
+      - "50057:50057"
 
   auth-service-mailhog:
     image: mailhog/mailhog:v1.0.1
@@ -116,6 +120,10 @@ services:
       retries: 10
     volumes:
       - auth_postgres_data:/var/lib/postgresql
+
+secrets:
+  jwt_private_key:
+    file: ./secrets/jwt_private.pem
 
 volumes:
   auth_postgres_data:
