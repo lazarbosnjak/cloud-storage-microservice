@@ -67,8 +67,9 @@ func run() error {
 	}
 
 	//Connecting everything
+	refreshRepo := repository.NewRefreshTokenRepository(pool)
 	repo := repository.NewCredentialRepository(pool)
-	svc, err := service.NewAuthService(repo, cfg, issuer)
+	svc, err := service.NewAuthService(repo, refreshRepo, cfg, issuer)
 	if err != nil {
 		return err
 	}

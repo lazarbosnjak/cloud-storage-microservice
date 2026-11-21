@@ -14,12 +14,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var (
-	ErrNotFound   = errors.New("credential not fonund")
-	ErrEmailTaken = errors.New("email already registered")
-	ErrDefault    = errors.New("there was an error")
-)
-
 type CredentialRepository struct {
 	pool *pgxpool.Pool
 }
@@ -40,7 +34,7 @@ func (r *CredentialRepository) Create(ctx context.Context, email string, passwor
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return "", ErrEmailTaken
+			return "", domain.ErrEmailTaken
 		}
 		slog.Error("creating credentials", "error", err)
 		return "", fmt.Errorf("error while creating credential: %w", err)
@@ -60,7 +54,7 @@ func (r *CredentialRepository) GetByEmail(ctx context.Context, email string) (*d
 	err := r.pool.QueryRow(ctx, query, email).Scan(&c.ID, &c.Email, &c.PasswordHash, &c.UserRole, &c.PasswordChangedAt, &c.FailedAttempts, &c.LockedUntil, &c.LastFailedAt, &c.EmailVerified, &c.CreatedAt, &c.IsEnabled)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrNotFound
+			return nil, domain.ErrNotFound
 		}
 		slog.Error("get email", "error", err)
 		return nil, fmt.Errorf("failed to get by email: %w", err)

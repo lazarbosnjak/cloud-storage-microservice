@@ -12,4 +12,5 @@ var (
 	ErrInvalidEmail       = errors.New("invalid email address")
 	ErrPassword           = errors.New("password does not meet requirements")
 	ErrDefault            = errors.New("there was an error")
+	ErrConcurrentRefresh  = errors.New("refresh token already consumed")
 )

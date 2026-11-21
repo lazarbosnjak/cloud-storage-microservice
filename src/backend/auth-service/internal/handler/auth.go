@@ -18,6 +18,8 @@ type AuthService interface {
 	Register(ctx context.Context, email string, password string) (string, error)
 	SignIn(ctx context.Context, email string, password string) (service.SignInResult, error)
 	ChangePassword(ctx context.Context, email string, currentPassword string, newPassword string) error
+	Refresh(ctx context.Context, refreshToken string) (service.RefreshResult, error)
+	SignOut(ctx context.Context, refreshToken string) error
 }
 
 type AuthHandler struct {
@@ -97,4 +99,28 @@ func (h *AuthHandler) ChangePassword(ctx context.Context, req *pb.ChangePassword
 	}
 
 	return &pb.ChangePasswordResponse{}, nil
+}
+
+func (h *AuthHandler) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.RefreshResponse, error) {
+	res, err := h.service.Refresh(ctx, req.GetRefreshToken())
+	if err != nil {
+		if errors.Is(err, domain.ErrInvalidToken) {
+			return nil, status.Error(codes.Unauthenticated, "invalid token")
+		}
+		slog.ErrorContext(ctx, "refresh failed", "error", err)
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &pb.RefreshResponse{
+		AccessToken:      res.AccessToken,
+		RefreshToken:     res.RefreshToken,
+		ExpiresInSeconds: int64(res.ExpiresIn.Seconds()),
+	}, nil
+}
+
+func (h *AuthHandler) SignOut(ctx context.Context, req *pb.SignOutRequest) (*pb.SignOutResponse, error) {
+	if err := h.service.SignOut(ctx, req.GetRefreshToken()); err != nil {
+		slog.ErrorContext(ctx, "sign our failed", "error", err)
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &pb.SignOutResponse{}, nil
 }

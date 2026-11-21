@@ -11,7 +11,6 @@ import (
 	"unicode/utf8"
 
 	"auth-service/internal/domain"
-	"auth-service/internal/repository"
 	"auth-service/internal/startup/config"
 	"auth-service/internal/token"
 
@@ -41,17 +40,22 @@ type CredentialStore interface {
 type AuthService struct {
 	config    config.Config
 	store     CredentialStore
+	refresh   RefreshTokenStore
 	policy    CredentialPolicy
 	params    *argon2id.Params
 	tokens    TokenIssuer
 	dummyHash string
+
+	refreshIdleTTL     time.Duration
+	refreshAbsoluteTTL time.Duration
+	refreshReuseGrace  time.Duration
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
 	return "hello from auth-service!", nil
 }
 
-func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer) (*AuthService, error) {
+func NewAuthService(store CredentialStore, refresh RefreshTokenStore, cfg config.Config, tokens TokenIssuer) (*AuthService, error) {
 
 	params := &argon2id.Params{
 		Memory:      cfg.Argon2id.Memory * 1024,
@@ -69,16 +73,20 @@ func NewAuthService(store CredentialStore, cfg config.Config, tokens TokenIssuer
 	}
 
 	return &AuthService{
-		config: cfg,
-		store:  store,
+		config:  cfg,
+		store:   store,
+		refresh: refresh,
 		policy: CredentialPolicy{
 			MaxEmailLength:    cfg.CredentialPolicy.MaxEmailLength,
 			MinPasswordLength: cfg.CredentialPolicy.MinPasswordLength,
 			MaxPasswordLength: cfg.CredentialPolicy.MaxPasswordLength,
 		},
-		params:    params,
-		tokens:    tokens,
-		dummyHash: dummy,
+		params:             params,
+		tokens:             tokens,
+		dummyHash:          dummy,
+		refreshIdleTTL:     cfg.Token.RefreshIdleTTL,
+		refreshAbsoluteTTL: cfg.Token.RefreshAbsoluteTTL,
+		refreshReuseGrace:  cfg.Token.RefreshReuseGrace,
 	}, nil
 }
 
@@ -121,7 +129,7 @@ func (s *AuthService) createAccount(ctx context.Context, email string, password 
 
 	id, err := s.store.Create(ctx, email, hash, userRole)
 	if err != nil {
-		if errors.Is(err, repository.ErrEmailTaken) {
+		if errors.Is(err, domain.ErrEmailTaken) {
 			slog.Error("email already taken")
 			return "", domain.ErrEmailTaken
 		}
@@ -142,13 +150,13 @@ func (s *AuthService) EnsureAdmin(ctx context.Context, email string, password st
 			slog.Warn("admin bootstrap skipped: account exists with a different role")
 		}
 		return nil
-	case !errors.Is(err, repository.ErrNotFound):
+	case !errors.Is(err, domain.ErrNotFound):
 		slog.Error("checking admin", "error", err)
 		return fmt.Errorf("error while checking admin: %w", err)
 	}
 
 	_, err = s.createAccount(ctx, email, password, domain.RoleAdmin)
-	if errors.Is(err, repository.ErrEmailTaken) {
+	if errors.Is(err, domain.ErrEmailTaken) {
 		return nil
 	}
 	return err

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/argon2id"
+	"github.com/google/uuid"
 )
 
 type SignInResult struct {
@@ -33,6 +34,10 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 
 	now := time.Now()
 
+	if cred != nil && cred.LockedUntil != nil && cred.LockedUntil.After(now) {
+		return SignInResult{}, domain.ErrAccountLocked
+	}
+
 	// dummyHash is just holding random hash in case there are no users registered. Why? Because it "wastes time" preventing time driven attacks
 	hash := s.dummyHash
 	if cred != nil {
@@ -42,10 +47,6 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 	match, err := argon2id.ComparePasswordAndHash(password, hash)
 	if err != nil {
 		return SignInResult{}, fmt.Errorf("compare password: %w", err)
-	}
-
-	if cred != nil && cred.LockedUntil != nil && cred.LockedUntil.After(now) {
-		return SignInResult{}, domain.ErrAccountLocked
 	}
 
 	if cred == nil {
@@ -71,14 +72,38 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		}
 	}
 
-	at, err := s.tokens.IssueAccessToken(cred.ID, cred.UserRole, "") // Currently empty session id is passed since we haven't implemented refresh tokens yet.
+	familyID, err := uuid.NewV7()
+	if err != nil {
+		return SignInResult{}, fmt.Errorf("generate session id: %w", err)
+	}
+
+	raw, opaqueHash, err := generateOpaqueToken()
+	if err != nil {
+		return SignInResult{}, fmt.Errorf("generate refresh token: %w", err)
+	}
+
+	rt := domain.RefreshToken{
+		UserID:    cred.ID,
+		FamilyID:  familyID.String(),
+		TokenHash: opaqueHash,
+		CreatedAt: now,
+	}
+	rt.ExpiresAt = now.Add(s.refreshIdleTTL)
+	rt.FamilyExpiresAt = now.Add(s.refreshAbsoluteTTL)
+
+	if err := s.refresh.Create(ctx, &rt); err != nil {
+		return SignInResult{}, fmt.Errorf("store refresh token: %w", err)
+	}
+
+	at, err := s.tokens.IssueAccessToken(cred.ID, cred.UserRole, rt.FamilyID)
 	if err != nil {
 		return SignInResult{}, fmt.Errorf("issue access token: %w", err)
 	}
 
 	return SignInResult{
-		AccessToken: at.Value,
-		ExpiresIn:   at.ExpiresIn,
+		AccessToken:  at.Value,
+		ExpiresIn:    at.ExpiresIn,
+		RefreshToken: raw,
 	}, nil
 
 }
@@ -113,15 +138,15 @@ func (s *AuthService) ChangePassword(ctx context.Context, email string, currentP
 		return domain.ErrInvalidCredentials
 	}
 
+	// Making sure that old password is not same as new one
+	if subtle.ConstantTimeCompare([]byte(newPassword), []byte(currentPassword)) == 1 {
+		return domain.ErrInvalidCredentials
+	}
+
 	hash, err := argon2id.CreateHash(newPassword, s.params)
 	if err != nil {
 		slog.Error("hash new password", "error", err)
 		return fmt.Errorf("hash new password: %w", err)
-	}
-
-	// Making sure that old password is not same as new one
-	if subtle.ConstantTimeCompare([]byte(newPassword), []byte(currentPassword)) == 1 {
-		return domain.ErrInvalidCredentials
 	}
 
 	if err := s.store.ChangePassword(ctx, cred.ID, hash); err != nil {

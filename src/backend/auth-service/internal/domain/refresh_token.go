@@ -12,4 +12,7 @@ type RefreshToken struct {
 	FamilyExpiresAt time.Time
 	UsedAt          *time.Time
 	RevokedAt       *time.Time
+
+	UserRole  Role
+	IsEnabled bool
 }
