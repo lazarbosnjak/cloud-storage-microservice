@@ -76,7 +76,7 @@ func (h *AuthHandler) ChangePassword(ctx context.Context, req *pb.ChangePassword
 		case errors.Is(err, domain.ErrInvalidCredentials):
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
 		case errors.Is(err, domain.ErrPasswordUnchanged):
-			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+			return nil, status.Error(codes.InvalidArgument, "new password must differ from the current one")
 		case errors.Is(err, domain.ErrPassword):
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
 		case errors.Is(err, domain.ErrAccountLocked):
