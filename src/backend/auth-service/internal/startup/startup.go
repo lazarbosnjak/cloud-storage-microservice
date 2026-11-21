@@ -1,12 +1,6 @@
 package startup
 
 import (
-	"auth-service/internal/db"
-	"auth-service/internal/handler"
-	"auth-service/internal/repository"
-	"auth-service/internal/service"
-	"auth-service/internal/startup/config"
-	"auth-service/internal/token"
 	"context"
 	"fmt"
 	"log/slog"
@@ -16,9 +10,18 @@ import (
 	"syscall"
 	"time"
 
+	"auth-service/internal/db"
+	"auth-service/internal/handler"
+	"auth-service/internal/infrastructure/mailhog"
+	"auth-service/internal/repository"
+	"auth-service/internal/service"
+	"auth-service/internal/startup/config"
+	"auth-service/internal/token"
+
 	pb "proto/auth"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -34,19 +37,22 @@ func Start() {
 	slog.Info("service stopped")
 }
 
+// FIXME:
+// Make this a method of *Service so you
+// get access to configurations through it
 func run() error {
-	//Setting up KILL signal
+	// Setting up KILL signal
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	//Loading configurations
+	// Loading configurations
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("load config", "error", err)
 		return err
 	}
 
-	//Initializing connection pool
+	// Initializing connection pool
 	pool, err := db.CreateNewPooling(ctx, cfg.Postgres)
 	if err != nil {
 		slog.Error("create pooling", "error", err)
@@ -54,28 +60,43 @@ func run() error {
 	}
 	defer pool.Close()
 
-	//If database is new, we will automatically create table
+	// If database is new, we will automatically create table
 	if err := db.RunMigrations(cfg.Postgres.GetDataSourceName()); err != nil {
 		slog.Error("running migrations", "error", err)
 		return err
 	}
 
-	//Getting token issuer that uses jwt
+	// Getting token issuer that uses jwt
 	issuer, err := token.NewIssuer(cfg.Token)
 	if err != nil {
 		return err
 	}
 
-	//Connecting everything
+	userConn, err := grpc.NewClient(
+		cfg.Service.UserServiceGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("create user gRPC connection: %w", err)
+	}
+	defer func() {
+		if err := userConn.Close(); err != nil {
+			slog.Error("close connection error")
+		}
+	}()
+
+	// Connecting everything
 	refreshRepo := repository.NewRefreshTokenRepository(pool)
 	repo := repository.NewCredentialRepository(pool)
-	svc, err := service.NewAuthService(repo, refreshRepo, cfg, issuer)
+	userGRPCClient := handler.NewGRPCUserClient(userConn)
+	mailhogServer := mailhog.NewServer(cfg)
+	svc, err := service.NewAuthService(repo, refreshRepo, cfg, issuer, userGRPCClient, mailhogServer)
 	if err != nil {
 		return err
 	}
 	authHandler := handler.NewAuthHandler(svc)
 
-	//Adding a default admin account. Used mainly in testing purposes
+	// Adding a default admin account. Used mainly in testing purposes
 	if cfg.Service.AdminEmail != "" {
 		if err := svc.EnsureAdmin(ctx, cfg.Service.AdminEmail, cfg.Service.AdminPassword); err != nil {
 			slog.Error("bootstrap admin", "error", err)
@@ -83,14 +104,14 @@ func run() error {
 		}
 	}
 
-	//Basic listener for our grpc port
+	// Basic listener for our grpc port
 	lis, err := net.Listen("tcp", ":"+cfg.Service.GRPCPort)
 	if err != nil {
 		slog.Error("grcp listen", "error", err)
 		return err
 	}
 
-	//Setting up grpc server and allowing direct access to external network via grpc
+	// Setting up grpc server and allowing direct access to external network via grpc
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(handler.LoggingInterceptor))
 	pb.RegisterAuthServer(grpcServer, authHandler)
 	reflection.Register(grpcServer)
@@ -118,7 +139,7 @@ func run() error {
 	}
 	go runCleanup(ctx)
 
-	//Rest of the code is mainly starting services correctly and gracefully shutting them down if
+	// Rest of the code is mainly starting services correctly and gracefully shutting them down if
 	serveErr := make(chan error, 1)
 	go func() {
 		slog.Info("service started", "port", cfg.Service.GRPCPort)

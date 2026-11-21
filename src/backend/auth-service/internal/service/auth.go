@@ -37,6 +37,32 @@ type CredentialStore interface {
 	ChangePassword(ctx context.Context, userID string, passwordHash string) error
 }
 
+type RegisterUserDTO struct {
+	Email            string
+	Password         string
+	RepeatedPassword string
+	FirstName        string
+	LastName         string
+}
+
+type CreateUserDTO struct {
+	ID        string
+	Email     string
+	FirstName string
+	LastName  string
+}
+
+type UserClient interface {
+	CreateUser(ctx context.Context, user *CreateUserDTO) error
+}
+
+// TODO: Move to separate file
+type EmailSender interface {
+	SendVerifyRegistrationMail(to []string, verificationLink string) error
+}
+
+// FIXME: move cfg to struct instead of constructor func
+
 type AuthService struct {
 	config    config.Config
 	store     CredentialStore
@@ -49,14 +75,23 @@ type AuthService struct {
 	refreshIdleTTL     time.Duration
 	refreshAbsoluteTTL time.Duration
 	refreshReuseGrace  time.Duration
+
+	UserClient  UserClient
+	EmailSender EmailSender
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
 	return "hello from auth-service!", nil
 }
 
-func NewAuthService(store CredentialStore, refresh RefreshTokenStore, cfg config.Config, tokens TokenIssuer) (*AuthService, error) {
-
+func NewAuthService(
+	store CredentialStore,
+	refresh RefreshTokenStore,
+	cfg config.Config,
+	tokens TokenIssuer,
+	userClient UserClient,
+	emailSender EmailSender,
+) (*AuthService, error) {
 	params := &argon2id.Params{
 		Memory:      cfg.Argon2id.Memory * 1024,
 		Iterations:  cfg.Argon2id.Iterations,
@@ -87,11 +122,17 @@ func NewAuthService(store CredentialStore, refresh RefreshTokenStore, cfg config
 		refreshIdleTTL:     cfg.Token.RefreshIdleTTL,
 		refreshAbsoluteTTL: cfg.Token.RefreshAbsoluteTTL,
 		refreshReuseGrace:  cfg.Token.RefreshReuseGrace,
+		UserClient:         userClient,
+		EmailSender:        emailSender,
 	}, nil
 }
 
-func (s *AuthService) Register(ctx context.Context, email string, password string) (string, error) {
-	id, err := s.createAccount(ctx, email, password, domain.RoleUser)
+func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (string, error) {
+	if user.RepeatedPassword != user.Password {
+		return "", status.Error(codes.InvalidArgument, domain.ErrPasswordMismatch.Error())
+	}
+
+	id, err := s.createAccount(ctx, user.Email, user.Password, domain.RoleUser)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrInvalidEmail):
@@ -109,8 +150,29 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 		}
 	}
 
+	createUserDTO := &CreateUserDTO{
+		ID:        id,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+	err = s.UserClient.CreateUser(ctx, createUserDTO)
+	if err != nil {
+		slog.Error("error creating user", "err", err)
+		return "", status.Error(codes.Unavailable, "error creating user")
+	}
+
+	err = s.EmailSender.SendVerifyRegistrationMail([]string{user.Email}, "verificationLink")
+	if err != nil {
+		return "", err
+	}
+
 	return id, nil
 }
+
+// TODO:
+// - pass RegisterUserDTO instead of email and password
+// - move repeated password matching to createAccount()
 
 func (s *AuthService) createAccount(ctx context.Context, email string, password string, userRole domain.Role) (string, error) {
 	email = normalizeEmail(email)

@@ -45,6 +45,8 @@ type Service struct {
 
 	AdminEmail    string
 	AdminPassword string
+
+	UserServiceGRPCAddr string
 }
 
 type Config struct {
@@ -52,13 +54,12 @@ type Config struct {
 	Argon2id         Argon2id
 	CredentialPolicy CredentialPolicy
 	Service          Service
-
-	Token   Token
-	Lockout Lockout
+	SMTP             SMTP
+	Token            Token
+	Lockout          Lockout
 }
 
 func Load() (Config, error) {
-
 	l := &loader{}
 
 	cfg := Config{
@@ -94,6 +95,13 @@ func Load() (Config, error) {
 			GracefulShutdownTimeout: getUInt("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
+			UserServiceGRPCAddr:     get("USER_SERVICE_GRPC_ADDR"),
+		},
+		SMTP: SMTP{
+			Username: get("SMPT_USERNAME"),
+			Password: get("SMPT_PASSWORD"),
+			Host:     get("SMPT_HOST"),
+			Port:     get("SMPT_PORT"),
 		},
 		Token:   loadToken(l),
 		Lockout: loadLockout(l),
@@ -104,7 +112,6 @@ func Load() (Config, error) {
 	}
 
 	return cfg, nil
-
 }
 
 func get(key string) string {

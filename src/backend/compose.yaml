@@ -26,6 +26,12 @@ services:
     ports:
       - "50057:50057"
 
+  auth-service-mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: auth-service-mailhog
+    ports:
+      - "${AUTH_SERVICE_MAILHOG_UI_PORT}:${AUTH_SERVICE_MAILHOG_UI_PORT}"
+
   user-service:
     image: user-service
     container_name: user-service

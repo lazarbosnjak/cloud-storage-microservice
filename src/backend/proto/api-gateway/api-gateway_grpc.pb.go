@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	auth "proto/auth"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,8 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApiGateway_Ping_FullMethodName     = "/api_gateway.ApiGateway/Ping"
-	ApiGateway_PingUser_FullMethodName = "/api_gateway.ApiGateway/PingUser"
+	ApiGateway_Ping_FullMethodName         = "/api_gateway.ApiGateway/Ping"
+	ApiGateway_PingUser_FullMethodName     = "/api_gateway.ApiGateway/PingUser"
+	ApiGateway_AuthRegister_FullMethodName = "/api_gateway.ApiGateway/AuthRegister"
 )
 
 // ApiGatewayClient is the client API for ApiGateway service.
@@ -29,6 +31,7 @@ const (
 type ApiGatewayClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	PingUser(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
+	AuthRegister(ctx context.Context, in *auth.RegisterRequest, opts ...grpc.CallOption) (*auth.RegisterResponse, error)
 }
 
 type apiGatewayClient struct {
@@ -59,12 +62,23 @@ func (c *apiGatewayClient) PingUser(ctx context.Context, in *PingRequest, opts .
 	return out, nil
 }
 
+func (c *apiGatewayClient) AuthRegister(ctx context.Context, in *auth.RegisterRequest, opts ...grpc.CallOption) (*auth.RegisterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(auth.RegisterResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthRegister_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiGatewayServer is the server API for ApiGateway service.
 // All implementations must embed UnimplementedApiGatewayServer
 // for forward compatibility.
 type ApiGatewayServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
 	PingUser(context.Context, *PingRequest) (*PingReply, error)
+	AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -80,6 +94,9 @@ func (UnimplementedApiGatewayServer) Ping(context.Context, *PingRequest) (*PingR
 }
 func (UnimplementedApiGatewayServer) PingUser(context.Context, *PingRequest) (*PingReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method PingUser not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthRegister not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
 func (UnimplementedApiGatewayServer) testEmbeddedByValue()                    {}
@@ -138,6 +155,24 @@ func _ApiGateway_PingUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_AuthRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(auth.RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthRegister(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthRegister_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthRegister(ctx, req.(*auth.RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiGateway_ServiceDesc is the grpc.ServiceDesc for ApiGateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +187,10 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PingUser",
 			Handler:    _ApiGateway_PingUser_Handler,
+		},
+		{
+			MethodName: "AuthRegister",
+			Handler:    _ApiGateway_AuthRegister_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

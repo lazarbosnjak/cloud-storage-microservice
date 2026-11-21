@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"auth-service/internal/domain"
-	"auth-service/internal/service"
 	"context"
 	"errors"
 	"log/slog"
+
+	"auth-service/internal/domain"
+	"auth-service/internal/service"
 
 	pb "proto/auth"
 
@@ -15,7 +16,7 @@ import (
 
 type AuthService interface {
 	Ping(ctx context.Context) (string, error)
-	Register(ctx context.Context, email string, password string) (string, error)
+	Register(ctx context.Context, user service.RegisterUserDTO) (string, error)
 	SignIn(ctx context.Context, email string, password string) (service.SignInResult, error)
 	ChangePassword(ctx context.Context, email string, currentPassword string, newPassword string) error
 	Refresh(ctx context.Context, refreshToken string) (service.RefreshResult, error)
@@ -42,7 +43,15 @@ func (h *AuthHandler) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingRe
 }
 
 func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	id, err := h.service.Register(ctx, req.GetEmail(), req.GetPassword())
+	user := service.RegisterUserDTO{
+		Email:            req.GetEmail(),
+		Password:         req.GetPassword(),
+		RepeatedPassword: req.GetRepeatedPassword(),
+		FirstName:        req.GetFirstName(),
+		LastName:         req.GetLastName(),
+	}
+
+	_, err := h.service.Register(ctx, user)
 	if err != nil {
 		if errors.Is(err, domain.ErrEmailTaken) {
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
@@ -51,7 +60,7 @@ func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
-	return &pb.RegisterResponse{UserId: id}, nil
+	return &pb.RegisterResponse{}, nil
 }
 
 func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
@@ -75,7 +84,6 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.Si
 		MustChangePassword: res.MustChangePassword,
 		RefreshToken:       res.RefreshToken,
 	}, nil
-
 }
 
 func (h *AuthHandler) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
