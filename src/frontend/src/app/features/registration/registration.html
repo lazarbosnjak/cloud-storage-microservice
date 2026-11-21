@@ -1,0 +1,75 @@
+
+<div class="max-w-md mx-auto mt-16 p-6 border rounded-lg">
+  <h1 class="text-center mb-6">Register</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    <div class="mb-4">
+      <label for="firstName">First name</label>
+      <input id="firstName" type="text" formControlName="firstName"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.controls.firstName.touched && form.controls.firstName.invalid) {
+        <p class="text-red-600 text-sm">First name is required.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="lastName">Last name</label>
+      <input id="lastName" type="text" formControlName="lastName"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.controls.lastName.touched && form.controls.lastName.invalid) {
+        <p class="text-red-600 text-sm">Last name is required.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <p class="text-red-600 text-sm">Enter a valid email.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <p class="text-red-600 text-sm">Password must have at least 8 characters.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="repeatedPassword">Confirm password</label>
+      <input id="repeatedPassword" type="password" formControlName="repeatedPassword"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.controls.repeatedPassword.touched && form.controls.repeatedPassword.invalid) {
+        <p class="text-red-600 text-sm">Confirm your password.</p>
+      }
+
+      @if (form.controls.repeatedPassword.touched && passwordsDoNotMatch) {
+        <p class="text-red-600 text-sm">Passwords do not match.</p>
+      }
+    </div>
+
+    @if (successMessage()) {
+      <p class="text-green-600 mb-3">{{ successMessage() }}</p>
+    }
+
+    @if (errorMessage()) {
+      <p class="text-red-600 mb-3">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" [disabled]="loading()"
+      class="w-full bg-brand-primary text-white p-2 rounded disabled:opacity-50">
+      {{ loading() ? 'Registering...' : 'Register' }}
+    </button>
+
+  </form>
+</div>
