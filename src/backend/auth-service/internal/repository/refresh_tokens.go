@@ -126,3 +126,15 @@ func (r *RefreshTokenRepository) RevokeFamily(ctx context.Context, familyID stri
 
 	return nil
 }
+
+func (r *RefreshTokenRepository) DeleteExpired(ctx context.Context) (int64, error) {
+
+	const query = `DELETE FROM refresh_tokens WHERE family_expires_at < NOW()`
+
+	tag, err := r.pool.Exec(ctx, query)
+	if err != nil {
+		slog.Error("delete expired refresh token", "error", err)
+		return 0, fmt.Errorf("delete expired refresh token: %w", err)
+	}
+	return tag.RowsAffected(), nil
+}

@@ -11,6 +11,7 @@ type Token struct {
 	RefreshIdleTTL     time.Duration
 	RefreshAbsoluteTTL time.Duration
 	RefreshReuseGrace  time.Duration
+	CleanupInterval    time.Duration
 }
 
 type Lockout struct {
@@ -30,6 +31,7 @@ func loadToken(l *loader) Token {
 		RefreshIdleTTL:     l.duration("REFRESH_TOKEN_IDLE_TTL", 168*time.Hour),
 		RefreshAbsoluteTTL: l.duration("REFRESH_TOKEN_ABSOLUTE_TTL", 720*time.Hour),
 		RefreshReuseGrace:  l.duration("REFRESH_REUSE_GRACE", 10*time.Second),
+		CleanupInterval:    l.duration("REFRESH_CLEANUP_INTERVAL", time.Hour),
 	}
 
 	if t.RefreshIdleTTL > t.RefreshAbsoluteTTL {

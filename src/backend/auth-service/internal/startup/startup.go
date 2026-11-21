@@ -95,6 +95,29 @@ func run() error {
 	pb.RegisterAuthServer(grpcServer, authHandler)
 	reflection.Register(grpcServer)
 
+	runCleanup := func(ctx context.Context) {
+		ticker := time.NewTicker(cfg.Token.CleanupInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				runCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				n, err := svc.CleanupExpiredRefreshTokens(runCtx)
+				cancel()
+				if err != nil {
+					slog.Error("refresh token cleanup failed", "error", err)
+					continue
+				}
+				if n > 0 {
+					slog.Info("refresh token cleanup", "deleted_rows", n)
+				}
+			}
+		}
+	}
+	go runCleanup(ctx)
+
 	//Rest of the code is mainly starting services correctly and gracefully shutting them down if
 	serveErr := make(chan error, 1)
 	go func() {

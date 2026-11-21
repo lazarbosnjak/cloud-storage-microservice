@@ -18,6 +18,7 @@ type RefreshTokenStore interface {
 	Rotate(ctx context.Context, oldTokenID string, now time.Time, successor *domain.RefreshToken) error
 	Revoke(ctx context.Context, id string, at time.Time) error
 	RevokeFamily(ctx context.Context, familyID string, at time.Time) error
+	DeleteExpired(ctx context.Context) (int64, error)
 }
 
 type RefreshResult struct {
@@ -126,4 +127,8 @@ func (s *AuthService) SignOut(ctx context.Context, raw string) error {
 		return fmt.Errorf("revoke session: %w", err)
 	}
 	return nil
+}
+
+func (s *AuthService) CleanupExpiredRefreshTokens(ctx context.Context) (int64, error) {
+	return s.refresh.DeleteExpired(ctx)
 }
