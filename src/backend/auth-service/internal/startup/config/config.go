@@ -36,6 +36,7 @@ type CredentialPolicy struct {
 	MaxEmailLength    uint8
 	MinPasswordLength uint8
 	MaxPasswordLength uint8
+	MaxPasswordAge    time.Duration
 }
 
 type Service struct {
@@ -86,6 +87,7 @@ func Load() (Config, error) {
 			MaxEmailLength:    uint8(getUInt("CREDENTIAL_MAX_EMAIL_LENGTH")),
 			MinPasswordLength: uint8(getUInt("CREDENTIAL_MIN_PASSWORD_LENGTH")),
 			MaxPasswordLength: uint8(getUInt("CREDENTIAL_MAX_PASSWORD_LENGTH")),
+			MaxPasswordAge:    l.duration("CREDENTIAL_MAX_PASSWORD_AGE", 60*24*time.Hour),
 		},
 		Service: Service{
 			GRPCPort:                get("GRPC_PORT"),

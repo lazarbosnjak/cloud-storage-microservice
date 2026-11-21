@@ -17,6 +17,7 @@ type AuthService interface {
 	Ping(ctx context.Context) (string, error)
 	Register(ctx context.Context, email string, password string) (string, error)
 	SignIn(ctx context.Context, email string, password string) (service.SignInResult, error)
+	ChangePassword(ctx context.Context, email string, currentPassword string, newPassword string) error
 }
 
 type AuthHandler struct {
@@ -47,14 +48,14 @@ func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
 	res, err := h.service.SignIn(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
-		if errors.Is(err, domain.ErrInvalidCredentials) {
+		if errors.Is(err, domain.ErrInvalidCredentials) || errors.Is(err, domain.ErrAccountLocked) {
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
 		}
 
-		// We are deliberately avoiding throwing this error in service layer since it can tell the hacker that account exists.
-		if errors.Is(err, domain.ErrAccountLocked) {
+		// We are deliberately avoiding throwing this error since it can tell the hacker that account exists.
+		/*if errors.Is(err, domain.ErrAccountLocked) {
 			return nil, status.Error(codes.ResourceExhausted, "account temporarly locked, try again later")
-		}
+		}*/
 		slog.ErrorContext(ctx, "sign in failed", "error", err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
@@ -66,4 +67,34 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.Si
 		RefreshToken:       res.RefreshToken,
 	}, nil
 
+}
+
+func (h *AuthHandler) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
+	err := h.service.ChangePassword(ctx, req.GetEmail(), req.GetCurrentPassword(), req.GetNewPassword())
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrInvalidCredentials):
+			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+		case errors.Is(err, domain.ErrPasswordUnchanged):
+			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+		case errors.Is(err, domain.ErrPassword):
+			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+		case errors.Is(err, domain.ErrAccountLocked):
+			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+		/*
+			case errors.Is(err, domain.ErrPasswordUnchanged):
+				return nil, status.Error(codes.InvalidArgument, "new password must differ from the current one")
+			case errors.Is(err, domain.ErrPassword):
+				return nil, status.Error(codes.InvalidArgument, "new password does not meet requirements")
+			case errors.Is(err, domain.ErrAccountLocked):
+				return nil, status.Error(codes.ResourceExhausted, "account temporarily locked, try again later")
+		*/
+		default:
+			slog.ErrorContext(ctx, "change password failed", "error", err)
+			return nil, status.Error(codes.Internal, "internal error")
+
+		}
+	}
+
+	return &pb.ChangePasswordResponse{}, nil
 }

@@ -20,13 +20,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var (
-	ErrInvalidEmail = errors.New("invalid email address")
-	ErrPassword     = errors.New("password does not meet requirements")
-	ErrEmailTaken   = errors.New("email already taken")
-	ErrDefault      = errors.New("there was an error")
-)
-
 type TokenIssuer interface {
 	IssueAccessToken(userID string, role domain.Role, sessionID string) (token.AccessToken, error)
 }
@@ -42,6 +35,7 @@ type CredentialStore interface {
 	GetByEmail(ctx context.Context, email string) (*domain.Credential, error)
 	UpdateFailedAttempts(ctx context.Context, userID string, failedAttempts uint8, lockedUntil *time.Time) error
 	ResetFailedAttempts(ctx context.Context, userID string) error
+	ChangePassword(ctx context.Context, userID string, passwordHash string) error
 }
 
 type AuthService struct {
@@ -92,13 +86,13 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 	id, err := s.createAccount(ctx, email, password, domain.RoleUser)
 	if err != nil {
 		switch {
-		case errors.Is(err, ErrInvalidEmail):
+		case errors.Is(err, domain.ErrInvalidEmail):
 			slog.Error("invalid email")
 			return "", status.Errorf(codes.InvalidArgument, "invalid email")
-		case errors.Is(err, ErrEmailTaken):
+		case errors.Is(err, domain.ErrEmailTaken):
 			slog.Error("email already registered")
 			return "", status.Errorf(codes.AlreadyExists, "email already registered")
-		case errors.Is(err, ErrPassword):
+		case errors.Is(err, domain.ErrPassword):
 			slog.Error("password does not meet the requirements")
 			return "", status.Errorf(codes.InvalidArgument, "password does not meet the requirements")
 		default:
@@ -129,7 +123,7 @@ func (s *AuthService) createAccount(ctx context.Context, email string, password 
 	if err != nil {
 		if errors.Is(err, repository.ErrEmailTaken) {
 			slog.Error("email already taken")
-			return "", ErrEmailTaken
+			return "", domain.ErrEmailTaken
 		}
 		slog.Error("creading credential", "error", err)
 		return "", fmt.Errorf("error while creating credential: %w", err)
@@ -166,12 +160,12 @@ func normalizeEmail(email string) string {
 
 func (s *AuthService) validateEmail(email string) error {
 	if len(email) > int(s.policy.MaxEmailLength) {
-		return ErrInvalidEmail
+		return domain.ErrInvalidEmail
 	}
 
 	parsedEmail, err := mail.ParseAddress(email)
 	if err != nil || parsedEmail.Address != email {
-		return ErrInvalidEmail
+		return domain.ErrInvalidEmail
 	}
 
 	return nil
@@ -180,7 +174,7 @@ func (s *AuthService) validateEmail(email string) error {
 func (s *AuthService) validatePassword(password string) error {
 	n := utf8.RuneCountInString(password)
 	if n < int(s.policy.MinPasswordLength) || n > int(s.policy.MaxPasswordLength) {
-		return ErrPassword
+		return domain.ErrPassword
 	}
 
 	return nil

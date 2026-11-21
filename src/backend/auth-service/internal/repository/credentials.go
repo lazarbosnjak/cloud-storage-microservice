@@ -96,3 +96,46 @@ func (r *CredentialRepository) ResetFailedAttempts(ctx context.Context, userID s
 
 	return nil
 }
+
+func (r *CredentialRepository) ChangePassword(ctx context.Context, userID string, passwordHash string) error {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("begin password change: %w", err)
+	}
+
+	// Transactional, if one fails, don't write the other and vice versa
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
+
+	// This query is related to auth credentials
+	const query = `
+		UPDATE credentials
+		SET password_hash = $2,
+			password_changed_at = NOW(),
+			failed_attempts = 0,
+			locked_until = NULL 
+			WHERE id = $1
+	`
+
+	_, err = tx.Exec(ctx, query, userID, passwordHash)
+	if err != nil {
+		slog.Error("update password", "error", err)
+		return fmt.Errorf("update password: %w", err)
+	}
+
+	// This query is related to refresh tokens
+	const query2 = `
+		UPDATE refresh_tokens
+		SET revoked_at = NOW()
+		WHERE user_id = $1 AND revoked_at IS NULL
+	`
+
+	_, err = tx.Exec(ctx, query2, userID)
+	if err != nil {
+		slog.Error("revoke refresh tokens", "error", err)
+		return fmt.Errorf("revoke refresh tokens: %w", err)
+	}
+
+	return tx.Commit(ctx)
+}

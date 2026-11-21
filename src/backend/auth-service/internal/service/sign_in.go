@@ -3,10 +3,10 @@ package service
 import (
 	"auth-service/internal/domain"
 	"context"
+	"crypto/subtle"
 	"errors"
 	"fmt"
 	"log/slog"
-	"math"
 	"time"
 
 	"github.com/alexedwards/argon2id"
@@ -33,12 +33,6 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 
 	now := time.Now()
 
-	if cred != nil && cred.LockedUntil != nil && cred.LockedUntil.After(now) {
-		// Uncoment line below for testing purposes. We avoid sending this info since that would tell hacker that account exists
-		// return SignInResult{}, domain.ErrAccountLocked
-		return SignInResult{}, domain.ErrInvalidCredentials
-	}
-
 	// dummyHash is just holding random hash in case there are no users registered. Why? Because it "wastes time" preventing time driven attacks
 	hash := s.dummyHash
 	if cred != nil {
@@ -50,29 +44,25 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, fmt.Errorf("compare password: %w", err)
 	}
 
+	if cred != nil && cred.LockedUntil != nil && cred.LockedUntil.After(now) {
+		return SignInResult{}, domain.ErrAccountLocked
+	}
+
 	if cred == nil {
 		return SignInResult{}, domain.ErrInvalidCredentials
 	}
 
 	if !match {
-		streak := s.nextStreak(cred.FailedAttempts, cred.LastFailedAt, now)
-
-		var lockedUntil *time.Time
-		if d, locked := s.lockoutFor(streak); locked {
-			deadline := now.Add(d)
-			lockedUntil = &deadline
-
-			slog.Warn("account locked", "user_id", cred.ID, "streak", streak, "locked_until", deadline)
-		}
-
-		if err := s.store.UpdateFailedAttempts(ctx, cred.ID, streak, lockedUntil); err != nil {
-			slog.Error("update failed attempts", "error", err)
-		}
+		s.recordFailedSignIn(ctx, cred, now)
 		return SignInResult{}, domain.ErrInvalidCredentials
 	}
 
 	if !cred.IsEnabled {
 		return SignInResult{}, domain.ErrInvalidCredentials
+	}
+
+	if s.passwordExpired(cred.PasswordChangedAt) {
+		return SignInResult{MustChangePassword: true}, nil
 	}
 
 	if cred.FailedAttempts > 0 || cred.LockedUntil != nil {
@@ -93,28 +83,51 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 
 }
 
-func (s *AuthService) nextStreak(prev uint8, LastFailedAt *time.Time, now time.Time) uint8 {
-	if prev == math.MaxUint8 {
-		return math.MaxUint8
-	}
-	if LastFailedAt == nil || now.Sub(*LastFailedAt) >= s.config.Lockout.ResetWindow {
-		return 1
-	}
-	return prev + 1
-}
+func (s *AuthService) ChangePassword(ctx context.Context, email string, currentPassword string, newPassword string) error {
+	email = normalizeEmail(email)
 
-func (s *AuthService) lockoutFor(streak uint8) (time.Duration, bool) {
-	treshold := uint8(s.config.Lockout.Treshold)
-	if streak < treshold {
-		return 0, false
+	if s.validateEmail(email) != nil {
+		return domain.ErrInvalidCredentials
 	}
 
-	d := s.config.Lockout.BaseDuration
-	for i := int(streak - treshold); i > 0 && d < s.config.Lockout.MaxDuration; i-- {
-		d *= 2
+	if err := s.validatePassword(newPassword); err != nil {
+		return domain.ErrPassword
 	}
-	if d > s.config.Lockout.MaxDuration {
-		d = s.config.Lockout.MaxDuration
+
+	cred, err := s.store.GetByEmail(ctx, email)
+	if err != nil {
+		return domain.ErrInvalidCredentials
 	}
-	return d, true
+
+	if cred.LockedUntil != nil && cred.LockedUntil.After(time.Now()) {
+		return domain.ErrAccountLocked
+	}
+
+	match, err := argon2id.ComparePasswordAndHash(currentPassword, cred.PasswordHash)
+	if err != nil {
+		slog.Error("compare password", "error", err)
+		return fmt.Errorf("compare password: %w", err)
+	}
+	if !match {
+		s.recordFailedSignIn(ctx, cred, time.Now())
+		return domain.ErrInvalidCredentials
+	}
+
+	hash, err := argon2id.CreateHash(newPassword, s.params)
+	if err != nil {
+		slog.Error("hash new password", "error", err)
+		return fmt.Errorf("hash new password: %w", err)
+	}
+
+	// Making sure that old password is not same as new one
+	if subtle.ConstantTimeCompare([]byte(newPassword), []byte(currentPassword)) == 1 {
+		return domain.ErrInvalidCredentials
+	}
+
+	if err := s.store.ChangePassword(ctx, cred.ID, hash); err != nil {
+		slog.Error("change password", "error", err)
+		return fmt.Errorf("change password: %w", err)
+	}
+
+	return nil
 }
