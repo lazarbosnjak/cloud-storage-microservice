@@ -42,7 +42,14 @@ func (h *AuthHandler) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingRe
 }
 
 func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	id, _ := h.service.Register(ctx, req.GetEmail(), req.GetPassword())
+	id, err := h.service.Register(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		if errors.Is(err, domain.ErrEmailTaken) {
+			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+		}
+		slog.Error("register credential", "error", err)
+		return nil, status.Error(codes.Internal, "internal error")
+	}
 
 	return &pb.RegisterResponse{UserId: id}, nil
 }
