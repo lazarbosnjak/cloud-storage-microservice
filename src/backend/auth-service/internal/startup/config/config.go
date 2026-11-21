@@ -53,6 +53,7 @@ type Config struct {
 	Argon2id         Argon2id
 	CredentialPolicy CredentialPolicy
 	Service          Service
+	SMTP             SMTP
 }
 
 func Load() (Config, error) {
@@ -89,6 +90,12 @@ func Load() (Config, error) {
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
 			UserServiceGRPCAddr:     get("USER_SERVICE_GRPC_ADDR"),
+		},
+		SMTP: SMTP{
+			Username: get("SMPT_USERNAME"),
+			Password: get("SMPT_PASSWORD"),
+			Host:     get("SMPT_HOST"),
+			Port:     get("SMPT_PORT"),
 		},
 	}
 

@@ -56,6 +56,11 @@ type UserClient interface {
 	CreateUser(ctx context.Context, user *CreateUserDTO) error
 }
 
+// TODO: Move to separate file
+type EmailSender interface {
+	SendVerifyRegistrationMail(to []string, verificationLink string) error
+}
+
 // FIXME: move cfg to struct instead of constructor func
 
 type AuthService struct {
@@ -63,7 +68,8 @@ type AuthService struct {
 	policy CredentialPolicy
 	params *argon2id.Params
 
-	UserClient UserClient
+	UserClient  UserClient
+	EmailSender EmailSender
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
@@ -73,6 +79,7 @@ func (s *AuthService) Ping(ctx context.Context) (string, error) {
 func NewAuthService(
 	store CredentialStore, cfg config.Config,
 	userClient UserClient,
+	emailSender EmailSender,
 ) *AuthService {
 	return &AuthService{
 		store: store,
@@ -88,7 +95,8 @@ func NewAuthService(
 			SaltLength:  cfg.Argon2id.SaltLength,
 			KeyLength:   cfg.Argon2id.KeyLength,
 		},
-		UserClient: userClient,
+		UserClient:  userClient,
+		EmailSender: emailSender,
 	}
 }
 
@@ -125,6 +133,11 @@ func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (strin
 	if err != nil {
 		slog.Error("error creating user", "err", err)
 		return "", status.Error(codes.Unavailable, "error creating user")
+	}
+
+	err = s.EmailSender.SendVerifyRegistrationMail([]string{user.Email}, "verificationLink")
+	if err != nil {
+		return "", err
 	}
 
 	return id, nil
