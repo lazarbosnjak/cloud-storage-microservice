@@ -6,6 +6,8 @@ option go_package = "proto/user";
 
 service User {
   rpc Ping (PingRequest) returns (PingReply) {}
+
+  rpc CreateUser (CreateUserRequest) returns (CreateUserReply) {}
 }
 
 message PingRequest {
@@ -14,4 +16,13 @@ message PingRequest {
 
 message PingReply {
   string message = 1;
+}
+
+message CreateUserReply {}
+
+message CreateUserRequest {
+  string id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
 }

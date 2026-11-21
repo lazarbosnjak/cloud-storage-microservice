@@ -13,12 +13,14 @@ type Config struct {
 	RestServerPort          string
 	GracefulShutdownTimeout time.Duration
 	UserServiceGRPCAddr     string
+	AuthServiceGRPCAddr     string
 }
 
 func NewConfig(logger *slog.Logger) *Config {
 	grpcPort := getEnv("GRPC_PORT", logger)
 	restPort := getEnv("REST_PORT", logger)
 	userServiceGRPCAddr := getEnv("USER_SERVICE_GRPC_ADDR", logger)
+	authServiceGRPCAddr := getEnv("AUTH_SERVICE_GRPC_ADDR", logger)
 
 	res, err := strconv.Atoi(os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"))
 	if err != nil || res == 0 {
@@ -32,6 +34,7 @@ func NewConfig(logger *slog.Logger) *Config {
 		RestServerPort:          restPort,
 		GracefulShutdownTimeout: gracefulShutdownTimeout,
 		UserServiceGRPCAddr:     userServiceGRPCAddr,
+		AuthServiceGRPCAddr:     authServiceGRPCAddr,
 	}
 }
 
