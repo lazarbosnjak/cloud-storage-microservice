@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	authPb "proto/auth"
+	"time"
 
 	"api-gateway/internal/application/auth"
 )
@@ -45,4 +46,25 @@ func (c *GRPCClient) Register(ctx context.Context, dto auth.RegisterUserDTO) err
 	}
 
 	return nil
+}
+
+func (c *GRPCClient) Login(ctx context.Context, dto auth.LoginDTO) (*auth.LoginResponseDTO, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	req := &authPb.SignInRequest{
+		Email:    dto.Email,
+		Password: dto.Password,
+	}
+
+	res, err := c.client.SignIn(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth.LoginResponseDTO{
+		AccessToken:      res.GetAccessToken(),
+		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
+		RefreshToken:     res.GetRefreshToken(),
+	}, nil
 }
