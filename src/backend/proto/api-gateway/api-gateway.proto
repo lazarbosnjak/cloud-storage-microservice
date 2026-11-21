@@ -27,7 +27,7 @@ service ApiGateway {
     };
   }
 
-  rpc AuthSignIn (auth.SignInRequest) returns (auth.SignInResponse) {
+  rpc AuthSignIn (auth.SignInRequest) returns (AuthSignInResponse) {
     option (google.api.http) = {
       post: "/api/auth/login"
       body: "*"
@@ -39,4 +39,9 @@ message PingRequest {}
 
 message PingReply {
   string message = 1;
+}
+
+message AuthSignInResponse {
+  string access_token = 1;
+  int32 expires_in_seconds = 2;
 }

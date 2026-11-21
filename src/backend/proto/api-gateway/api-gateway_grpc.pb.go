@@ -33,7 +33,7 @@ type ApiGatewayClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	PingUser(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	AuthRegister(ctx context.Context, in *auth.RegisterRequest, opts ...grpc.CallOption) (*auth.RegisterResponse, error)
-	AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*auth.SignInResponse, error)
+	AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*AuthSignInResponse, error)
 }
 
 type apiGatewayClient struct {
@@ -74,9 +74,9 @@ func (c *apiGatewayClient) AuthRegister(ctx context.Context, in *auth.RegisterRe
 	return out, nil
 }
 
-func (c *apiGatewayClient) AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*auth.SignInResponse, error) {
+func (c *apiGatewayClient) AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*AuthSignInResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(auth.SignInResponse)
+	out := new(AuthSignInResponse)
 	err := c.cc.Invoke(ctx, ApiGateway_AuthSignIn_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ type ApiGatewayServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
 	PingUser(context.Context, *PingRequest) (*PingReply, error)
 	AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error)
-	AuthSignIn(context.Context, *auth.SignInRequest) (*auth.SignInResponse, error)
+	AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -111,7 +111,7 @@ func (UnimplementedApiGatewayServer) PingUser(context.Context, *PingRequest) (*P
 func (UnimplementedApiGatewayServer) AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthRegister not implemented")
 }
-func (UnimplementedApiGatewayServer) AuthSignIn(context.Context, *auth.SignInRequest) (*auth.SignInResponse, error) {
+func (UnimplementedApiGatewayServer) AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthSignIn not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
