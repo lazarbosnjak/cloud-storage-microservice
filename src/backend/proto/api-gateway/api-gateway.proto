@@ -26,6 +26,13 @@ service ApiGateway {
       body: "*"
     };
   }
+
+  rpc AuthSignIn (auth.SignInRequest) returns (auth.SignInResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/login"
+      body: "*"
+    };
+  }
 }
 
 message PingRequest {}

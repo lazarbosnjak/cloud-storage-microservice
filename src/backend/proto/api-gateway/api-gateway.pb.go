@@ -110,12 +110,14 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x11api-gateway.proto\x12\vapi_gateway\x1a\x1cgoogle/api/annotations.proto\x1a\x0fauth/auth.proto\"\r\n" +
 	"\vPingRequest\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\xfc\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xd1\x02\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
 	"\bPingUser\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/user\x12\\\n" +
-	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/registerB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
+	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/register\x12S\n" +
+	"\n" +
+	"AuthSignIn\x12\x13.auth.SignInRequest\x1a\x14.auth.SignInResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/auth/loginB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
 
 var (
 	file_api_gateway_proto_rawDescOnce sync.Once
@@ -134,17 +136,21 @@ var file_api_gateway_proto_goTypes = []any{
 	(*PingRequest)(nil),           // 0: api_gateway.PingRequest
 	(*PingReply)(nil),             // 1: api_gateway.PingReply
 	(*auth.RegisterRequest)(nil),  // 2: auth.RegisterRequest
-	(*auth.RegisterResponse)(nil), // 3: auth.RegisterResponse
+	(*auth.SignInRequest)(nil),    // 3: auth.SignInRequest
+	(*auth.RegisterResponse)(nil), // 4: auth.RegisterResponse
+	(*auth.SignInResponse)(nil),   // 5: auth.SignInResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
 	0, // 0: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
 	0, // 1: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
 	2, // 2: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
-	1, // 3: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1, // 4: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	3, // 5: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	3, // 3: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
+	1, // 4: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1, // 5: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	4, // 6: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	5, // 7: api_gateway.ApiGateway.AuthSignIn:output_type -> auth.SignInResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
