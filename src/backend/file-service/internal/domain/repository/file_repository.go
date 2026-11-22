@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"file-service/internal/domain/models"
 )
@@ -9,4 +10,6 @@ import (
 type FileRepository interface {
 	Create(ctx context.Context, file *models.FileMetadata) error
 	GetByID(ctx context.Context, id string) (*models.FileMetadata, error)
+	Rename(ctx context.Context, id string, ownerID string, name string, updatedAt time.Time) error
+	ListByParentID(ctx context.Context, parentID string, ownerID string) ([]*models.FileMetadata, error)
 }

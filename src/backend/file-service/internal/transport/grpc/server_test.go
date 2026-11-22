@@ -2,13 +2,14 @@ package grpc
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
+	"file-service/internal/application/file"
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
 	"file-service/internal/domain/models"
+	"file-service/internal/domain/repository"
 
 	pb "proto/file"
 
@@ -48,19 +49,47 @@ func (r *fakeFolderRepository) GetByID(
 
 	f, ok := r.folders[id]
 	if !ok {
-		return nil, errors.New("folder not found")
+		return nil, repository.ErrNotFound
 	}
 
 	return f, nil
 }
 
+func (r *fakeFolderRepository) Rename(
+	ctx context.Context,
+	id string,
+	ownerID string,
+	name string,
+	updatedAt time.Time,
+) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	folder, ok := r.folders[id]
+	if !ok || folder.OwnerID != ownerID {
+		return repository.ErrNotFound
+	}
+
+	folder.Name = name
+	folder.UpdatedAt = updatedAt
+
+	return nil
+}
+
 func newTestServer() (*Server, *fakeFolderRepository) {
-	repo := newFakeFolderRepository()
+	folderRepo := newFakeFolderRepository()
+	fileRepo := newFakeGRPCFileRepository()
 
 	return NewServer(
 		ping.NewHandler(5*time.Second),
-		folder.NewCreateHandler(repo),
-	), repo
+		folder.NewCreateHandler(folderRepo),
+		file.NewRenameHandler(fileRepo),
+		folder.NewRenameHandler(folderRepo),
+		folder.NewListContentsHandler(folderRepo, fileRepo),
+		file.NewGetHandler(fileRepo),
+		folder.NewGetHandler(folderRepo),
+	), folderRepo
 }
 
 func TestGRPCCreateRootFolder(t *testing.T) {
@@ -215,4 +244,24 @@ func TestGRPCCreateFolderDifferentOwner(t *testing.T) {
 	if status.Code(err) != codes.NotFound {
 		t.Fatalf("expected NotFound, got %v", err)
 	}
+}
+
+func (r *fakeFolderRepository) ListByParentID(
+	ctx context.Context,
+	parentID string,
+	ownerID string,
+) ([]*models.FolderMetadata, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	folders := make([]*models.FolderMetadata, 0)
+
+	for _, folder := range r.folders {
+		if folder.ParentID == parentID && folder.OwnerID == ownerID {
+			folders = append(folders, folder)
+		}
+	}
+
+	return folders, nil
 }

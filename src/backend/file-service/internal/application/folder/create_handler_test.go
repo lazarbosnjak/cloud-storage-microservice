@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"file-service/internal/domain/models"
+	"file-service/internal/domain/repository"
 )
 
 type fakeFolderRepository struct {
@@ -38,9 +40,31 @@ func (r *fakeFolderRepository) GetByID(
 	}
 	folder, ok := r.folders[id]
 	if !ok {
-		return nil, errors.New("folder not found")
+		return nil, repository.ErrNotFound
 	}
 	return folder, nil
+}
+
+func (r *fakeFolderRepository) Rename(
+	ctx context.Context,
+	id string,
+	ownerID string,
+	name string,
+	updatedAt time.Time,
+) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	folder, ok := r.folders[id]
+	if !ok || folder.OwnerID != ownerID {
+		return repository.ErrNotFound
+	}
+
+	folder.Name = name
+	folder.UpdatedAt = updatedAt
+
+	return nil
 }
 
 func TestCreateRootFolder(t *testing.T) {
@@ -176,4 +200,24 @@ func TestCreateFolderInvalidInput(t *testing.T) {
 			}
 		})
 	}
+}
+
+func (r *fakeFolderRepository) ListByParentID(
+	ctx context.Context,
+	parentID string,
+	ownerID string,
+) ([]*models.FolderMetadata, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	folders := make([]*models.FolderMetadata, 0)
+
+	for _, folder := range r.folders {
+		if folder.ParentID == parentID && folder.OwnerID == ownerID {
+			folders = append(folders, folder)
+		}
+	}
+
+	return folders, nil
 }

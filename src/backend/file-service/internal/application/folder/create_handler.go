@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -42,30 +43,36 @@ func (h *CreateHandler) Handle(
 	parentID := strings.TrimSpace(cmd.ParentID)
 
 	if name == "" {
+		slog.Warn("folder creation rejected: empty name")
 		return nil, ErrInvalidName
 	}
 
 	if ownerID == "" {
+		slog.Warn("folder creation rejected: empty owner ID")
 		return nil, ErrInvalidOwner
 	}
 
 	if err := ctx.Err(); err != nil {
+		slog.Warn("folder creation canceled", "err", err)
 		return nil, err
 	}
 
 	if parentID != "" {
 		parent, err := h.repository.GetByID(ctx, parentID)
 		if err != nil {
+			slog.Error("failed to retrieve parent folder", "err", err)
 			return nil, fmt.Errorf("%w: %v", ErrInvalidParent, err)
 		}
 
 		if parent == nil || parent.OwnerID != ownerID {
+			slog.Warn("folder creation rejected: invalid parent folder")
 			return nil, ErrInvalidParent
 		}
 	}
 
 	idBytes := make([]byte, 16)
 	if _, err := rand.Read(idBytes); err != nil {
+		slog.Error("failed to generate folder ID", "err", err)
 		return nil, fmt.Errorf("generate folder ID: %w", err)
 	}
 
@@ -81,8 +88,11 @@ func (h *CreateHandler) Handle(
 	}
 
 	if err := h.repository.Create(ctx, folder); err != nil {
+		slog.Error("failed to create folder", "err", err)
 		return nil, fmt.Errorf("create folder: %w", err)
 	}
+
+	slog.Info("folder created successfully", "folder_id", folder.ID)
 
 	return folder, nil
 }
