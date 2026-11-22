@@ -1,4 +1,4 @@
-﻿package startup
+package startup
 
 import (
 	"context"
@@ -10,13 +10,13 @@ import (
 	"syscall"
 	"time"
 
+	"file-service/internal/application/file"
+	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
 	"file-service/internal/infrastructure/database"
+	infrarepo "file-service/internal/infrastructure/repository"
 	"file-service/internal/startup/config"
 	transportgrpc "file-service/internal/transport/grpc"
-
-	"file-service/internal/application/folder"
-	infrarepo "file-service/internal/infrastructure/repository"
 
 	pb "proto/file"
 
@@ -69,10 +69,7 @@ func (s *Server) run() error {
 		}
 	}()
 
-	listener, err := net.Listen(
-		"tcp",
-		":"+s.config.GRPCPort,
-	)
+	listener, err := net.Listen("tcp", ":"+s.config.GRPCPort)
 	if err != nil {
 		return fmt.Errorf("start gRPC listener: %w", err)
 	}
@@ -82,12 +79,33 @@ func (s *Server) run() error {
 	db := mongoClient.Database(s.config.MongoDB)
 
 	folderRepository := infrarepo.NewFolderRepository(db)
-	createFolderHandler := folder.NewCreateHandler(folderRepository)
+	fileRepository := infrarepo.NewFileRepository(db)
+
 	pingHandler := ping.NewHandler(s.config.PingDelay)
+	createFolderHandler := folder.NewCreateHandler(folderRepository)
+
+	renameFileHandler := file.NewRenameHandler(fileRepository)
+	renameFolderHandler := folder.NewRenameHandler(folderRepository)
+
+	listContentsHandler := folder.NewListContentsHandler(
+		folderRepository,
+		fileRepository,
+	)
+
+	getFileHandler := file.NewGetHandler(fileRepository)
+	getFolderHandler := folder.NewGetHandler(folderRepository)
 
 	pb.RegisterFileServer(
 		grpcServer,
-		transportgrpc.NewServer(pingHandler, createFolderHandler),
+		transportgrpc.NewServer(
+			pingHandler,
+			createFolderHandler,
+			renameFileHandler,
+			renameFolderHandler,
+			listContentsHandler,
+			getFileHandler,
+			getFolderHandler,
+		),
 	)
 
 	reflection.Register(grpcServer)
