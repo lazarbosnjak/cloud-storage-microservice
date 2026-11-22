@@ -9,7 +9,6 @@ import (
 	"file-service/internal/application/file"
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
-	"file-service/internal/domain/models"
 
 	pb "proto/file"
 
@@ -30,6 +29,7 @@ func newNetworkTestClient(
 
 	server := NewServer(
 		ping.NewHandler(0),
+		file.NewCreateHandler(fileRepo, folderRepo),
 		folder.NewCreateHandler(folderRepo),
 		file.NewRenameHandler(fileRepo),
 		folder.NewRenameHandler(folderRepo),
@@ -76,7 +76,7 @@ func newNetworkTestClient(
 }
 
 func TestGRPCNetworkMetadataWorkflow(t *testing.T) {
-	client, _, fileRepo := newNetworkTestClient(t)
+	client, _, _ := newNetworkTestClient(t)
 
 	ctx, cancel := context.WithTimeout(
 		context.Background(),
@@ -126,18 +126,46 @@ func TestGRPCNetworkMetadataWorkflow(t *testing.T) {
 		t.Fatalf("RenameFolder RPC failed: %v", err)
 	}
 
-	fileRepo.files["file-1"] = &models.FileMetadata{
-		ID:       "file-1",
-		Name:     "old.txt",
-		ParentID: created.GetId(),
-		OwnerID:  "user-1",
-		Size:     512,
+	//kreiranje fajla u folderu
+	createdFile, err := client.CreateFile(
+		ctx,
+		&pb.CreateFileRequest{
+			Name:        "old.txt",
+			Size:        512,
+			ContentType: "text/plain",
+			StorageKey:  "files/old.txt",
+			ParentId:    created.GetId(),
+			OwnerId:     "user-1",
+		},
+	)
+	if err != nil {
+		t.Fatalf("CreateFile RPC failed: %v", err)
+	}
+
+	if createdFile.GetId() == "" {
+		t.Fatal("expected generated file ID")
+	}
+
+	if createdFile.GetName() != "old.txt" {
+		t.Fatalf("unexpected file name: %s", createdFile.GetName())
+	}
+
+	if createdFile.GetParentId() != created.GetId() {
+		t.Fatal("incorrect parent folder ID")
+	}
+
+	if createdFile.GetOwnerId() != "user-1" {
+		t.Fatal("incorrect file owner")
+	}
+
+	if createdFile.GetCreatedAt() == "" {
+		t.Fatal("expected creation timestamp")
 	}
 
 	_, err = client.RenameFile(
 		ctx,
 		&pb.RenameFileRequest{
-			Id:      "file-1",
+			Id:      createdFile.GetId(),
 			OwnerId: "user-1",
 			Name:    "new.txt",
 		},
@@ -149,7 +177,7 @@ func TestGRPCNetworkMetadataWorkflow(t *testing.T) {
 	fileMetadata, err := client.GetFile(
 		ctx,
 		&pb.GetFileRequest{
-			Id:      "file-1",
+			Id:      createdFile.GetId(),
 			OwnerId: "user-1",
 		},
 	)

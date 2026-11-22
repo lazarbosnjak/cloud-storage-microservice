@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        v7.36.2
-// source: proto/file/file.proto
+// source: file.proto
 
 package file
 
@@ -29,7 +29,7 @@ type PingRequest struct {
 
 func (x *PingRequest) Reset() {
 	*x = PingRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[0]
+	mi := &file_file_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -41,7 +41,7 @@ func (x *PingRequest) String() string {
 func (*PingRequest) ProtoMessage() {}
 
 func (x *PingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[0]
+	mi := &file_file_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,7 +54,7 @@ func (x *PingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
 func (*PingRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{0}
+	return file_file_proto_rawDescGZIP(), []int{0}
 }
 
 type PingReply struct {
@@ -66,7 +66,7 @@ type PingReply struct {
 
 func (x *PingReply) Reset() {
 	*x = PingReply{}
-	mi := &file_proto_file_file_proto_msgTypes[1]
+	mi := &file_file_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -78,7 +78,7 @@ func (x *PingReply) String() string {
 func (*PingReply) ProtoMessage() {}
 
 func (x *PingReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[1]
+	mi := &file_file_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -91,12 +91,204 @@ func (x *PingReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingReply.ProtoReflect.Descriptor instead.
 func (*PingReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{1}
+	return file_file_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PingReply) GetMessage() string {
 	if x != nil {
 		return x.Message
+	}
+	return ""
+}
+
+type CreateFileRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Size          uint64                 `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	StorageKey    string                 `protobuf:"bytes,4,opt,name=storage_key,json=storageKey,proto3" json:"storage_key,omitempty"`
+	ParentId      string                 `protobuf:"bytes,5,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,6,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateFileRequest) Reset() {
+	*x = CreateFileRequest{}
+	mi := &file_file_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateFileRequest) ProtoMessage() {}
+
+func (x *CreateFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_file_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateFileRequest.ProtoReflect.Descriptor instead.
+func (*CreateFileRequest) Descriptor() ([]byte, []int) {
+	return file_file_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateFileRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateFileRequest) GetSize() uint64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *CreateFileRequest) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *CreateFileRequest) GetStorageKey() string {
+	if x != nil {
+		return x.StorageKey
+	}
+	return ""
+}
+
+func (x *CreateFileRequest) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *CreateFileRequest) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+type CreateFileReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Size          uint64                 `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	ContentType   string                 `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	StorageKey    string                 `protobuf:"bytes,5,opt,name=storage_key,json=storageKey,proto3" json:"storage_key,omitempty"`
+	ParentId      string                 `protobuf:"bytes,6,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,7,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateFileReply) Reset() {
+	*x = CreateFileReply{}
+	mi := &file_file_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateFileReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateFileReply) ProtoMessage() {}
+
+func (x *CreateFileReply) ProtoReflect() protoreflect.Message {
+	mi := &file_file_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateFileReply.ProtoReflect.Descriptor instead.
+func (*CreateFileReply) Descriptor() ([]byte, []int) {
+	return file_file_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreateFileReply) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetSize() uint64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *CreateFileReply) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetStorageKey() string {
+	if x != nil {
+		return x.StorageKey
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *CreateFileReply) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
 	}
 	return ""
 }
@@ -112,7 +304,7 @@ type CreateFolderRequest struct {
 
 func (x *CreateFolderRequest) Reset() {
 	*x = CreateFolderRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[2]
+	mi := &file_file_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -124,7 +316,7 @@ func (x *CreateFolderRequest) String() string {
 func (*CreateFolderRequest) ProtoMessage() {}
 
 func (x *CreateFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[2]
+	mi := &file_file_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -137,7 +329,7 @@ func (x *CreateFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFolderRequest.ProtoReflect.Descriptor instead.
 func (*CreateFolderRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{2}
+	return file_file_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateFolderRequest) GetName() string {
@@ -174,7 +366,7 @@ type CreateFolderReply struct {
 
 func (x *CreateFolderReply) Reset() {
 	*x = CreateFolderReply{}
-	mi := &file_proto_file_file_proto_msgTypes[3]
+	mi := &file_file_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -186,7 +378,7 @@ func (x *CreateFolderReply) String() string {
 func (*CreateFolderReply) ProtoMessage() {}
 
 func (x *CreateFolderReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[3]
+	mi := &file_file_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -199,7 +391,7 @@ func (x *CreateFolderReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFolderReply.ProtoReflect.Descriptor instead.
 func (*CreateFolderReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{3}
+	return file_file_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateFolderReply) GetId() string {
@@ -248,7 +440,7 @@ type RenameFileRequest struct {
 
 func (x *RenameFileRequest) Reset() {
 	*x = RenameFileRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[4]
+	mi := &file_file_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -260,7 +452,7 @@ func (x *RenameFileRequest) String() string {
 func (*RenameFileRequest) ProtoMessage() {}
 
 func (x *RenameFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[4]
+	mi := &file_file_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -273,7 +465,7 @@ func (x *RenameFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameFileRequest.ProtoReflect.Descriptor instead.
 func (*RenameFileRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{4}
+	return file_file_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RenameFileRequest) GetId() string {
@@ -305,7 +497,7 @@ type RenameFileReply struct {
 
 func (x *RenameFileReply) Reset() {
 	*x = RenameFileReply{}
-	mi := &file_proto_file_file_proto_msgTypes[5]
+	mi := &file_file_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +509,7 @@ func (x *RenameFileReply) String() string {
 func (*RenameFileReply) ProtoMessage() {}
 
 func (x *RenameFileReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[5]
+	mi := &file_file_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +522,7 @@ func (x *RenameFileReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameFileReply.ProtoReflect.Descriptor instead.
 func (*RenameFileReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{5}
+	return file_file_proto_rawDescGZIP(), []int{7}
 }
 
 type RenameFolderRequest struct {
@@ -344,7 +536,7 @@ type RenameFolderRequest struct {
 
 func (x *RenameFolderRequest) Reset() {
 	*x = RenameFolderRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[6]
+	mi := &file_file_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -356,7 +548,7 @@ func (x *RenameFolderRequest) String() string {
 func (*RenameFolderRequest) ProtoMessage() {}
 
 func (x *RenameFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[6]
+	mi := &file_file_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -369,7 +561,7 @@ func (x *RenameFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameFolderRequest.ProtoReflect.Descriptor instead.
 func (*RenameFolderRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{6}
+	return file_file_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *RenameFolderRequest) GetId() string {
@@ -401,7 +593,7 @@ type RenameFolderReply struct {
 
 func (x *RenameFolderReply) Reset() {
 	*x = RenameFolderReply{}
-	mi := &file_proto_file_file_proto_msgTypes[7]
+	mi := &file_file_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -413,7 +605,7 @@ func (x *RenameFolderReply) String() string {
 func (*RenameFolderReply) ProtoMessage() {}
 
 func (x *RenameFolderReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[7]
+	mi := &file_file_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -426,7 +618,7 @@ func (x *RenameFolderReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameFolderReply.ProtoReflect.Descriptor instead.
 func (*RenameFolderReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{7}
+	return file_file_proto_rawDescGZIP(), []int{9}
 }
 
 type ListFolderContentsRequest struct {
@@ -439,7 +631,7 @@ type ListFolderContentsRequest struct {
 
 func (x *ListFolderContentsRequest) Reset() {
 	*x = ListFolderContentsRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[8]
+	mi := &file_file_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -451,7 +643,7 @@ func (x *ListFolderContentsRequest) String() string {
 func (*ListFolderContentsRequest) ProtoMessage() {}
 
 func (x *ListFolderContentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[8]
+	mi := &file_file_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -464,7 +656,7 @@ func (x *ListFolderContentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFolderContentsRequest.ProtoReflect.Descriptor instead.
 func (*ListFolderContentsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{8}
+	return file_file_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListFolderContentsRequest) GetFolderId() string {
@@ -491,7 +683,7 @@ type ListFolderContentsReply struct {
 
 func (x *ListFolderContentsReply) Reset() {
 	*x = ListFolderContentsReply{}
-	mi := &file_proto_file_file_proto_msgTypes[9]
+	mi := &file_file_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -503,7 +695,7 @@ func (x *ListFolderContentsReply) String() string {
 func (*ListFolderContentsReply) ProtoMessage() {}
 
 func (x *ListFolderContentsReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[9]
+	mi := &file_file_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -516,7 +708,7 @@ func (x *ListFolderContentsReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFolderContentsReply.ProtoReflect.Descriptor instead.
 func (*ListFolderContentsReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{9}
+	return file_file_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListFolderContentsReply) GetFolders() []*FolderMetadataReply {
@@ -543,7 +735,7 @@ type GetFileRequest struct {
 
 func (x *GetFileRequest) Reset() {
 	*x = GetFileRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[10]
+	mi := &file_file_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -555,7 +747,7 @@ func (x *GetFileRequest) String() string {
 func (*GetFileRequest) ProtoMessage() {}
 
 func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[10]
+	mi := &file_file_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -568,7 +760,7 @@ func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileRequest.ProtoReflect.Descriptor instead.
 func (*GetFileRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{10}
+	return file_file_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetFileRequest) GetId() string {
@@ -595,7 +787,7 @@ type GetFolderRequest struct {
 
 func (x *GetFolderRequest) Reset() {
 	*x = GetFolderRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[11]
+	mi := &file_file_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -607,7 +799,7 @@ func (x *GetFolderRequest) String() string {
 func (*GetFolderRequest) ProtoMessage() {}
 
 func (x *GetFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[11]
+	mi := &file_file_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -620,7 +812,7 @@ func (x *GetFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFolderRequest.ProtoReflect.Descriptor instead.
 func (*GetFolderRequest) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{11}
+	return file_file_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetFolderRequest) GetId() string {
@@ -653,7 +845,7 @@ type FileMetadataReply struct {
 
 func (x *FileMetadataReply) Reset() {
 	*x = FileMetadataReply{}
-	mi := &file_proto_file_file_proto_msgTypes[12]
+	mi := &file_file_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -665,7 +857,7 @@ func (x *FileMetadataReply) String() string {
 func (*FileMetadataReply) ProtoMessage() {}
 
 func (x *FileMetadataReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[12]
+	mi := &file_file_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -678,7 +870,7 @@ func (x *FileMetadataReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileMetadataReply.ProtoReflect.Descriptor instead.
 func (*FileMetadataReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{12}
+	return file_file_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *FileMetadataReply) GetId() string {
@@ -751,7 +943,7 @@ type FolderMetadataReply struct {
 
 func (x *FolderMetadataReply) Reset() {
 	*x = FolderMetadataReply{}
-	mi := &file_proto_file_file_proto_msgTypes[13]
+	mi := &file_file_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +955,7 @@ func (x *FolderMetadataReply) String() string {
 func (*FolderMetadataReply) ProtoMessage() {}
 
 func (x *FolderMetadataReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[13]
+	mi := &file_file_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -776,7 +968,7 @@ func (x *FolderMetadataReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FolderMetadataReply.ProtoReflect.Descriptor instead.
 func (*FolderMetadataReply) Descriptor() ([]byte, []int) {
-	return file_proto_file_file_proto_rawDescGZIP(), []int{13}
+	return file_file_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *FolderMetadataReply) GetId() string {
@@ -821,14 +1013,36 @@ func (x *FolderMetadataReply) GetUpdatedAt() string {
 	return ""
 }
 
-var File_proto_file_file_proto protoreflect.FileDescriptor
+var File_file_proto protoreflect.FileDescriptor
 
-const file_proto_file_file_proto_rawDesc = "" +
+const file_file_proto_rawDesc = "" +
 	"\n" +
-	"\x15proto/file/file.proto\"\r\n" +
+	"\n" +
+	"file.proto\"\r\n" +
 	"\vPingRequest\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"a\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xb7\x01\n" +
+	"\x11CreateFileRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04size\x18\x02 \x01(\x04R\x04size\x12!\n" +
+	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1f\n" +
+	"\vstorage_key\x18\x04 \x01(\tR\n" +
+	"storageKey\x12\x1b\n" +
+	"\tparent_id\x18\x05 \x01(\tR\bparentId\x12\x19\n" +
+	"\bowner_id\x18\x06 \x01(\tR\aownerId\"\x83\x02\n" +
+	"\x0fCreateFileReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x04R\x04size\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12\x1f\n" +
+	"\vstorage_key\x18\x05 \x01(\tR\n" +
+	"storageKey\x12\x1b\n" +
+	"\tparent_id\x18\x06 \x01(\tR\bparentId\x12\x19\n" +
+	"\bowner_id\x18\a \x01(\tR\aownerId\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\b \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\t \x01(\tR\tupdatedAt\"a\n" +
 	"\x13CreateFolderRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tparent_id\x18\x02 \x01(\tR\bparentId\x12\x19\n" +
@@ -881,10 +1095,12 @@ const file_proto_file_file_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\tR\tupdatedAt2\x90\x03\n" +
+	"updated_at\x18\x06 \x01(\tR\tupdatedAt2\xc6\x03\n" +
 	"\x04File\x12\"\n" +
 	"\x04Ping\x12\f.PingRequest\x1a\n" +
-	".PingReply\"\x00\x12:\n" +
+	".PingReply\"\x00\x124\n" +
+	"\n" +
+	"CreateFile\x12\x12.CreateFileRequest\x1a\x10.CreateFileReply\"\x00\x12:\n" +
 	"\fCreateFolder\x12\x14.CreateFolderRequest\x1a\x12.CreateFolderReply\"\x00\x124\n" +
 	"\n" +
 	"RenameFile\x12\x12.RenameFileRequest\x1a\x10.RenameFileReply\"\x00\x12:\n" +
@@ -895,78 +1111,82 @@ const file_proto_file_file_proto_rawDesc = "" +
 	"proto/fileb\x06proto3"
 
 var (
-	file_proto_file_file_proto_rawDescOnce sync.Once
-	file_proto_file_file_proto_rawDescData []byte
+	file_file_proto_rawDescOnce sync.Once
+	file_file_proto_rawDescData []byte
 )
 
-func file_proto_file_file_proto_rawDescGZIP() []byte {
-	file_proto_file_file_proto_rawDescOnce.Do(func() {
-		file_proto_file_file_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_file_file_proto_rawDesc), len(file_proto_file_file_proto_rawDesc)))
+func file_file_proto_rawDescGZIP() []byte {
+	file_file_proto_rawDescOnce.Do(func() {
+		file_file_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_file_proto_rawDesc), len(file_file_proto_rawDesc)))
 	})
-	return file_proto_file_file_proto_rawDescData
+	return file_file_proto_rawDescData
 }
 
-var file_proto_file_file_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
-var file_proto_file_file_proto_goTypes = []any{
+var file_file_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_file_proto_goTypes = []any{
 	(*PingRequest)(nil),               // 0: PingRequest
 	(*PingReply)(nil),                 // 1: PingReply
-	(*CreateFolderRequest)(nil),       // 2: CreateFolderRequest
-	(*CreateFolderReply)(nil),         // 3: CreateFolderReply
-	(*RenameFileRequest)(nil),         // 4: RenameFileRequest
-	(*RenameFileReply)(nil),           // 5: RenameFileReply
-	(*RenameFolderRequest)(nil),       // 6: RenameFolderRequest
-	(*RenameFolderReply)(nil),         // 7: RenameFolderReply
-	(*ListFolderContentsRequest)(nil), // 8: ListFolderContentsRequest
-	(*ListFolderContentsReply)(nil),   // 9: ListFolderContentsReply
-	(*GetFileRequest)(nil),            // 10: GetFileRequest
-	(*GetFolderRequest)(nil),          // 11: GetFolderRequest
-	(*FileMetadataReply)(nil),         // 12: FileMetadataReply
-	(*FolderMetadataReply)(nil),       // 13: FolderMetadataReply
+	(*CreateFileRequest)(nil),         // 2: CreateFileRequest
+	(*CreateFileReply)(nil),           // 3: CreateFileReply
+	(*CreateFolderRequest)(nil),       // 4: CreateFolderRequest
+	(*CreateFolderReply)(nil),         // 5: CreateFolderReply
+	(*RenameFileRequest)(nil),         // 6: RenameFileRequest
+	(*RenameFileReply)(nil),           // 7: RenameFileReply
+	(*RenameFolderRequest)(nil),       // 8: RenameFolderRequest
+	(*RenameFolderReply)(nil),         // 9: RenameFolderReply
+	(*ListFolderContentsRequest)(nil), // 10: ListFolderContentsRequest
+	(*ListFolderContentsReply)(nil),   // 11: ListFolderContentsReply
+	(*GetFileRequest)(nil),            // 12: GetFileRequest
+	(*GetFolderRequest)(nil),          // 13: GetFolderRequest
+	(*FileMetadataReply)(nil),         // 14: FileMetadataReply
+	(*FolderMetadataReply)(nil),       // 15: FolderMetadataReply
 }
-var file_proto_file_file_proto_depIdxs = []int32{
-	13, // 0: ListFolderContentsReply.folders:type_name -> FolderMetadataReply
-	12, // 1: ListFolderContentsReply.files:type_name -> FileMetadataReply
+var file_file_proto_depIdxs = []int32{
+	15, // 0: ListFolderContentsReply.folders:type_name -> FolderMetadataReply
+	14, // 1: ListFolderContentsReply.files:type_name -> FileMetadataReply
 	0,  // 2: File.Ping:input_type -> PingRequest
-	2,  // 3: File.CreateFolder:input_type -> CreateFolderRequest
-	4,  // 4: File.RenameFile:input_type -> RenameFileRequest
-	6,  // 5: File.RenameFolder:input_type -> RenameFolderRequest
-	8,  // 6: File.ListFolderContents:input_type -> ListFolderContentsRequest
-	10, // 7: File.GetFile:input_type -> GetFileRequest
-	11, // 8: File.GetFolder:input_type -> GetFolderRequest
-	1,  // 9: File.Ping:output_type -> PingReply
-	3,  // 10: File.CreateFolder:output_type -> CreateFolderReply
-	5,  // 11: File.RenameFile:output_type -> RenameFileReply
-	7,  // 12: File.RenameFolder:output_type -> RenameFolderReply
-	9,  // 13: File.ListFolderContents:output_type -> ListFolderContentsReply
-	12, // 14: File.GetFile:output_type -> FileMetadataReply
-	13, // 15: File.GetFolder:output_type -> FolderMetadataReply
-	9,  // [9:16] is the sub-list for method output_type
-	2,  // [2:9] is the sub-list for method input_type
+	2,  // 3: File.CreateFile:input_type -> CreateFileRequest
+	4,  // 4: File.CreateFolder:input_type -> CreateFolderRequest
+	6,  // 5: File.RenameFile:input_type -> RenameFileRequest
+	8,  // 6: File.RenameFolder:input_type -> RenameFolderRequest
+	10, // 7: File.ListFolderContents:input_type -> ListFolderContentsRequest
+	12, // 8: File.GetFile:input_type -> GetFileRequest
+	13, // 9: File.GetFolder:input_type -> GetFolderRequest
+	1,  // 10: File.Ping:output_type -> PingReply
+	3,  // 11: File.CreateFile:output_type -> CreateFileReply
+	5,  // 12: File.CreateFolder:output_type -> CreateFolderReply
+	7,  // 13: File.RenameFile:output_type -> RenameFileReply
+	9,  // 14: File.RenameFolder:output_type -> RenameFolderReply
+	11, // 15: File.ListFolderContents:output_type -> ListFolderContentsReply
+	14, // 16: File.GetFile:output_type -> FileMetadataReply
+	15, // 17: File.GetFolder:output_type -> FolderMetadataReply
+	10, // [10:18] is the sub-list for method output_type
+	2,  // [2:10] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name
 	2,  // [2:2] is the sub-list for extension extendee
 	0,  // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_proto_file_file_proto_init() }
-func file_proto_file_file_proto_init() {
-	if File_proto_file_file_proto != nil {
+func init() { file_file_proto_init() }
+func file_file_proto_init() {
+	if File_file_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_file_file_proto_rawDesc), len(file_proto_file_file_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_file_proto_rawDesc), len(file_file_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_file_file_proto_goTypes,
-		DependencyIndexes: file_proto_file_file_proto_depIdxs,
-		MessageInfos:      file_proto_file_file_proto_msgTypes,
+		GoTypes:           file_file_proto_goTypes,
+		DependencyIndexes: file_file_proto_depIdxs,
+		MessageInfos:      file_file_proto_msgTypes,
 	}.Build()
-	File_proto_file_file_proto = out.File
-	file_proto_file_file_proto_goTypes = nil
-	file_proto_file_file_proto_depIdxs = nil
+	File_file_proto = out.File
+	file_file_proto_goTypes = nil
+	file_file_proto_depIdxs = nil
 }

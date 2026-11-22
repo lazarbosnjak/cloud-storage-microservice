@@ -83,6 +83,7 @@ func newTestServer() (*Server, *fakeFolderRepository) {
 
 	return NewServer(
 		ping.NewHandler(5*time.Second),
+		file.NewCreateHandler(fileRepo, folderRepo),
 		folder.NewCreateHandler(folderRepo),
 		file.NewRenameHandler(fileRepo),
 		folder.NewRenameHandler(folderRepo),

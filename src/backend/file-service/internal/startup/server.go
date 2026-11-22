@@ -82,6 +82,7 @@ func (s *Server) run() error {
 	fileRepository := infrarepo.NewFileRepository(db)
 
 	pingHandler := ping.NewHandler(s.config.PingDelay)
+	createFileHandler := file.NewCreateHandler(fileRepository, folderRepository)
 	createFolderHandler := folder.NewCreateHandler(folderRepository)
 
 	renameFileHandler := file.NewRenameHandler(fileRepository)
@@ -99,6 +100,7 @@ func (s *Server) run() error {
 		grpcServer,
 		transportgrpc.NewServer(
 			pingHandler,
+			createFileHandler,
 			createFolderHandler,
 			renameFileHandler,
 			renameFolderHandler,

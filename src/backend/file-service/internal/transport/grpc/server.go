@@ -22,6 +22,7 @@ type Server struct {
 	pb.UnimplementedFileServer
 
 	pingHandler         *ping.Handler
+	createFileHandler   *file.CreateHandler
 	createFolderHandler *folder.CreateHandler
 	renameFileHandler   *file.RenameHandler
 	renameFolderHandler *folder.RenameHandler
@@ -32,6 +33,7 @@ type Server struct {
 
 func NewServer(
 	pingHandler *ping.Handler,
+	createFileHandler *file.CreateHandler,
 	createFolderHandler *folder.CreateHandler,
 	renameFileHandler *file.RenameHandler,
 	renameFolderHandler *folder.RenameHandler,
@@ -41,6 +43,7 @@ func NewServer(
 ) *Server {
 	return &Server{
 		pingHandler:         pingHandler,
+		createFileHandler:   createFileHandler,
 		createFolderHandler: createFolderHandler,
 		renameFileHandler:   renameFileHandler,
 		renameFolderHandler: renameFolderHandler,
@@ -53,7 +56,8 @@ func NewServer(
 func mapError(err error) error {
 	switch {
 	case errors.Is(err, repository.ErrNotFound),
-		errors.Is(err, folder.ErrInvalidParent):
+		errors.Is(err, folder.ErrInvalidParent),
+		errors.Is(err, file.ErrInvalidParent):
 		return status.Error(codes.NotFound, "resource not found")
 
 	case errors.Is(err, file.ErrInvalidFileID),
@@ -61,7 +65,10 @@ func mapError(err error) error {
 		errors.Is(err, file.ErrInvalidName),
 		errors.Is(err, folder.ErrInvalidName),
 		errors.Is(err, file.ErrInvalidOwner),
-		errors.Is(err, folder.ErrInvalidOwner):
+		errors.Is(err, folder.ErrInvalidOwner),
+		errors.Is(err, file.ErrInvalidSize),
+		errors.Is(err, file.ErrInvalidContentType),
+		errors.Is(err, file.ErrInvalidStorageKey):
 		return status.Error(codes.InvalidArgument, err.Error())
 
 	case errors.Is(err, context.Canceled):
@@ -122,6 +129,45 @@ func (s *Server) Ping(
 	}
 
 	return &pb.PingReply{Message: message}, nil
+}
+
+func (s *Server) CreateFile(
+	ctx context.Context,
+	req *pb.CreateFileRequest,
+) (*pb.CreateFileReply, error) {
+	if req == nil {
+		return nil, status.Error(
+			codes.InvalidArgument,
+			"request cannot be nil",
+		)
+	}
+
+	result, err := s.createFileHandler.Handle(
+		ctx,
+		file.CreateCommand{
+			Name:        req.GetName(),
+			Size:        req.GetSize(),
+			ContentType: req.GetContentType(),
+			StorageKey:  req.GetStorageKey(),
+			ParentID:    req.GetParentId(),
+			OwnerID:     req.GetOwnerId(),
+		},
+	)
+	if err != nil {
+		return nil, mapError(err)
+	}
+
+	return &pb.CreateFileReply{
+		Id:          result.ID,
+		Name:        result.Name,
+		Size:        result.Size,
+		ContentType: result.ContentType,
+		StorageKey:  result.StorageKey,
+		ParentId:    result.ParentID,
+		OwnerId:     result.OwnerID,
+		CreatedAt:   formatTime(result.CreatedAt),
+		UpdatedAt:   formatTime(result.UpdatedAt),
+	}, nil
 }
 
 func (s *Server) CreateFolder(
