@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"api-gateway/internal/api/gateway"
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	"api-gateway/internal/application/auth/login"
+	"api-gateway/internal/application/auth/refresh"
 	"api-gateway/internal/application/auth/register"
 	"api-gateway/internal/application/user/ping"
 	"api-gateway/internal/infrastructure/clients/auth"
@@ -109,19 +109,14 @@ func (s *Server) run() error {
 		}
 	}()
 
-	cookieSetter := runtime.WithOutgoingHeaderMatcher(func(key string) (string, bool) {
-		if strings.EqualFold(key, "set-cookie") {
-			return "Set-Cookie", true
-		}
-		return runtime.DefaultHeaderMatcher(key)
-	})
 	jwtHandler, err := gateway.NewJwtHandler(s.config)
 	if err != nil {
 		return fmt.Errorf("create jwt handler: %w", err)
 	}
 
 	gwMux := runtime.NewServeMux(
-		cookieSetter,
+		gateway.CookieSetter(),
+		gateway.CookieGetter(),
 		runtime.WithErrorHandler(gateway.ProblemErrorHandler),
 		gateway.WithIdentityMetadata(),
 		gateway.BlockMetadataSpoofing(),
@@ -201,10 +196,12 @@ func (s *Server) newAPIServer(
 	authClient := auth.NewGRPCClient(authPb.NewAuthClient(authConn), s.logger)
 	authRegisterHandler := register.NewHandler(authClient)
 	authLoginHandler := login.NewHandler(authClient)
+	authRefreshHandler := refresh.NewHandler(authClient)
 
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
 		UserPingHandler:     userPingHandler,
 		AuthRegisterHandler: authRegisterHandler,
 		AuthLoginHandler:    authLoginHandler,
+		AuthRefreshHandler:  authRefreshHandler,
 	})
 }

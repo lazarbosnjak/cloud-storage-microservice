@@ -23,7 +23,18 @@ type LoginResponseDTO struct {
 	RefreshToken     string
 }
 
+type RefreshRequestDTO struct {
+	RefreshToken string
+}
+
+type RefreshResponseDTO struct {
+	AccessToken      string
+	ExpiresInSeconds int
+	RefreshToken     string
+}
+
 type Client interface {
 	Register(context.Context, RegisterUserDTO) error
 	Login(context.Context, LoginDTO) (*LoginResponseDTO, error)
+	Refresh(context.Context, RefreshRequestDTO) (*RefreshResponseDTO, error)
 }
