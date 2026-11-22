@@ -122,6 +122,8 @@ services:
       - auth_postgres_data:/var/lib/postgresql
 
 secrets:
+  jwt_public_key:
+    file: ./secrets/jwt_private.pem
   jwt_private_key:
     file: ./secrets/jwt_private.pem
 
