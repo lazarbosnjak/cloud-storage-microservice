@@ -24,8 +24,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 
 	pb "proto/api-gateway"
 	authPb "proto/auth"
@@ -113,18 +115,29 @@ func (s *Server) run() error {
 		}
 		return runtime.DefaultHeaderMatcher(key)
 	})
+	jwtHandler, err := gateway.NewJwtHandler(s.config)
+	if err != nil {
+		return fmt.Errorf("create jwt handler: %w", err)
+	}
 
 	gwMux := runtime.NewServeMux(
 		cookieSetter,
 		runtime.WithErrorHandler(gateway.ProblemErrorHandler),
+		gateway.WithIdentityMetadata(),
+		gateway.BlockMetadataSpoofing(),
 	)
 	if err := pb.RegisterApiGatewayHandler(ctx, gwMux, restConn); err != nil {
 		return fmt.Errorf("register gateway handler: %w", err)
 	}
 
+	reject := func(w http.ResponseWriter, r *http.Request) {
+		gateway.ProblemErrorHandler(r.Context(), gwMux, &runtime.JSONPb{}, w, r,
+			status.Error(codes.Unauthenticated, "invalid token"))
+	}
+
 	gwServer := &http.Server{
 		Addr:    ":" + s.config.RestServerPort,
-		Handler: gwMux,
+		Handler: jwtHandler.Middleware(gwMux, reject),
 	}
 
 	g, gctx := errgroup.WithContext(ctx)
