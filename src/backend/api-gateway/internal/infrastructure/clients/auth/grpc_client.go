@@ -68,3 +68,20 @@ func (c *GRPCClient) Login(ctx context.Context, dto auth.LoginDTO) (*auth.LoginR
 		RefreshToken:     res.GetRefreshToken(),
 	}, nil
 }
+
+func (c *GRPCClient) Refresh(ctx context.Context, dto auth.RefreshRequestDTO) (*auth.RefreshResponseDTO, error) {
+	req := &authPb.RefreshRequest{
+		RefreshToken: dto.RefreshToken,
+	}
+
+	res, err := c.client.Refresh(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth.RefreshResponseDTO{
+		AccessToken:      res.GetAccessToken(),
+		RefreshToken:     res.GetRefreshToken(),
+		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
+	}, nil
+}
