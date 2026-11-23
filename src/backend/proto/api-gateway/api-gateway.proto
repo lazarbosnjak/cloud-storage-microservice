@@ -39,6 +39,19 @@ service ApiGateway {
       post: "/api/auth/refresh"
     };
   }
+
+  rpc GetFile (GatewayGetFileRequest) returns (GatewayFileMetadataReply) {
+    option (google.api.http) = {
+      get: "/api/files/{id}"
+    };
+  }
+
+  rpc GetFolder (GatewayGetFolderRequest) returns (GatewayFolderMetadataReply) {
+    option (google.api.http) = {
+      get: "/api/folders/{id}"
+    };
+  }
+
 }
 
 message PingRequest {}
@@ -57,5 +70,34 @@ message AuthRefreshRequest {}
 message AuthRefreshResponse {
   string access_token = 1;
   int64 expires_in_seconds = 2;
+}
+
+
+message GatewayGetFileRequest {
+  string id = 1;
+}
+
+message GatewayGetFolderRequest {
+  string id = 1;
+}
+
+message GatewayFileMetadataReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message GatewayFolderMetadataReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+  string updated_at = 6;
 }
 
