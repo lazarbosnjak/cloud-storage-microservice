@@ -33,8 +33,8 @@ import (
 	authPb "proto/auth"
 	userPb "proto/user"
 
-	getfile "api-gateway/internal/application/file/get_file"
-	getfolder "api-gateway/internal/application/file/get_folder"
+	filehandler "api-gateway/internal/application/file/file"
+	folderhandler "api-gateway/internal/application/file/folder"
 	fileclient "api-gateway/internal/infrastructure/clients/file"
 	filePb "proto/file"
 )
@@ -216,17 +216,16 @@ func (s *Server) newAPIServer(
 	authRegisterHandler := register.NewHandler(authClient)
 	authLoginHandler := login.NewHandler(authClient)
 	authRefreshHandler := refresh.NewHandler(authClient)
-
 	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
-	fileGetHandler := getfile.NewHandler(fileClient)
-	folderGetHandler := getfolder.NewHandler(fileClient)
+	fileHandler := filehandler.NewHandler(fileClient)
+	folderHandler := folderhandler.NewHandler(fileClient)
 
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
 		UserPingHandler:     userPingHandler,
 		AuthRegisterHandler: authRegisterHandler,
 		AuthLoginHandler:    authLoginHandler,
 		AuthRefreshHandler:  authRefreshHandler,
-		FileGetHandler:      fileGetHandler,
-		FolderGetHandler:    folderGetHandler,
+		FileHandler:         fileHandler,
+		FolderHandler:       folderHandler,
 	})
 }

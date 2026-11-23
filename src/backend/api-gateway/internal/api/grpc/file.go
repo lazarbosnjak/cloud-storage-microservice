@@ -3,9 +3,6 @@ package grpc
 import (
 	"context"
 
-	getfile "api-gateway/internal/application/file/get_file"
-	getfolder "api-gateway/internal/application/file/get_folder"
-
 	pb "proto/api-gateway"
 
 	"google.golang.org/grpc/codes"
@@ -39,11 +36,11 @@ func (s *Server) GetFile(
 	if req == nil || req.GetId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "file id is required")
 	}
-
-	result, err := s.Handlers.FileGetHandler.Handle(ctx, getfile.Query{
-		ID:      req.GetId(),
-		OwnerID: ownerID,
-	})
+	result, err := s.Handlers.FileHandler.GetFile(
+		ctx,
+		req.GetId(),
+		ownerID,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +69,11 @@ func (s *Server) GetFolder(
 	if req == nil || req.GetId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "folder id is required")
 	}
-
-	result, err := s.Handlers.FolderGetHandler.Handle(ctx, getfolder.Query{
-		ID:      req.GetId(),
-		OwnerID: ownerID,
-	})
+	result, err := s.Handlers.FolderHandler.GetFolder(
+		ctx,
+		req.GetId(),
+		ownerID,
+	)
 	if err != nil {
 		return nil, err
 	}
