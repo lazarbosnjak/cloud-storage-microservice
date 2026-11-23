@@ -64,13 +64,14 @@ type EmailSender interface {
 // FIXME: move cfg to struct instead of constructor func
 
 type AuthService struct {
-	config    config.Config
-	store     CredentialStore
-	refresh   RefreshTokenStore
-	policy    CredentialPolicy
-	params    *argon2id.Params
-	tokens    TokenIssuer
-	dummyHash string
+	config                 config.Config
+	store                  CredentialStore
+	refresh                RefreshTokenStore
+	verificationTokenStore VerificationTokenStore
+	policy                 CredentialPolicy
+	params                 *argon2id.Params
+	tokens                 TokenIssuer
+	dummyHash              string
 
 	refreshIdleTTL     time.Duration
 	refreshAbsoluteTTL time.Duration
@@ -87,6 +88,7 @@ func (s *AuthService) Ping(ctx context.Context) (string, error) {
 func NewAuthService(
 	store CredentialStore,
 	refresh RefreshTokenStore,
+	verificationTokenStore VerificationTokenStore,
 	cfg config.Config,
 	tokens TokenIssuer,
 	userClient UserClient,
@@ -108,9 +110,10 @@ func NewAuthService(
 	}
 
 	return &AuthService{
-		config:  cfg,
-		store:   store,
-		refresh: refresh,
+		config:                 cfg,
+		store:                  store,
+		refresh:                refresh,
+		verificationTokenStore: verificationTokenStore,
 		policy: CredentialPolicy{
 			MaxEmailLength:    cfg.CredentialPolicy.MaxEmailLength,
 			MinPasswordLength: cfg.CredentialPolicy.MinPasswordLength,
@@ -162,7 +165,12 @@ func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (strin
 		return "", status.Error(codes.Unavailable, "error creating user")
 	}
 
-	err = s.EmailSender.SendVerifyRegistrationMail([]string{user.Email}, "verificationLink")
+	link, err := s.constructRegistrationVerificationLink(ctx, id)
+	if err != nil {
+		return "", err
+	}
+
+	err = s.EmailSender.SendVerifyRegistrationMail([]string{user.Email}, link)
 	if err != nil {
 		return "", err
 	}
@@ -248,4 +256,47 @@ func (s *AuthService) validatePassword(password string) error {
 	}
 
 	return nil
+}
+
+func (s *AuthService) createVerificationToken(
+	ctx context.Context,
+	userID string,
+	reason domain.VerificationTokenReason,
+) (string, error) {
+	token := &domain.VerificationToken{
+		ID:        "",
+		UserID:    userID,
+		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(s.config.VerificationToken.ExpiresIn),
+		UsedAt:    nil,
+		Reason:    reason,
+	}
+
+	err := s.verificationTokenStore.Create(ctx, token)
+	if err != nil {
+		return "", err
+	}
+
+	return token.ID, nil
+}
+
+func (s *AuthService) constructRegistrationVerificationLink(
+	ctx context.Context,
+	userID string,
+) (string, error) {
+	token, err := s.createVerificationToken(ctx, userID, domain.VerificationTokenReason(0))
+	if err != nil {
+		return "", err
+	}
+
+	frontendAddr := s.config.Service.FrontendAddr
+	path := "/api/auth/register/verify"
+	link := fmt.Sprintf(
+		"%s%s/%s",
+		frontendAddr,
+		path,
+		token,
+	)
+
+	return link, nil
 }
