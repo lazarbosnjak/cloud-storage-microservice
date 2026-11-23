@@ -103,6 +103,146 @@ func (x *PingReply) GetMessage() string {
 	return ""
 }
 
+type AuthSignInResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken      string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	ExpiresInSeconds int32                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AuthSignInResponse) Reset() {
+	*x = AuthSignInResponse{}
+	mi := &file_api_gateway_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthSignInResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthSignInResponse) ProtoMessage() {}
+
+func (x *AuthSignInResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthSignInResponse.ProtoReflect.Descriptor instead.
+func (*AuthSignInResponse) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AuthSignInResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *AuthSignInResponse) GetExpiresInSeconds() int32 {
+	if x != nil {
+		return x.ExpiresInSeconds
+	}
+	return 0
+}
+
+type AuthRefreshRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthRefreshRequest) Reset() {
+	*x = AuthRefreshRequest{}
+	mi := &file_api_gateway_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthRefreshRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthRefreshRequest) ProtoMessage() {}
+
+func (x *AuthRefreshRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthRefreshRequest.ProtoReflect.Descriptor instead.
+func (*AuthRefreshRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{3}
+}
+
+type AuthRefreshResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken      string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	ExpiresInSeconds int64                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AuthRefreshResponse) Reset() {
+	*x = AuthRefreshResponse{}
+	mi := &file_api_gateway_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthRefreshResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthRefreshResponse) ProtoMessage() {}
+
+func (x *AuthRefreshResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthRefreshResponse.ProtoReflect.Descriptor instead.
+func (*AuthRefreshResponse) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AuthRefreshResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *AuthRefreshResponse) GetExpiresInSeconds() int64 {
+	if x != nil {
+		return x.ExpiresInSeconds
+	}
+	return 0
+}
+
 var File_api_gateway_proto protoreflect.FileDescriptor
 
 const file_api_gateway_proto_rawDesc = "" +
@@ -110,12 +250,22 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x11api-gateway.proto\x12\vapi_gateway\x1a\x1cgoogle/api/annotations.proto\x1a\x0fauth/auth.proto\"\r\n" +
 	"\vPingRequest\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\xfc\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"e\n" +
+	"\x12AuthSignInResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
+	"\x12expires_in_seconds\x18\x02 \x01(\x05R\x10expiresInSeconds\"\x14\n" +
+	"\x12AuthRefreshRequest\"f\n" +
+	"\x13AuthRefreshResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
+	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds2\xc9\x03\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
 	"\bPingUser\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/user\x12\\\n" +
-	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/registerB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
+	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/register\x12^\n" +
+	"\n" +
+	"AuthSignIn\x12\x13.auth.SignInRequest\x1a\x1f.api_gateway.AuthSignInResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/auth/login\x12k\n" +
+	"\vAuthRefresh\x12\x1f.api_gateway.AuthRefreshRequest\x1a .api_gateway.AuthRefreshResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/refreshB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
 
 var (
 	file_api_gateway_proto_rawDescOnce sync.Once
@@ -129,22 +279,30 @@ func file_api_gateway_proto_rawDescGZIP() []byte {
 	return file_api_gateway_proto_rawDescData
 }
 
-var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_gateway_proto_goTypes = []any{
 	(*PingRequest)(nil),           // 0: api_gateway.PingRequest
 	(*PingReply)(nil),             // 1: api_gateway.PingReply
-	(*auth.RegisterRequest)(nil),  // 2: auth.RegisterRequest
-	(*auth.RegisterResponse)(nil), // 3: auth.RegisterResponse
+	(*AuthSignInResponse)(nil),    // 2: api_gateway.AuthSignInResponse
+	(*AuthRefreshRequest)(nil),    // 3: api_gateway.AuthRefreshRequest
+	(*AuthRefreshResponse)(nil),   // 4: api_gateway.AuthRefreshResponse
+	(*auth.RegisterRequest)(nil),  // 5: auth.RegisterRequest
+	(*auth.SignInRequest)(nil),    // 6: auth.SignInRequest
+	(*auth.RegisterResponse)(nil), // 7: auth.RegisterResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
 	0, // 0: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
 	0, // 1: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
-	2, // 2: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
-	1, // 3: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1, // 4: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	3, // 5: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	5, // 2: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
+	6, // 3: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
+	3, // 4: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
+	1, // 5: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1, // 6: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	7, // 7: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	2, // 8: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
+	4, // 9: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -161,7 +319,7 @@ func file_api_gateway_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_gateway_proto_rawDesc), len(file_api_gateway_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
