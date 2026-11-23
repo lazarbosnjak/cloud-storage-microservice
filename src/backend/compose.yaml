@@ -8,6 +8,8 @@ services:
       context: .
       dockerfile: ./api-gateway/Dockerfile
     env_file: ./api-gateway/.env
+    secrets:
+      - jwt_public_key
     ports:
       - "${API_GATEWAY_REST_PORT}:${API_GATEWAY_REST_PORT}"
 
@@ -122,6 +124,8 @@ services:
       - auth_postgres_data:/var/lib/postgresql
 
 secrets:
+  jwt_public_key:
+    file: ./secrets/jwt_public.pem
   jwt_private_key:
     file: ./secrets/jwt_private.pem
 

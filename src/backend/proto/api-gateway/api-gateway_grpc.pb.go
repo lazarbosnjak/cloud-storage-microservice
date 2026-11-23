@@ -23,6 +23,7 @@ const (
 	ApiGateway_Ping_FullMethodName         = "/api_gateway.ApiGateway/Ping"
 	ApiGateway_PingUser_FullMethodName     = "/api_gateway.ApiGateway/PingUser"
 	ApiGateway_AuthRegister_FullMethodName = "/api_gateway.ApiGateway/AuthRegister"
+	ApiGateway_AuthSignIn_FullMethodName   = "/api_gateway.ApiGateway/AuthSignIn"
 )
 
 // ApiGatewayClient is the client API for ApiGateway service.
@@ -32,6 +33,7 @@ type ApiGatewayClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	PingUser(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	AuthRegister(ctx context.Context, in *auth.RegisterRequest, opts ...grpc.CallOption) (*auth.RegisterResponse, error)
+	AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*AuthSignInResponse, error)
 }
 
 type apiGatewayClient struct {
@@ -72,6 +74,16 @@ func (c *apiGatewayClient) AuthRegister(ctx context.Context, in *auth.RegisterRe
 	return out, nil
 }
 
+func (c *apiGatewayClient) AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*AuthSignInResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthSignInResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthSignIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiGatewayServer is the server API for ApiGateway service.
 // All implementations must embed UnimplementedApiGatewayServer
 // for forward compatibility.
@@ -79,6 +91,7 @@ type ApiGatewayServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
 	PingUser(context.Context, *PingRequest) (*PingReply, error)
 	AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error)
+	AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -97,6 +110,9 @@ func (UnimplementedApiGatewayServer) PingUser(context.Context, *PingRequest) (*P
 }
 func (UnimplementedApiGatewayServer) AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthRegister not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthSignIn not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
 func (UnimplementedApiGatewayServer) testEmbeddedByValue()                    {}
@@ -173,6 +189,24 @@ func _ApiGateway_AuthRegister_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_AuthSignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(auth.SignInRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthSignIn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthSignIn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthSignIn(ctx, req.(*auth.SignInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiGateway_ServiceDesc is the grpc.ServiceDesc for ApiGateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,6 +225,10 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthRegister",
 			Handler:    _ApiGateway_AuthRegister_Handler,
+		},
+		{
+			MethodName: "AuthSignIn",
+			Handler:    _ApiGateway_AuthSignIn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
