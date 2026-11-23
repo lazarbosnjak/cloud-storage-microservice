@@ -35,6 +35,7 @@ type CredentialStore interface {
 	UpdateFailedAttempts(ctx context.Context, userID string, failedAttempts uint8, lockedUntil *time.Time) error
 	ResetFailedAttempts(ctx context.Context, userID string) error
 	ChangePassword(ctx context.Context, userID string, passwordHash string) error
+	UpdateIsEnabled(ctx context.Context, userID string, enabled bool) error
 }
 
 type RegisterUserDTO struct {

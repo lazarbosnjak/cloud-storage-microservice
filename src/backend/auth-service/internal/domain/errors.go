@@ -14,4 +14,8 @@ var (
 	ErrDefault            = errors.New("there was an error")
 	ErrConcurrentRefresh  = errors.New("refresh token already consumed")
 	ErrPasswordMismatch   = errors.New("password and repeated password do not match")
+
+	ErrInvalidVerificationToken  = errors.New("invalid verification token")
+	ErrVerificationTokenExpired  = errors.New("verification token expired")
+	ErrVerificationTokenNotFound = errors.New("verification token not found")
 )

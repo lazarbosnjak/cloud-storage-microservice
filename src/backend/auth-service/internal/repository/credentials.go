@@ -133,3 +133,21 @@ func (r *CredentialRepository) ChangePassword(ctx context.Context, userID string
 
 	return tx.Commit(ctx)
 }
+
+func (r *CredentialRepository) UpdateIsEnabled(
+	ctx context.Context,
+	userID string,
+	enabled bool,
+) error {
+	const query = `
+		UPDATE credentials
+		SET is_enabled = $2
+		WHERE id = $1
+	`
+
+	if _, err := r.pool.Exec(ctx, query, userID, enabled); err != nil {
+		slog.Error("update is_enabled", "error", err)
+		return fmt.Errorf("error updating is_enabled: %w", err)
+	}
+	return nil
+}

@@ -21,6 +21,7 @@ type AuthService interface {
 	ChangePassword(ctx context.Context, email string, currentPassword string, newPassword string) error
 	Refresh(ctx context.Context, refreshToken string) (service.RefreshResult, error)
 	SignOut(ctx context.Context, refreshToken string) error
+	VerifyRegistration(ctx context.Context, tokenID string) error
 }
 
 type AuthHandler struct {
@@ -138,4 +139,16 @@ func (h *AuthHandler) SignOut(ctx context.Context, req *pb.SignOutRequest) (*pb.
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 	return &pb.SignOutResponse{}, nil
+}
+
+func (h *AuthHandler) VerifyRegistration(
+	ctx context.Context,
+	req *pb.VerifyRegistrationRequest,
+) (*pb.VerifyRegistrationResponse, error) {
+	err := h.service.VerifyRegistration(ctx, req.TokenId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.VerifyRegistrationResponse{}, nil
 }
