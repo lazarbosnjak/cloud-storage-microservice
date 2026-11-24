@@ -5,6 +5,7 @@ option go_package = "proto/file";
 
 service File {
   rpc Ping (PingRequest) returns (PingReply) {}
+  rpc CreateFile (CreateFileRequest) returns (CreateFileReply) {}
   rpc CreateFolder (CreateFolderRequest) returns (CreateFolderReply) {}
   rpc RenameFile (RenameFileRequest) returns (RenameFileReply) {}
   rpc RenameFolder (RenameFolderRequest) returns (RenameFolderReply) {}
@@ -18,6 +19,29 @@ message PingRequest {}
 message PingReply {
   string message = 1;
 }
+
+
+message CreateFileRequest {
+  string name = 1;
+  uint64 size = 2;
+  string content_type = 3;
+  string storage_key = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+}
+
+message CreateFileReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string storage_key = 5;
+  string parent_id = 6;
+  string owner_id = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
 
 message CreateFolderRequest {
   string name = 1;

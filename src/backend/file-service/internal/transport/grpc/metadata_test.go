@@ -112,6 +112,7 @@ func TestGRPCRenameFile(t *testing.T) {
 	server = NewServer(
 		nil,
 		nil,
+		nil,
 		file.NewRenameHandler(fileRepo),
 		folder.NewRenameHandler(folderRepo),
 		folder.NewListContentsHandler(folderRepo, fileRepo),
@@ -193,6 +194,7 @@ func TestGRPCListFolderContents(t *testing.T) {
 	server := NewServer(
 		nil,
 		nil,
+		nil,
 		file.NewRenameHandler(fileRepo),
 		folder.NewRenameHandler(folderRepo),
 		folder.NewListContentsHandler(folderRepo, fileRepo),
@@ -236,6 +238,7 @@ func TestGRPCGetFile(t *testing.T) {
 	}
 
 	server := NewServer(
+		nil,
 		nil,
 		nil,
 		file.NewRenameHandler(fileRepo),

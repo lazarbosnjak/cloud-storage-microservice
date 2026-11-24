@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v7.36.2
-// source: proto/file/file.proto
+// source: file.proto
 
 package file
 
@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	File_Ping_FullMethodName               = "/File/Ping"
+	File_CreateFile_FullMethodName         = "/File/CreateFile"
 	File_CreateFolder_FullMethodName       = "/File/CreateFolder"
 	File_RenameFile_FullMethodName         = "/File/RenameFile"
 	File_RenameFolder_FullMethodName       = "/File/RenameFolder"
@@ -33,6 +34,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FileClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
+	CreateFile(ctx context.Context, in *CreateFileRequest, opts ...grpc.CallOption) (*CreateFileReply, error)
 	CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*CreateFolderReply, error)
 	RenameFile(ctx context.Context, in *RenameFileRequest, opts ...grpc.CallOption) (*RenameFileReply, error)
 	RenameFolder(ctx context.Context, in *RenameFolderRequest, opts ...grpc.CallOption) (*RenameFolderReply, error)
@@ -53,6 +55,16 @@ func (c *fileClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.Cal
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PingReply)
 	err := c.cc.Invoke(ctx, File_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fileClient) CreateFile(ctx context.Context, in *CreateFileRequest, opts ...grpc.CallOption) (*CreateFileReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateFileReply)
+	err := c.cc.Invoke(ctx, File_CreateFile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,6 +136,7 @@ func (c *fileClient) GetFolder(ctx context.Context, in *GetFolderRequest, opts .
 // for forward compatibility.
 type FileServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
+	CreateFile(context.Context, *CreateFileRequest) (*CreateFileReply, error)
 	CreateFolder(context.Context, *CreateFolderRequest) (*CreateFolderReply, error)
 	RenameFile(context.Context, *RenameFileRequest) (*RenameFileReply, error)
 	RenameFolder(context.Context, *RenameFolderRequest) (*RenameFolderReply, error)
@@ -142,6 +155,9 @@ type UnimplementedFileServer struct{}
 
 func (UnimplementedFileServer) Ping(context.Context, *PingRequest) (*PingReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedFileServer) CreateFile(context.Context, *CreateFileRequest) (*CreateFileReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateFile not implemented")
 }
 func (UnimplementedFileServer) CreateFolder(context.Context, *CreateFolderRequest) (*CreateFolderReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFolder not implemented")
@@ -196,6 +212,24 @@ func _File_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FileServer).Ping(ctx, req.(*PingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _File_CreateFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileServer).CreateFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: File_CreateFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileServer).CreateFile(ctx, req.(*CreateFileRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -320,6 +354,10 @@ var File_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _File_Ping_Handler,
 		},
 		{
+			MethodName: "CreateFile",
+			Handler:    _File_CreateFile_Handler,
+		},
+		{
 			MethodName: "CreateFolder",
 			Handler:    _File_CreateFolder_Handler,
 		},
@@ -345,5 +383,5 @@ var File_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/file/file.proto",
+	Metadata: "file.proto",
 }
