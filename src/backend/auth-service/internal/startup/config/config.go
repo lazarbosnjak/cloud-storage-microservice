@@ -1,6 +1,7 @@
 package config
 
 import (
+	"auth-service/internal/domain"
 	"fmt"
 	"log/slog"
 	"net/url"
@@ -60,7 +61,7 @@ type Config struct {
 	CredentialPolicy  CredentialPolicy
 	Service           Service
 	SMTP              SMTP
-	Token             Token
+	Token             domain.Token
 	Lockout           Lockout
 	VerificationToken VerificationToken
 }

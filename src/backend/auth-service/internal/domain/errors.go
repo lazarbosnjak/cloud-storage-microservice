@@ -18,4 +18,6 @@ var (
 	ErrInvalidVerificationToken  = errors.New("invalid verification token")
 	ErrVerificationTokenExpired  = errors.New("verification token expired")
 	ErrVerificationTokenNotFound = errors.New("verification token not found")
+	ErrFirstName                 = errors.New("first name is invalid")
+	ErrLastName                  = errors.New("last name is invalid")
 )

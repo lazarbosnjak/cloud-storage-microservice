@@ -38,7 +38,7 @@ func (s *AuthService) SignIn(ctx context.Context, email string, password string)
 		return SignInResult{}, domain.ErrAccountLocked
 	}
 
-	// dummyHash is just holding random hash in case there are no users registered. Why? Because it "wastes time" preventing time driven attacks
+	// dummyHash is just holding random hash in case there are no users registered. Why? Because we want to make "unknown email" and "wrong password" last the same
 	hash := s.dummyHash
 	if cred != nil {
 		hash = cred.PasswordHash

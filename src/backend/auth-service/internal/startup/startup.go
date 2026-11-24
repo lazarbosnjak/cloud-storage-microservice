@@ -1,6 +1,13 @@
 package startup
 
 import (
+	"auth-service/internal/handler"
+	"auth-service/internal/infrastructure/db"
+	"auth-service/internal/infrastructure/mailhog"
+	"auth-service/internal/infrastructure/repository"
+	"auth-service/internal/service"
+	"auth-service/internal/startup/config"
+	"auth-service/internal/token"
 	"context"
 	"fmt"
 	"log/slog"
@@ -9,14 +16,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"auth-service/internal/db"
-	"auth-service/internal/handler"
-	"auth-service/internal/infrastructure/mailhog"
-	"auth-service/internal/repository"
-	"auth-service/internal/service"
-	"auth-service/internal/startup/config"
-	"auth-service/internal/token"
 
 	pb "proto/auth"
 
@@ -97,7 +96,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	authHandler := handler.NewAuthHandler(svc)
+	authHandler := handler.NewAuthHandler(*svc)
 
 	// Adding a default admin account. Used mainly in testing purposes
 	if cfg.Service.AdminEmail != "" {

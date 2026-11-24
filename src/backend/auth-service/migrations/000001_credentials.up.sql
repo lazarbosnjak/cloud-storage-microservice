@@ -6,7 +6,8 @@ CREATE TABLE credentials (
     password_changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     failed_attempts INTEGER NOT NULL DEFAULT 0 CHECK (failed_attempts >= 0),
     locked_until TIMESTAMPTZ NULL,
-    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    is_locked BOOLEAN NOT NULL DEFAULT FALSE,
+    locked_reason TEXT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     is_enabled BOOLEAN NOT NULL DEFAULT FALSE
 );
