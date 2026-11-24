@@ -20,4 +20,7 @@ var (
 	ErrVerificationTokenNotFound = errors.New("verification token not found")
 	ErrFirstName                 = errors.New("first name is invalid")
 	ErrLastName                  = errors.New("last name is invalid")
+	ErrOtpInvalid                = errors.New("invalid verification code")
+	ErrOtpExpired                = errors.New("verification code expired")
+	ErrOtpTooMany                = errors.New("too many incorrect verification codes")
 )
