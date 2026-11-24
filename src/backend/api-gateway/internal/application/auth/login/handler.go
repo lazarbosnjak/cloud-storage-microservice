@@ -29,6 +29,8 @@ type Query struct {
 type Response struct {
 	AccessToken      string
 	ExpiresInSeconds int32
+	OtpRequired      bool
+	OtpChallenge     string
 }
 
 func (h *Handler) Handle(ctx context.Context, query Query) (*Response, error) {
@@ -40,6 +42,13 @@ func (h *Handler) Handle(ctx context.Context, query Query) (*Response, error) {
 	res, err := h.authClient.Login(ctx, dto)
 	if err != nil {
 		return nil, err
+	}
+
+	if res.OtpRequired {
+		return &Response{
+			OtpRequired:  true,
+			OtpChallenge: res.OtpChallenge,
+		}, nil
 	}
 
 	cookie := &http.Cookie{

@@ -13,7 +13,6 @@ service Auth{
     rpc SignOut (SignOutRequest) returns (SignOutResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
     rpc VerifyRegistration (VerifyRegistrationRequest) returns (VerifyRegistrationResponse);
-    rpc VerifyOtp (VerifyOtpRequest) returns (VerifyOtpResponse);
 }
 
 message PingRequest {}
@@ -89,15 +88,3 @@ message VerifyRegistrationRequest {
 }
 
 message VerifyRegistrationResponse {}
-
-message VerifyOtpRequest {
-    string otp_challenge = 1;
-    string code = 2;
-}
-
-message VerifyOtpResponse {
-    string access_token = 1;
-    int64 expires_in_seconds = 2;
-    bool must_change_password = 3;
-    string refresh_token = 4;
-}

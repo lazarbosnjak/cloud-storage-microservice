@@ -21,6 +21,8 @@ func (s *Server) AuthSignIn(ctx context.Context, in *authPb.SignInRequest) (*pb.
 
 	return &pb.AuthSignInResponse{
 		AccessToken:      handleRes.AccessToken,
-		ExpiresInSeconds: int32(handleRes.ExpiresInSeconds),
+		ExpiresInSeconds: handleRes.ExpiresInSeconds,
+		OtpRequired:      handleRes.OtpRequired,
+		OtpChallenge:     handleRes.OtpChallenge,
 	}, nil
 }
