@@ -33,8 +33,13 @@ type RefreshResponseDTO struct {
 	RefreshToken     string
 }
 
+type VerifyRegistrationRequestDTO struct {
+	VerificationToken string
+}
+
 type Client interface {
 	Register(context.Context, RegisterUserDTO) error
 	Login(context.Context, LoginDTO) (*LoginResponseDTO, error)
 	Refresh(context.Context, RefreshRequestDTO) (*RefreshResponseDTO, error)
+	VerifyRegistration(context.Context, VerifyRegistrationRequestDTO) error
 }
