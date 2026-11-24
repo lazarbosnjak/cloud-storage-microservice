@@ -2,7 +2,10 @@ module notification-service
 
 go 1.26.10
 
-require google.golang.org/grpc v1.85.0
+require (
+	golang.org/x/sync v0.24.0
+	google.golang.org/grpc v1.85.0
+)
 
 require (
 	golang.org/x/net v0.61.0 // indirect
