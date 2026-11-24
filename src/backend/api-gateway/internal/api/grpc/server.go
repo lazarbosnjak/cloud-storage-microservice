@@ -8,6 +8,7 @@ import (
 	authregister "api-gateway/internal/application/auth/register"
 	authverifyregistration "api-gateway/internal/application/auth/verify_registration"
 
+	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	userping "api-gateway/internal/application/user/ping"
 )
 
@@ -22,6 +23,7 @@ type Handlers struct {
 	AuthLoginHandler              *authlogin.Handler
 	AuthRefreshHandler            *authrefresh.Handler
 	AuthVerifyRegistrationHandler *authverifyregistration.Handler
+	AuthVerifyOtpHandler          *verifyotp.Handler
 }
 
 func NewServer(handlers *Handlers) *Server {
