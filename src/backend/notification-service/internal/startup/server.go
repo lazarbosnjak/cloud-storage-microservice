@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	notificationgrpc "notification-service/internal/api/grpc"
+	"notification-service/internal/infrastructure/db/cassandra"
 	"notification-service/internal/startup/config"
 
 	"golang.org/x/sync/errgroup"
@@ -45,7 +46,10 @@ func (s *Server) run() error {
 
 	grpcServer := grpc.NewServer()
 
-	notifGRPCServer := s.newGRPCServer()
+	notifGRPCServer, err := s.newGRPCServer()
+	if err != nil {
+		return err
+	}
 
 	pb.RegisterNotificationServer(grpcServer, notifGRPCServer)
 	reflection.Register(grpcServer)
@@ -95,8 +99,13 @@ func (s *Server) shutdown(grpcServer *grpc.Server) {
 	}
 }
 
-func (s *Server) newGRPCServer() pb.NotificationServer {
-	notifGRPCServer := notificationgrpc.NewServer()
+func (s *Server) newGRPCServer() (pb.NotificationServer, error) {
+	notifRepo, err := cassandra.NewNotificationsRepository(s.cfg)
+	if err != nil {
+		return nil, err
+	}
 
-	return notifGRPCServer
+	return notificationgrpc.NewServer(
+		notifRepo,
+	), nil
 }

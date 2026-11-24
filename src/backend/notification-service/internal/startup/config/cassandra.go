@@ -1,11 +1,11 @@
 package config
 
 type cassandra struct {
-	Port string
+	Addr string
 }
 
 func newCassandraConfig() *cassandra {
 	return &cassandra{
-		Port: getString("CASSANDRA_PORT"),
+		Addr: getString("CASSANDRA_ADDR"),
 	}
 }
