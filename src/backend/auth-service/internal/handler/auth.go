@@ -149,7 +149,7 @@ func (h *AuthHandler) VerifyRegistration(
 
 	switch {
 	case errors.Is(err, domain.ErrVerificationTokenNotFound):
-		return nil, status.Error(codes.NotFound, err.Error())
+		return nil, status.Error(codes.NotFound, domain.ErrVerificationTokenNotFound.Error())
 	case err != nil:
 		return nil, err
 	}
