@@ -64,7 +64,7 @@ func (r *OtpCodeRepository) GetByID(ctx context.Context, id string) (*domain.Otp
 
 func (r *OtpCodeRepository) Consume(ctx context.Context, id string) error {
 	const query = `
-		UPDATE otp_codes SET used_at = NOW 
+		UPDATE otp_codes SET used_at = NOW() 
 		WHERE id = $1 AND used_at IS NULL
 	`
 
