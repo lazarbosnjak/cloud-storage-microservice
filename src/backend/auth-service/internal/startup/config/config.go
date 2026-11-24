@@ -39,6 +39,10 @@ type CredentialPolicy struct {
 	MaxPasswordAge    time.Duration
 }
 
+type VerificationToken struct {
+	ExpiresIn time.Duration
+}
+
 type Service struct {
 	GRPCPort                string
 	GracefulShutdownTimeout uint32
@@ -47,16 +51,18 @@ type Service struct {
 	AdminPassword string
 
 	UserServiceGRPCAddr string
+	FrontendAddr        string
 }
 
 type Config struct {
-	Postgres         Postgres
-	Argon2id         Argon2id
-	CredentialPolicy CredentialPolicy
-	Service          Service
-	SMTP             SMTP
-	Token            Token
-	Lockout          Lockout
+	Postgres          Postgres
+	Argon2id          Argon2id
+	CredentialPolicy  CredentialPolicy
+	Service           Service
+	SMTP              SMTP
+	Token             Token
+	Lockout           Lockout
+	VerificationToken VerificationToken
 }
 
 func Load() (Config, error) {
@@ -96,6 +102,7 @@ func Load() (Config, error) {
 			AdminEmail:              get("ADMIN_EMAIL"),
 			AdminPassword:           get("ADMIN_PASSWORD"),
 			UserServiceGRPCAddr:     get("USER_SERVICE_GRPC_ADDR"),
+			FrontendAddr:            get("FRONTEND_ADDR"),
 		},
 		SMTP: SMTP{
 			Username: get("SMPT_USERNAME"),
@@ -105,6 +112,9 @@ func Load() (Config, error) {
 		},
 		Token:   loadToken(l),
 		Lockout: loadLockout(l),
+		VerificationToken: VerificationToken{
+			ExpiresIn: l.duration("VERIFICATION_TOKEN_EXPIRATION", time.Minute*15),
+		},
 	}
 
 	if err := l.err(); err != nil {

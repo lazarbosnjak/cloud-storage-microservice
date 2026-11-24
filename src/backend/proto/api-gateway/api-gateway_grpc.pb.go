@@ -20,18 +20,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApiGateway_Ping_FullMethodName               = "/api_gateway.ApiGateway/Ping"
-	ApiGateway_PingUser_FullMethodName           = "/api_gateway.ApiGateway/PingUser"
-	ApiGateway_AuthRegister_FullMethodName       = "/api_gateway.ApiGateway/AuthRegister"
-	ApiGateway_AuthSignIn_FullMethodName         = "/api_gateway.ApiGateway/AuthSignIn"
-	ApiGateway_AuthRefresh_FullMethodName        = "/api_gateway.ApiGateway/AuthRefresh"
-	ApiGateway_GetFile_FullMethodName            = "/api_gateway.ApiGateway/GetFile"
-	ApiGateway_GetFolder_FullMethodName          = "/api_gateway.ApiGateway/GetFolder"
-	ApiGateway_CreateFile_FullMethodName         = "/api_gateway.ApiGateway/CreateFile"
-	ApiGateway_RenameFile_FullMethodName         = "/api_gateway.ApiGateway/RenameFile"
-	ApiGateway_CreateFolder_FullMethodName       = "/api_gateway.ApiGateway/CreateFolder"
-	ApiGateway_RenameFolder_FullMethodName       = "/api_gateway.ApiGateway/RenameFolder"
-	ApiGateway_ListFolderContents_FullMethodName = "/api_gateway.ApiGateway/ListFolderContents"
+	ApiGateway_Ping_FullMethodName                   = "/api_gateway.ApiGateway/Ping"
+	ApiGateway_PingUser_FullMethodName               = "/api_gateway.ApiGateway/PingUser"
+	ApiGateway_AuthRegister_FullMethodName           = "/api_gateway.ApiGateway/AuthRegister"
+	ApiGateway_AuthVerifyRegistration_FullMethodName = "/api_gateway.ApiGateway/AuthVerifyRegistration"
+	ApiGateway_AuthSignIn_FullMethodName             = "/api_gateway.ApiGateway/AuthSignIn"
+	ApiGateway_AuthRefresh_FullMethodName            = "/api_gateway.ApiGateway/AuthRefresh"
+	ApiGateway_GetFile_FullMethodName                = "/api_gateway.ApiGateway/GetFile"
+	ApiGateway_GetFolder_FullMethodName              = "/api_gateway.ApiGateway/GetFolder"
+	ApiGateway_CreateFile_FullMethodName             = "/api_gateway.ApiGateway/CreateFile"
+	ApiGateway_RenameFile_FullMethodName             = "/api_gateway.ApiGateway/RenameFile"
+	ApiGateway_CreateFolder_FullMethodName           = "/api_gateway.ApiGateway/CreateFolder"
+	ApiGateway_RenameFolder_FullMethodName           = "/api_gateway.ApiGateway/RenameFolder"
+	ApiGateway_ListFolderContents_FullMethodName     = "/api_gateway.ApiGateway/ListFolderContents"
 )
 
 // ApiGatewayClient is the client API for ApiGateway service.
@@ -41,6 +42,7 @@ type ApiGatewayClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	PingUser(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	AuthRegister(ctx context.Context, in *auth.RegisterRequest, opts ...grpc.CallOption) (*auth.RegisterResponse, error)
+	AuthVerifyRegistration(ctx context.Context, in *AuthVerifyRegistrationRequest, opts ...grpc.CallOption) (*AuthVerifyRegistrationResponse, error)
 	AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*AuthSignInResponse, error)
 	AuthRefresh(ctx context.Context, in *AuthRefreshRequest, opts ...grpc.CallOption) (*AuthRefreshResponse, error)
 	GetFile(ctx context.Context, in *GatewayGetFileRequest, opts ...grpc.CallOption) (*GatewayFileMetadataReply, error)
@@ -84,6 +86,16 @@ func (c *apiGatewayClient) AuthRegister(ctx context.Context, in *auth.RegisterRe
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(auth.RegisterResponse)
 	err := c.cc.Invoke(ctx, ApiGateway_AuthRegister_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) AuthVerifyRegistration(ctx context.Context, in *AuthVerifyRegistrationRequest, opts ...grpc.CallOption) (*AuthVerifyRegistrationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthVerifyRegistrationResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthVerifyRegistration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +199,7 @@ type ApiGatewayServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
 	PingUser(context.Context, *PingRequest) (*PingReply, error)
 	AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error)
+	AuthVerifyRegistration(context.Context, *AuthVerifyRegistrationRequest) (*AuthVerifyRegistrationResponse, error)
 	AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error)
 	AuthRefresh(context.Context, *AuthRefreshRequest) (*AuthRefreshResponse, error)
 	GetFile(context.Context, *GatewayGetFileRequest) (*GatewayFileMetadataReply, error)
@@ -214,6 +227,9 @@ func (UnimplementedApiGatewayServer) PingUser(context.Context, *PingRequest) (*P
 }
 func (UnimplementedApiGatewayServer) AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthRegister not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthVerifyRegistration(context.Context, *AuthVerifyRegistrationRequest) (*AuthVerifyRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthVerifyRegistration not implemented")
 }
 func (UnimplementedApiGatewayServer) AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthSignIn not implemented")
@@ -313,6 +329,24 @@ func _ApiGateway_AuthRegister_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiGatewayServer).AuthRegister(ctx, req.(*auth.RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_AuthVerifyRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthVerifyRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthVerifyRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthVerifyRegistration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthVerifyRegistration(ctx, req.(*AuthVerifyRegistrationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -497,6 +531,10 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthRegister",
 			Handler:    _ApiGateway_AuthRegister_Handler,
+		},
+		{
+			MethodName: "AuthVerifyRegistration",
+			Handler:    _ApiGateway_AuthVerifyRegistration_Handler,
 		},
 		{
 			MethodName: "AuthSignIn",

@@ -1,0 +1,7 @@
+@if (loading()) {
+  <h2>Verifying your registration...</h2>
+} @else if (verified()) {
+  <h2>Your account has been verified.</h2>
+} @else {
+  <h2 class="error">{{ errorMessage() }}</h2>
+}

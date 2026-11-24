@@ -16,6 +16,7 @@ import (
 	"api-gateway/internal/application/auth/login"
 	"api-gateway/internal/application/auth/refresh"
 	"api-gateway/internal/application/auth/register"
+	verifyregistration "api-gateway/internal/application/auth/verify_registration"
 	"api-gateway/internal/application/user/ping"
 	"api-gateway/internal/infrastructure/clients/auth"
 	"api-gateway/internal/infrastructure/clients/user"
@@ -216,16 +217,19 @@ func (s *Server) newAPIServer(
 	authRegisterHandler := register.NewHandler(authClient)
 	authLoginHandler := login.NewHandler(authClient)
 	authRefreshHandler := refresh.NewHandler(authClient)
+	authVerifyRegistrationHandler := verifyregistration.NewHandler(authClient)
+
 	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
 	fileHandler := filehandler.NewHandler(fileClient)
 	folderHandler := folderhandler.NewHandler(fileClient)
 
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
-		UserPingHandler:     userPingHandler,
-		AuthRegisterHandler: authRegisterHandler,
-		AuthLoginHandler:    authLoginHandler,
-		AuthRefreshHandler:  authRefreshHandler,
-		FileHandler:         fileHandler,
-		FolderHandler:       folderHandler,
+		UserPingHandler:               userPingHandler,
+		AuthRegisterHandler:           authRegisterHandler,
+		AuthLoginHandler:              authLoginHandler,
+		AuthRefreshHandler:            authRefreshHandler,
+		AuthVerifyRegistrationHandler: authVerifyRegistrationHandler,
+		FileHandler:                   fileHandler,
+		FolderHandler:                 folderHandler,
 	})
 }

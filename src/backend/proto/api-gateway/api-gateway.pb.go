@@ -1003,6 +1003,86 @@ func (x *GatewayFolderContentsReply) GetFolders() []*GatewayFolderMetadataReply 
 	return nil
 }
 
+type AuthVerifyRegistrationRequest struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	VerificationToken string                 `protobuf:"bytes,1,opt,name=verification_token,json=verificationToken,proto3" json:"verification_token,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AuthVerifyRegistrationRequest) Reset() {
+	*x = AuthVerifyRegistrationRequest{}
+	mi := &file_api_gateway_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthVerifyRegistrationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthVerifyRegistrationRequest) ProtoMessage() {}
+
+func (x *AuthVerifyRegistrationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthVerifyRegistrationRequest.ProtoReflect.Descriptor instead.
+func (*AuthVerifyRegistrationRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *AuthVerifyRegistrationRequest) GetVerificationToken() string {
+	if x != nil {
+		return x.VerificationToken
+	}
+	return ""
+}
+
+type AuthVerifyRegistrationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthVerifyRegistrationResponse) Reset() {
+	*x = AuthVerifyRegistrationResponse{}
+	mi := &file_api_gateway_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthVerifyRegistrationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthVerifyRegistrationResponse) ProtoMessage() {}
+
+func (x *AuthVerifyRegistrationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthVerifyRegistrationResponse.ProtoReflect.Descriptor instead.
+func (*AuthVerifyRegistrationResponse) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{18}
+}
+
 var File_api_gateway_proto protoreflect.FileDescriptor
 
 const file_api_gateway_proto_rawDesc = "" +
@@ -1078,13 +1158,16 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\tfolder_id\x18\x01 \x01(\tR\bfolderId\"\x9c\x01\n" +
 	"\x1aGatewayFolderContentsReply\x12;\n" +
 	"\x05files\x18\x01 \x03(\v2%.api_gateway.GatewayFileMetadataReplyR\x05files\x12A\n" +
-	"\afolders\x18\x02 \x03(\v2'.api_gateway.GatewayFolderMetadataReplyR\afolders2\x9d\n" +
-	"\n" +
+	"\afolders\x18\x02 \x03(\v2'.api_gateway.GatewayFolderMetadataReplyR\afolders\"N\n" +
+	"\x1dAuthVerifyRegistrationRequest\x12-\n" +
+	"\x12verification_token\x18\x01 \x01(\tR\x11verificationToken\" \n" +
+	"\x1eAuthVerifyRegistrationResponse2\xb7\v\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
 	"\bPingUser\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/user\x12\\\n" +
-	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/register\x12^\n" +
+	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/register\x12\x97\x01\n" +
+	"\x16AuthVerifyRegistration\x12*.api_gateway.AuthVerifyRegistrationRequest\x1a+.api_gateway.AuthVerifyRegistrationResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/auth/register/verify\x12^\n" +
 	"\n" +
 	"AuthSignIn\x12\x13.auth.SignInRequest\x1a\x1f.api_gateway.AuthSignInResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/auth/login\x12k\n" +
 	"\vAuthRefresh\x12\x1f.api_gateway.AuthRefreshRequest\x1a .api_gateway.AuthRefreshResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/refresh\x12m\n" +
@@ -1111,7 +1194,7 @@ func file_api_gateway_proto_rawDescGZIP() []byte {
 	return file_api_gateway_proto_rawDescData
 }
 
-var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_api_gateway_proto_goTypes = []any{
 	(*PingRequest)(nil),                      // 0: api_gateway.PingRequest
 	(*PingReply)(nil),                        // 1: api_gateway.PingReply
@@ -1130,39 +1213,43 @@ var file_api_gateway_proto_goTypes = []any{
 	(*GatewayEmptyReply)(nil),                // 14: api_gateway.GatewayEmptyReply
 	(*GatewayListFolderContentsRequest)(nil), // 15: api_gateway.GatewayListFolderContentsRequest
 	(*GatewayFolderContentsReply)(nil),       // 16: api_gateway.GatewayFolderContentsReply
-	(*auth.RegisterRequest)(nil),             // 17: auth.RegisterRequest
-	(*auth.SignInRequest)(nil),               // 18: auth.SignInRequest
-	(*auth.RegisterResponse)(nil),            // 19: auth.RegisterResponse
+	(*AuthVerifyRegistrationRequest)(nil),    // 17: api_gateway.AuthVerifyRegistrationRequest
+	(*AuthVerifyRegistrationResponse)(nil),   // 18: api_gateway.AuthVerifyRegistrationResponse
+	(*auth.RegisterRequest)(nil),             // 19: auth.RegisterRequest
+	(*auth.SignInRequest)(nil),               // 20: auth.SignInRequest
+	(*auth.RegisterResponse)(nil),            // 21: auth.RegisterResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
 	7,  // 0: api_gateway.GatewayFolderContentsReply.files:type_name -> api_gateway.GatewayFileMetadataReply
 	8,  // 1: api_gateway.GatewayFolderContentsReply.folders:type_name -> api_gateway.GatewayFolderMetadataReply
 	0,  // 2: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
 	0,  // 3: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
-	17, // 4: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
-	18, // 5: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
-	3,  // 6: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
-	5,  // 7: api_gateway.ApiGateway.GetFile:input_type -> api_gateway.GatewayGetFileRequest
-	6,  // 8: api_gateway.ApiGateway.GetFolder:input_type -> api_gateway.GatewayGetFolderRequest
-	9,  // 9: api_gateway.ApiGateway.CreateFile:input_type -> api_gateway.GatewayCreateFileRequest
-	13, // 10: api_gateway.ApiGateway.RenameFile:input_type -> api_gateway.GatewayRenameRequest
-	11, // 11: api_gateway.ApiGateway.CreateFolder:input_type -> api_gateway.GatewayCreateFolderRequest
-	13, // 12: api_gateway.ApiGateway.RenameFolder:input_type -> api_gateway.GatewayRenameRequest
-	15, // 13: api_gateway.ApiGateway.ListFolderContents:input_type -> api_gateway.GatewayListFolderContentsRequest
-	1,  // 14: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1,  // 15: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	19, // 16: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	2,  // 17: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
-	4,  // 18: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
-	7,  // 19: api_gateway.ApiGateway.GetFile:output_type -> api_gateway.GatewayFileMetadataReply
-	8,  // 20: api_gateway.ApiGateway.GetFolder:output_type -> api_gateway.GatewayFolderMetadataReply
-	10, // 21: api_gateway.ApiGateway.CreateFile:output_type -> api_gateway.GatewayCreatedFileReply
-	14, // 22: api_gateway.ApiGateway.RenameFile:output_type -> api_gateway.GatewayEmptyReply
-	12, // 23: api_gateway.ApiGateway.CreateFolder:output_type -> api_gateway.GatewayCreatedFolderReply
-	14, // 24: api_gateway.ApiGateway.RenameFolder:output_type -> api_gateway.GatewayEmptyReply
-	16, // 25: api_gateway.ApiGateway.ListFolderContents:output_type -> api_gateway.GatewayFolderContentsReply
-	14, // [14:26] is the sub-list for method output_type
-	2,  // [2:14] is the sub-list for method input_type
+	19, // 4: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
+	17, // 5: api_gateway.ApiGateway.AuthVerifyRegistration:input_type -> api_gateway.AuthVerifyRegistrationRequest
+	20, // 6: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
+	3,  // 7: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
+	5,  // 8: api_gateway.ApiGateway.GetFile:input_type -> api_gateway.GatewayGetFileRequest
+	6,  // 9: api_gateway.ApiGateway.GetFolder:input_type -> api_gateway.GatewayGetFolderRequest
+	9,  // 10: api_gateway.ApiGateway.CreateFile:input_type -> api_gateway.GatewayCreateFileRequest
+	13, // 11: api_gateway.ApiGateway.RenameFile:input_type -> api_gateway.GatewayRenameRequest
+	11, // 12: api_gateway.ApiGateway.CreateFolder:input_type -> api_gateway.GatewayCreateFolderRequest
+	13, // 13: api_gateway.ApiGateway.RenameFolder:input_type -> api_gateway.GatewayRenameRequest
+	15, // 14: api_gateway.ApiGateway.ListFolderContents:input_type -> api_gateway.GatewayListFolderContentsRequest
+	1,  // 15: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1,  // 16: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	21, // 17: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	18, // 18: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
+	2,  // 19: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
+	4,  // 20: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
+	7,  // 21: api_gateway.ApiGateway.GetFile:output_type -> api_gateway.GatewayFileMetadataReply
+	8,  // 22: api_gateway.ApiGateway.GetFolder:output_type -> api_gateway.GatewayFolderMetadataReply
+	10, // 23: api_gateway.ApiGateway.CreateFile:output_type -> api_gateway.GatewayCreatedFileReply
+	14, // 24: api_gateway.ApiGateway.RenameFile:output_type -> api_gateway.GatewayEmptyReply
+	12, // 25: api_gateway.ApiGateway.CreateFolder:output_type -> api_gateway.GatewayCreatedFolderReply
+	14, // 26: api_gateway.ApiGateway.RenameFolder:output_type -> api_gateway.GatewayEmptyReply
+	16, // 27: api_gateway.ApiGateway.ListFolderContents:output_type -> api_gateway.GatewayFolderContentsReply
+	15, // [15:28] is the sub-list for method output_type
+	2,  // [2:15] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name
 	2,  // [2:2] is the sub-list for extension extendee
 	0,  // [0:2] is the sub-list for field type_name
@@ -1179,7 +1266,7 @@ func file_api_gateway_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_gateway_proto_rawDesc), len(file_api_gateway_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

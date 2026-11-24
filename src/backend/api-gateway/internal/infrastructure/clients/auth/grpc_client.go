@@ -85,3 +85,16 @@ func (c *GRPCClient) Refresh(ctx context.Context, dto auth.RefreshRequestDTO) (*
 		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
 	}, nil
 }
+
+func (c *GRPCClient) VerifyRegistration(ctx context.Context, dto auth.VerifyRegistrationRequestDTO) error {
+	req := &authPb.VerifyRegistrationRequest{
+		TokenId: dto.VerificationToken,
+	}
+
+	_, err := c.client.VerifyRegistration(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
