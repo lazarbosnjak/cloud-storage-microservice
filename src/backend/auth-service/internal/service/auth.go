@@ -1,6 +1,9 @@
 package service
 
 import (
+	"auth-service/internal/domain"
+	"auth-service/internal/startup/config"
+	"auth-service/internal/token"
 	"context"
 	"errors"
 	"fmt"
@@ -9,10 +12,6 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
-
-	"auth-service/internal/domain"
-	"auth-service/internal/startup/config"
-	"auth-service/internal/token"
 
 	"github.com/alexedwards/argon2id"
 	"google.golang.org/grpc/codes"
@@ -291,7 +290,7 @@ func (s *AuthService) constructRegistrationVerificationLink(
 	}
 
 	frontendAddr := s.config.Service.FrontendAddr
-	path := "/api/auth/register/verify"
+	path := "/register/verify"
 	link := fmt.Sprintf(
 		"%s%s/%s",
 		frontendAddr,
