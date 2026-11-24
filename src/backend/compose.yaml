@@ -85,7 +85,8 @@ services:
       dockerfile: ./notification-service/Dockerfile
     env_file: ./notification-service/.env
     depends_on:
-      - notification-service-cassandra
+      notification-service-cassandra:
+        condition: service_healthy
 
   notification-service-cassandra:
     image: cassandra:6.0
