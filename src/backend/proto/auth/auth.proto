@@ -11,6 +11,7 @@ service Auth{
     rpc Refresh (RefreshRequest) returns (RefreshResponse);
     rpc SignOut (SignOutRequest) returns (SignOutResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
+    rpc VerifyRegistration (VerifyRegistrationRequest) returns (VerifyRegistrationResponse);
 }
 
 message PingRequest {}
@@ -64,3 +65,9 @@ message ChangePasswordRequest {
 }
 
 message ChangePasswordResponse {}
+
+message VerifyRegistrationRequest {
+    string tokenId = 1;
+}
+
+message VerifyRegistrationResponse {}

@@ -1,10 +1,5 @@
-
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 
@@ -36,10 +31,7 @@ export class Registration {
     const password = this.form.controls.password.value;
     const repeatedPassword = this.form.controls.repeatedPassword.value;
 
-    return (
-      repeatedPassword.length > 0 &&
-      password !== repeatedPassword
-    );
+    return repeatedPassword.length > 0 && password !== repeatedPassword;
   }
 
   submit(): void {
@@ -53,11 +45,14 @@ export class Registration {
 
     this.loading.set(true);
 
-    this.auth.register(this.form.getRawValue())
+    this.auth
+      .register(this.form.getRawValue())
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
-          this.successMessage.set('Registration successful!');
+          this.successMessage.set(
+            'Registration successful! Check your e-mail for the verification link.',
+          );
           this.form.reset();
         },
         error: (error: HttpErrorResponse) => {

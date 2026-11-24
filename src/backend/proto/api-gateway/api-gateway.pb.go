@@ -243,6 +243,86 @@ func (x *AuthRefreshResponse) GetExpiresInSeconds() int64 {
 	return 0
 }
 
+type AuthVerifyRegistrationRequest struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	VerificationToken string                 `protobuf:"bytes,1,opt,name=verification_token,json=verificationToken,proto3" json:"verification_token,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AuthVerifyRegistrationRequest) Reset() {
+	*x = AuthVerifyRegistrationRequest{}
+	mi := &file_api_gateway_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthVerifyRegistrationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthVerifyRegistrationRequest) ProtoMessage() {}
+
+func (x *AuthVerifyRegistrationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthVerifyRegistrationRequest.ProtoReflect.Descriptor instead.
+func (*AuthVerifyRegistrationRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AuthVerifyRegistrationRequest) GetVerificationToken() string {
+	if x != nil {
+		return x.VerificationToken
+	}
+	return ""
+}
+
+type AuthVerifyRegistrationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthVerifyRegistrationResponse) Reset() {
+	*x = AuthVerifyRegistrationResponse{}
+	mi := &file_api_gateway_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthVerifyRegistrationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthVerifyRegistrationResponse) ProtoMessage() {}
+
+func (x *AuthVerifyRegistrationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthVerifyRegistrationResponse.ProtoReflect.Descriptor instead.
+func (*AuthVerifyRegistrationResponse) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{6}
+}
+
 var File_api_gateway_proto protoreflect.FileDescriptor
 
 const file_api_gateway_proto_rawDesc = "" +
@@ -257,12 +337,16 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x12AuthRefreshRequest\"f\n" +
 	"\x13AuthRefreshResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
-	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds2\xc9\x03\n" +
+	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds\"N\n" +
+	"\x1dAuthVerifyRegistrationRequest\x12-\n" +
+	"\x12verification_token\x18\x01 \x01(\tR\x11verificationToken\" \n" +
+	"\x1eAuthVerifyRegistrationResponse2\xe3\x04\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
 	"\bPingUser\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/user\x12\\\n" +
-	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/register\x12^\n" +
+	"\fAuthRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/auth/register\x12\x97\x01\n" +
+	"\x16AuthVerifyRegistration\x12*.api_gateway.AuthVerifyRegistrationRequest\x1a+.api_gateway.AuthVerifyRegistrationResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/auth/register/verify\x12^\n" +
 	"\n" +
 	"AuthSignIn\x12\x13.auth.SignInRequest\x1a\x1f.api_gateway.AuthSignInResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/auth/login\x12k\n" +
 	"\vAuthRefresh\x12\x1f.api_gateway.AuthRefreshRequest\x1a .api_gateway.AuthRefreshResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/refreshB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
@@ -279,30 +363,34 @@ func file_api_gateway_proto_rawDescGZIP() []byte {
 	return file_api_gateway_proto_rawDescData
 }
 
-var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_api_gateway_proto_goTypes = []any{
-	(*PingRequest)(nil),           // 0: api_gateway.PingRequest
-	(*PingReply)(nil),             // 1: api_gateway.PingReply
-	(*AuthSignInResponse)(nil),    // 2: api_gateway.AuthSignInResponse
-	(*AuthRefreshRequest)(nil),    // 3: api_gateway.AuthRefreshRequest
-	(*AuthRefreshResponse)(nil),   // 4: api_gateway.AuthRefreshResponse
-	(*auth.RegisterRequest)(nil),  // 5: auth.RegisterRequest
-	(*auth.SignInRequest)(nil),    // 6: auth.SignInRequest
-	(*auth.RegisterResponse)(nil), // 7: auth.RegisterResponse
+	(*PingRequest)(nil),                    // 0: api_gateway.PingRequest
+	(*PingReply)(nil),                      // 1: api_gateway.PingReply
+	(*AuthSignInResponse)(nil),             // 2: api_gateway.AuthSignInResponse
+	(*AuthRefreshRequest)(nil),             // 3: api_gateway.AuthRefreshRequest
+	(*AuthRefreshResponse)(nil),            // 4: api_gateway.AuthRefreshResponse
+	(*AuthVerifyRegistrationRequest)(nil),  // 5: api_gateway.AuthVerifyRegistrationRequest
+	(*AuthVerifyRegistrationResponse)(nil), // 6: api_gateway.AuthVerifyRegistrationResponse
+	(*auth.RegisterRequest)(nil),           // 7: auth.RegisterRequest
+	(*auth.SignInRequest)(nil),             // 8: auth.SignInRequest
+	(*auth.RegisterResponse)(nil),          // 9: auth.RegisterResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
 	0, // 0: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
 	0, // 1: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
-	5, // 2: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
-	6, // 3: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
-	3, // 4: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
-	1, // 5: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1, // 6: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	7, // 7: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	2, // 8: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
-	4, // 9: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
+	7, // 2: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
+	5, // 3: api_gateway.ApiGateway.AuthVerifyRegistration:input_type -> api_gateway.AuthVerifyRegistrationRequest
+	8, // 4: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
+	3, // 5: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
+	1, // 6: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1, // 7: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	9, // 8: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	6, // 9: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
+	2, // 10: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
+	4, // 11: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
+	6, // [6:12] is the sub-list for method output_type
+	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -319,7 +407,7 @@ func file_api_gateway_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_gateway_proto_rawDesc), len(file_api_gateway_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

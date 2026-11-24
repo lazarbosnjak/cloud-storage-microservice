@@ -613,6 +613,86 @@ func (*ChangePasswordResponse) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{11}
 }
 
+type VerifyRegistrationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TokenId       string                 `protobuf:"bytes,1,opt,name=tokenId,proto3" json:"tokenId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VerifyRegistrationRequest) Reset() {
+	*x = VerifyRegistrationRequest{}
+	mi := &file_auth_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifyRegistrationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifyRegistrationRequest) ProtoMessage() {}
+
+func (x *VerifyRegistrationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifyRegistrationRequest.ProtoReflect.Descriptor instead.
+func (*VerifyRegistrationRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *VerifyRegistrationRequest) GetTokenId() string {
+	if x != nil {
+		return x.TokenId
+	}
+	return ""
+}
+
+type VerifyRegistrationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VerifyRegistrationResponse) Reset() {
+	*x = VerifyRegistrationResponse{}
+	mi := &file_auth_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifyRegistrationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifyRegistrationResponse) ProtoMessage() {}
+
+func (x *VerifyRegistrationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifyRegistrationResponse.ProtoReflect.Descriptor instead.
+func (*VerifyRegistrationResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{13}
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -650,14 +730,18 @@ const file_auth_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12)\n" +
 	"\x10current_password\x18\x02 \x01(\tR\x0fcurrentPassword\x12!\n" +
 	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"\x18\n" +
-	"\x16ChangePasswordResponse2\xe1\x02\n" +
+	"\x16ChangePasswordResponse\"5\n" +
+	"\x19VerifyRegistrationRequest\x12\x18\n" +
+	"\atokenId\x18\x01 \x01(\tR\atokenId\"\x1c\n" +
+	"\x1aVerifyRegistrationResponse2\xba\x03\n" +
 	"\x04Auth\x12,\n" +
 	"\x04Ping\x12\x11.auth.PingRequest\x1a\x0f.auth.PingReply\"\x00\x129\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x123\n" +
 	"\x06SignIn\x12\x13.auth.SignInRequest\x1a\x14.auth.SignInResponse\x126\n" +
 	"\aRefresh\x12\x14.auth.RefreshRequest\x1a\x15.auth.RefreshResponse\x126\n" +
 	"\aSignOut\x12\x14.auth.SignOutRequest\x1a\x15.auth.SignOutResponse\x12K\n" +
-	"\x0eChangePassword\x12\x1b.auth.ChangePasswordRequest\x1a\x1c.auth.ChangePasswordResponseB\fZ\n" +
+	"\x0eChangePassword\x12\x1b.auth.ChangePasswordRequest\x1a\x1c.auth.ChangePasswordResponse\x12W\n" +
+	"\x12VerifyRegistration\x12\x1f.auth.VerifyRegistrationRequest\x1a .auth.VerifyRegistrationResponseB\fZ\n" +
 	"proto/authb\x06proto3"
 
 var (
@@ -672,20 +756,22 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_auth_proto_goTypes = []any{
-	(*PingRequest)(nil),            // 0: auth.PingRequest
-	(*PingReply)(nil),              // 1: auth.PingReply
-	(*RegisterRequest)(nil),        // 2: auth.RegisterRequest
-	(*RegisterResponse)(nil),       // 3: auth.RegisterResponse
-	(*SignInRequest)(nil),          // 4: auth.SignInRequest
-	(*SignInResponse)(nil),         // 5: auth.SignInResponse
-	(*RefreshRequest)(nil),         // 6: auth.RefreshRequest
-	(*RefreshResponse)(nil),        // 7: auth.RefreshResponse
-	(*SignOutRequest)(nil),         // 8: auth.SignOutRequest
-	(*SignOutResponse)(nil),        // 9: auth.SignOutResponse
-	(*ChangePasswordRequest)(nil),  // 10: auth.ChangePasswordRequest
-	(*ChangePasswordResponse)(nil), // 11: auth.ChangePasswordResponse
+	(*PingRequest)(nil),                // 0: auth.PingRequest
+	(*PingReply)(nil),                  // 1: auth.PingReply
+	(*RegisterRequest)(nil),            // 2: auth.RegisterRequest
+	(*RegisterResponse)(nil),           // 3: auth.RegisterResponse
+	(*SignInRequest)(nil),              // 4: auth.SignInRequest
+	(*SignInResponse)(nil),             // 5: auth.SignInResponse
+	(*RefreshRequest)(nil),             // 6: auth.RefreshRequest
+	(*RefreshResponse)(nil),            // 7: auth.RefreshResponse
+	(*SignOutRequest)(nil),             // 8: auth.SignOutRequest
+	(*SignOutResponse)(nil),            // 9: auth.SignOutResponse
+	(*ChangePasswordRequest)(nil),      // 10: auth.ChangePasswordRequest
+	(*ChangePasswordResponse)(nil),     // 11: auth.ChangePasswordResponse
+	(*VerifyRegistrationRequest)(nil),  // 12: auth.VerifyRegistrationRequest
+	(*VerifyRegistrationResponse)(nil), // 13: auth.VerifyRegistrationResponse
 }
 var file_auth_proto_depIdxs = []int32{
 	0,  // 0: auth.Auth.Ping:input_type -> auth.PingRequest
@@ -694,14 +780,16 @@ var file_auth_proto_depIdxs = []int32{
 	6,  // 3: auth.Auth.Refresh:input_type -> auth.RefreshRequest
 	8,  // 4: auth.Auth.SignOut:input_type -> auth.SignOutRequest
 	10, // 5: auth.Auth.ChangePassword:input_type -> auth.ChangePasswordRequest
-	1,  // 6: auth.Auth.Ping:output_type -> auth.PingReply
-	3,  // 7: auth.Auth.Register:output_type -> auth.RegisterResponse
-	5,  // 8: auth.Auth.SignIn:output_type -> auth.SignInResponse
-	7,  // 9: auth.Auth.Refresh:output_type -> auth.RefreshResponse
-	9,  // 10: auth.Auth.SignOut:output_type -> auth.SignOutResponse
-	11, // 11: auth.Auth.ChangePassword:output_type -> auth.ChangePasswordResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	12, // 6: auth.Auth.VerifyRegistration:input_type -> auth.VerifyRegistrationRequest
+	1,  // 7: auth.Auth.Ping:output_type -> auth.PingReply
+	3,  // 8: auth.Auth.Register:output_type -> auth.RegisterResponse
+	5,  // 9: auth.Auth.SignIn:output_type -> auth.SignInResponse
+	7,  // 10: auth.Auth.Refresh:output_type -> auth.RefreshResponse
+	9,  // 11: auth.Auth.SignOut:output_type -> auth.SignOutResponse
+	11, // 12: auth.Auth.ChangePassword:output_type -> auth.ChangePasswordResponse
+	13, // 13: auth.Auth.VerifyRegistration:output_type -> auth.VerifyRegistrationResponse
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -718,7 +806,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
