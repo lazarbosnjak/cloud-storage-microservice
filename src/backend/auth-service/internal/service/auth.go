@@ -272,19 +272,21 @@ func (s *AuthService) validatePassword(password string) error {
 		return domain.ErrPassword
 	}
 
-	var hasUpper, hasLower, hasSymbol bool
+	var hasUpper, hasLower, hasNumber, hasSymbol bool
 	for _, r := range password {
 		switch {
 		case unicode.IsUpper(r):
 			hasUpper = true
 		case unicode.IsLower(r):
 			hasLower = true
+		case unicode.IsNumber(r):
+			hasNumber = true
 		case unicode.IsPunct(r) || unicode.IsSymbol(r):
 			hasSymbol = true
 		}
 	}
 
-	if !hasUpper || !hasLower || !hasSymbol {
+	if !hasUpper || !hasLower || !hasNumber || !hasSymbol {
 		return domain.ErrPassword
 	}
 
