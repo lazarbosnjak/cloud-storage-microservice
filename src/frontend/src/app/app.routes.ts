@@ -7,8 +7,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/registration/registration').then((m) => m.Registration),
   },
   {
-    path: 'register/verify/:id',
-    component: VerifyRegistration,
+    path: 'register/verify',
+    children: [
+      { path: '', redirectTo: '/', pathMatch: 'full' },
+      { path: ':id', component: VerifyRegistration },
+    ],
   },
   {
     path: '',
