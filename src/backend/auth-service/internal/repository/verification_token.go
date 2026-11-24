@@ -69,7 +69,7 @@ func (r *VerificationTokenRepository) GetByID(
 			return nil, domain.ErrVerificationTokenNotFound
 		}
 		slog.Error("get verification token", "error", err)
-		return nil, fmt.Errorf("failed to get verification token by id: %w", err)
+		return nil, fmt.Errorf("%w: %w", domain.ErrVerificationTokenNotFound, err)
 	}
 
 	return &token, err
