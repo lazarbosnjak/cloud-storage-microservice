@@ -146,7 +146,11 @@ func (h *AuthHandler) VerifyRegistration(
 	req *pb.VerifyRegistrationRequest,
 ) (*pb.VerifyRegistrationResponse, error) {
 	err := h.service.VerifyRegistration(ctx, req.TokenId)
-	if err != nil {
+
+	switch {
+	case errors.Is(err, domain.ErrVerificationTokenNotFound):
+		return nil, status.Error(codes.NotFound, err.Error())
+	case err != nil:
 		return nil, err
 	}
 
