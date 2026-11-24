@@ -46,7 +46,7 @@ func (r *CredentialRepository) Create(ctx context.Context, email string, passwor
 func (r *CredentialRepository) GetByEmail(ctx context.Context, email string) (*domain.Credential, error) {
 	const query = `
 		SELECT id, email, password_hash, user_role, password_changed_at, failed_attempts,
-		locked_until, last_failed_at, is_locked, locked_reason, created_at, is_enabled
+		locked_until, last_failed_at, is_locked, COALESCE(locked_reason, ''), created_at, is_enabled
 		FROM credentials
 		WHERE email = $1`
 
@@ -155,7 +155,7 @@ func (r *CredentialRepository) UpdateIsEnabled(
 func (r *CredentialRepository) GetByID(ctx context.Context, userID string) (*domain.Credential, error) {
 	const query = `
 		SELECT id, email, password_hash, user_role, password_changed_at, failed_attempts,
-		locked_until, last_failed_at, is_locked, locked_reason, created_at, is_enabled
+		locked_until, last_failed_at, is_locked, COALESCE(locked_reason, ''), created_at, is_enabled
 		FROM credentials
 		WHERE id = $1`
 
