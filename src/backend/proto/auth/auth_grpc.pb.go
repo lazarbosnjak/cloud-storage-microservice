@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+<<<<<<< HEAD
 	Auth_Ping_FullMethodName               = "/auth.Auth/Ping"
 	Auth_Register_FullMethodName           = "/auth.Auth/Register"
 	Auth_SignIn_FullMethodName             = "/auth.Auth/SignIn"
@@ -27,6 +28,15 @@ const (
 	Auth_ChangePassword_FullMethodName     = "/auth.Auth/ChangePassword"
 	Auth_VerifyRegistration_FullMethodName = "/auth.Auth/VerifyRegistration"
 	Auth_VerifyOtp_FullMethodName          = "/auth.Auth/VerifyOtp"
+=======
+	Auth_Ping_FullMethodName           = "/auth.Auth/Ping"
+	Auth_Register_FullMethodName       = "/auth.Auth/Register"
+	Auth_SignIn_FullMethodName         = "/auth.Auth/SignIn"
+	Auth_VerifyOtp_FullMethodName      = "/auth.Auth/VerifyOtp"
+	Auth_Refresh_FullMethodName        = "/auth.Auth/Refresh"
+	Auth_SignOut_FullMethodName        = "/auth.Auth/SignOut"
+	Auth_ChangePassword_FullMethodName = "/auth.Auth/ChangePassword"
+>>>>>>> 7df3161 (fix: fixed typo)
 )
 
 // AuthClient is the client API for Auth service.
@@ -36,6 +46,7 @@ type AuthClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingReply, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
+	VerifyOtp(ctx context.Context, in *VerifyOtpRequest, opts ...grpc.CallOption) (*VerifyOtpResponse, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshResponse, error)
 	SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*SignOutResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
@@ -75,6 +86,16 @@ func (c *authClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SignInResponse)
 	err := c.cc.Invoke(ctx, Auth_SignIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) VerifyOtp(ctx context.Context, in *VerifyOtpRequest, opts ...grpc.CallOption) (*VerifyOtpResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyOtpResponse)
+	err := c.cc.Invoke(ctx, Auth_VerifyOtp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +159,7 @@ type AuthServer interface {
 	Ping(context.Context, *PingRequest) (*PingReply, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
+	VerifyOtp(context.Context, *VerifyOtpRequest) (*VerifyOtpResponse, error)
 	Refresh(context.Context, *RefreshRequest) (*RefreshResponse, error)
 	SignOut(context.Context, *SignOutRequest) (*SignOutResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
@@ -161,6 +183,9 @@ func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*Reg
 }
 func (UnimplementedAuthServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedAuthServer) VerifyOtp(context.Context, *VerifyOtpRequest) (*VerifyOtpResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method VerifyOtp not implemented")
 }
 func (UnimplementedAuthServer) Refresh(context.Context, *RefreshRequest) (*RefreshResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Refresh not implemented")
@@ -248,6 +273,24 @@ func _Auth_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).SignIn(ctx, req.(*SignInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_VerifyOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyOtpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).VerifyOtp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_VerifyOtp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).VerifyOtp(ctx, req.(*VerifyOtpRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -360,6 +403,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignIn",
 			Handler:    _Auth_SignIn_Handler,
+		},
+		{
+			MethodName: "VerifyOtp",
+			Handler:    _Auth_VerifyOtp_Handler,
 		},
 		{
 			MethodName: "Refresh",
