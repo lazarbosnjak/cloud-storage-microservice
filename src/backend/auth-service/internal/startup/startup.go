@@ -90,9 +90,8 @@ func run() error {
 	verificationTokenRepo := repository.NewVerificationTokenRepository(pool)
 	userGRPCClient := handler.NewGRPCUserClient(userConn)
 	mailhogServer := mailhog.NewServer(cfg)
-	svc, err := service.NewAuthService(
-		repo, refreshRepo, verificationTokenRepo,
-		cfg, issuer, userGRPCClient, mailhogServer)
+	otpRepo := repository.NewOtpCodeRepository(pool)
+	svc, err := service.NewAuthService(repo, refreshRepo, otpRepo, verificationTokenRepo, cfg, issuer, userGRPCClient, mailhogServer)
 	if err != nil {
 		return err
 	}

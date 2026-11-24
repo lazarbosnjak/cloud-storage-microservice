@@ -36,6 +36,7 @@ type CredentialStore interface {
 	ResetFailedAttempts(ctx context.Context, userID string) error
 	ChangePassword(ctx context.Context, userID string, passwordHash string) error
 	UpdateIsEnabled(ctx context.Context, userID string, enabled bool) error
+	GetByID(ctx context.Context, userID string) (*domain.Credential, error)
 }
 
 type RegisterUserDTO struct {
@@ -60,6 +61,7 @@ type UserClient interface {
 // TODO: Move to separate file
 type EmailSender interface {
 	SendVerifyRegistrationMail(to []string, verificationLink string) error
+	SendOtpMail(to []string, code string, expiresIn time.Duration) error
 }
 
 // FIXME: move cfg to struct instead of constructor func
@@ -80,6 +82,8 @@ type AuthService struct {
 
 	UserClient  UserClient
 	EmailSender EmailSender
+
+	otp OtpStore
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
@@ -89,6 +93,7 @@ func (s *AuthService) Ping(ctx context.Context) (string, error) {
 func NewAuthService(
 	store CredentialStore,
 	refresh RefreshTokenStore,
+	otp OtpStore,
 	verificationTokenStore VerificationTokenStore,
 	cfg config.Config,
 	tokens TokenIssuer,
@@ -128,6 +133,7 @@ func NewAuthService(
 		refreshReuseGrace:  cfg.Token.RefreshReuseGrace,
 		UserClient:         userClient,
 		EmailSender:        emailSender,
+		otp:                otp,
 	}, nil
 }
 

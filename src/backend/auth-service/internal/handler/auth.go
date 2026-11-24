@@ -79,6 +79,8 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.Si
 	}
 
 	return &pb.SignInResponse{
+		OtpRequired:        res.OtpRequired,
+		OtpChallenge:       res.OtpChallenge,
 		AccessToken:        res.AccessToken,
 		ExpiresInSeconds:   int64(res.ExpiresIn.Seconds()),
 		MustChangePassword: res.MustChangePassword,
@@ -149,4 +151,31 @@ func (h *AuthHandler) VerifyRegistration(
 	}
 
 	return &pb.VerifyRegistrationResponse{}, nil
+}
+
+func (h *AuthHandler) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest) (*pb.VerifyOtpResponse, error) {
+	res, err := h.service.VerifyOtp(ctx, req.GetOtpChallenge(), req.GetCode())
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrOtpInvalid):
+			return nil, status.Error(codes.Unauthenticated, "invalid verification code")
+		case errors.Is(err, domain.ErrOtpExpired):
+			return nil, status.Error(codes.DeadlineExceeded, "verification code expired, sign in again")
+		case errors.Is(err, domain.ErrOtpTooMany):
+			return nil, status.Error(codes.ResourceExhausted, "too many incorrect codes, sign up again")
+		case errors.Is(err, domain.ErrConcurrentRefresh):
+			return nil, status.Error(codes.Unauthenticated, "verification code already used")
+		default:
+			slog.ErrorContext(ctx, "verify otp failed", "error", err)
+			return nil, status.Error(codes.Internal, "internal error")
+		}
+	}
+
+	return &pb.VerifyOtpResponse{
+		AccessToken:        res.AccessToken,
+		ExpiresInSeconds:   int64(res.ExpiresIn.Seconds()),
+		MustChangePassword: res.MustChangePassword,
+		RefreshToken:       res.RefreshToken,
+	}, nil
+
 }
