@@ -23,3 +23,17 @@ func (h *Handler) GetFile(
 ) (*appfile.FileMetadata, error) {
 	return h.client.GetFile(ctx, id, ownerID)
 }
+
+func (h *Handler) CreateFile(
+	ctx context.Context,
+	input appfile.CreateFileInput,
+) (*appfile.CreatedFile, error) {
+	return h.client.CreateFile(ctx, input)
+}
+
+func (h *Handler) RenameFile(
+	ctx context.Context,
+	id, ownerID, name string,
+) error {
+	return h.client.RenameFile(ctx, id, ownerID, name)
+}
