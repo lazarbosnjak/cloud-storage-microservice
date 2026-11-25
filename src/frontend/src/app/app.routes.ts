@@ -3,6 +3,11 @@ import { VerifyRegistration } from './features/verify-registration/verify-regist
 
 export const routes: Routes = [
   {
+    path: 'sign-in',
+    loadComponent: () =>
+      import('./features/sign-in/sign-in').then((m) => m.SignIn),
+  },
+  {
     path: 'register',
     loadComponent: () => import('./features/registration/registration').then((m) => m.Registration),
   },
@@ -15,7 +20,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'register',
+    redirectTo: 'sign-in',
     pathMatch: 'full',
   },
 ];
