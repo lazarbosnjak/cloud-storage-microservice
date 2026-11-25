@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { Auth } from '../../core/services/auth';
@@ -23,6 +23,7 @@ type Stage = 'credentials' | 'otp' | 'done';
 export class SignIn {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
 
   readonly stage = signal<Stage>('credentials');
   readonly loading = signal(false);
@@ -54,7 +55,11 @@ export class SignIn {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.otpRequired) {
+          if (response.mustChangePassword) {
+            this.router.navigate(['/change-password'], {
+              state: { email: this.credentialsForm.getRawValue().email },
+            });
+          } else if (response.otpRequired) {
             this.otpChallenge = response.otpChallenge;
             this.stage.set('otp');
           } else {
