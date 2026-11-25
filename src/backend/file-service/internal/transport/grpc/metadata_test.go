@@ -357,3 +357,50 @@ func TestGRPCMetadataNotFound(t *testing.T) {
 		t.Fatalf("expected NotFound, got %v", err)
 	}
 }
+
+func (r *fakeGRPCFileRepository) GetByNameAndParent(
+	ctx context.Context,
+	name string,
+	parentID string,
+	ownerID string,
+) (*models.FileMetadata, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	for _, value := range r.files {
+		if value.Name == name &&
+			value.ParentID == parentID &&
+			value.OwnerID == ownerID {
+			result := *value
+			return &result, nil
+		}
+	}
+
+	return nil, repository.ErrNotFound
+}
+
+func (r *fakeGRPCFileRepository) UpdateVersion(
+	ctx context.Context,
+	value *models.FileMetadata,
+	expectedUpdatedAt time.Time,
+) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	existing, ok := r.files[value.ID]
+
+	if !ok ||
+		existing.OwnerID != value.OwnerID ||
+		existing.ParentID != value.ParentID ||
+		existing.Name != value.Name ||
+		!existing.UpdatedAt.Equal(expectedUpdatedAt) {
+		return repository.ErrVersionConflict
+	}
+
+	updated := *value
+	r.files[value.ID] = &updated
+
+	return nil
+}

@@ -11,13 +11,16 @@ import (
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type fileRepository struct {
 	collection *mongo.Collection
 }
 
-func NewFileRepository(db *mongo.Database) repository.FileRepository {
+func NewFileRepository(
+	db *mongo.Database,
+) repository.UploadRepository {
 	return &fileRepository{
 		collection: db.Collection("files"),
 	}
@@ -32,6 +35,11 @@ func (r *fileRepository) Create(
 	}
 
 	_, err := r.collection.InsertOne(ctx, file)
+
+	if mongo.IsDuplicateKeyError(err) {
+		return repository.ErrFileAlreadyExists
+	}
+
 	if err != nil {
 		return fmt.Errorf("failed to save file metadata: %w", err)
 	}
@@ -79,6 +87,10 @@ func (r *fileRepository) Rename(
 			},
 		},
 	)
+	if mongo.IsDuplicateKeyError(err) {
+		return repository.ErrFileAlreadyExists
+	}
+
 	if err != nil {
 		return fmt.Errorf("failed to rename file: %w", err)
 	}
@@ -110,4 +122,102 @@ func (r *fileRepository) ListByParentID(
 	}
 
 	return files, nil
+}
+
+func (r *fileRepository) GetByNameAndParent(
+	ctx context.Context,
+	name string,
+	parentID string,
+	ownerID string,
+) (*models.FileMetadata, error) {
+	var file models.FileMetadata
+
+	err := r.collection.FindOne(
+		ctx,
+		bson.M{
+			"name":           name,
+			"parentFolderId": parentID,
+			"ownerId":        ownerID,
+		},
+	).Decode(&file)
+
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, repository.ErrNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to find file by name: %w",
+			err,
+		)
+	}
+
+	return &file, nil
+}
+
+func (r *fileRepository) UpdateVersion(
+	ctx context.Context,
+	file *models.FileMetadata,
+	expectedUpdatedAt time.Time,
+) error {
+	if file == nil {
+		return fmt.Errorf("file metadata cannot be nil")
+	}
+
+	result, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{
+			"_id":            file.ID,
+			"ownerId":        file.OwnerID,
+			"parentFolderId": file.ParentID,
+			"name":           file.Name,
+			"updatedAt":      expectedUpdatedAt,
+		},
+		bson.M{
+			"$set": bson.M{
+				"size":        file.Size,
+				"contentType": file.ContentType,
+				"storageKey":  file.StorageKey,
+				"updatedAt":   file.UpdatedAt,
+			},
+		},
+	)
+
+	if err != nil {
+		return fmt.Errorf(
+			"failed to update file version: %w",
+			err,
+		)
+	}
+
+	if result.MatchedCount == 0 {
+		return repository.ErrVersionConflict
+	}
+
+	return nil
+}
+
+func EnsureFileIndexes(
+	ctx context.Context,
+	db *mongo.Database,
+) error {
+	_, err := db.Collection("files").Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys: bson.D{
+				{Key: "ownerId", Value: 1},
+				{Key: "parentFolderId", Value: 1},
+				{Key: "name", Value: 1},
+			},
+			Options: options.Index().
+				SetUnique(true).
+				SetName("unique_file_owner_parent_name"),
+		},
+	)
+
+	if err != nil {
+		return fmt.Errorf("create file indexes: %w", err)
+	}
+
+	return nil
 }
