@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	notificationgrpc "notification-service/internal/api/grpc"
+	getbyuser "notification-service/internal/application/notification/get_by_user"
 	"notification-service/internal/infrastructure/db/cassandra"
 	"notification-service/internal/startup/config"
 
@@ -105,7 +106,9 @@ func (s *Server) newGRPCServer() (pb.NotificationServer, error) {
 		return nil, err
 	}
 
+	notifGetByUserHandler := getbyuser.NewHandler(notifRepo)
+
 	return notificationgrpc.NewServer(
-		notifRepo,
+		notifGetByUserHandler,
 	), nil
 }
