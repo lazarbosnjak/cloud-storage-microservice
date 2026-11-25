@@ -23,5 +23,6 @@ func NewServer(notifRepo *cassandra.NotificationsRepository) *Server {
 
 func (s *Server) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
 	time.Sleep(time.Second * 5)
+
 	return &pb.PingReply{Message: "hello from notification-service"}, nil
 }

@@ -84,6 +84,8 @@ services:
       context: .
       dockerfile: ./notification-service/Dockerfile
     env_file: ./notification-service/.env
+    ports:
+      - 50055:50055
     depends_on:
       notification-service-cassandra:
         condition: service_healthy
@@ -98,6 +100,9 @@ services:
       interval: 15s
       timeout: 5s
       retries: 15
+    # environment:
+    #   - MAX_HEAP_SIZE=512M
+    #   - HEAP_NEWSIZE=100M
     volumes:
       - notification_service_cass_store:/var/lib/cassandra/data
 
