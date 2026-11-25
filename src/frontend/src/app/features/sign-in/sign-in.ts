@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { Auth } from '../../core/services/auth';
+import { decodeJwtPayload, isTokenExpired } from '../../core/utils/jwt';
 
 type Stage = 'credentials' | 'otp' | 'done';
 
@@ -94,6 +95,14 @@ export class SignIn {
   }
 
   private completeSignIn(accessToken: string, expiresInSeconds: number): void {
+    const payload = decodeJwtPayload(accessToken);
+
+    if (!accessToken || !payload || isTokenExpired(accessToken)) {
+      this.errorMessage.set('Invalid session token. Please try again.');
+      this.backToCredentials();
+      return;
+    }
+
     sessionStorage.setItem('access_token', accessToken);
     this.expiresInSeconds.set(expiresInSeconds);
     this.stage.set('done');
