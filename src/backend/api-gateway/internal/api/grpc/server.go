@@ -7,7 +7,8 @@ import (
 	authrefresh "api-gateway/internal/application/auth/refresh"
 	authregister "api-gateway/internal/application/auth/register"
 	authverifyregistration "api-gateway/internal/application/auth/verify_registration"
-
+	filehandler "api-gateway/internal/application/file/file"
+	folderhandler "api-gateway/internal/application/file/folder"
 	userping "api-gateway/internal/application/user/ping"
 )
 
@@ -22,6 +23,8 @@ type Handlers struct {
 	AuthLoginHandler              *authlogin.Handler
 	AuthRefreshHandler            *authrefresh.Handler
 	AuthVerifyRegistrationHandler *authverifyregistration.Handler
+	FileHandler                   *filehandler.Handler
+	FolderHandler                 *folderhandler.Handler
 }
 
 func NewServer(handlers *Handlers) *Server {

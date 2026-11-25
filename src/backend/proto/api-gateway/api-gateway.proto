@@ -46,6 +46,54 @@ service ApiGateway {
       post: "/api/auth/refresh"
     };
   }
+
+  rpc GetFile (GatewayGetFileRequest) returns (GatewayFileMetadataReply) {
+    option (google.api.http) = {
+      get: "/api/files/{id}"
+    };
+  }
+
+  rpc GetFolder (GatewayGetFolderRequest) returns (GatewayFolderMetadataReply) {
+    option (google.api.http) = {
+      get: "/api/folders/{id}"
+    };
+  }
+
+
+  rpc CreateFile (GatewayCreateFileRequest) returns (GatewayCreatedFileReply) {
+    option (google.api.http) = {
+      post: "/api/files"
+      body: "*"
+    };
+  }
+
+  rpc RenameFile (GatewayRenameRequest) returns (GatewayEmptyReply) {
+    option (google.api.http) = {
+      patch: "/api/files/{id}/name"
+      body: "*"
+    };
+  }
+
+  rpc CreateFolder (GatewayCreateFolderRequest) returns (GatewayCreatedFolderReply) {
+    option (google.api.http) = {
+      post: "/api/folders"
+      body: "*"
+    };
+  }
+
+  rpc RenameFolder (GatewayRenameRequest) returns (GatewayEmptyReply) {
+    option (google.api.http) = {
+      patch: "/api/folders/{id}/name"
+      body: "*"
+    };
+  }
+
+  rpc ListFolderContents (GatewayListFolderContentsRequest) returns (GatewayFolderContentsReply) {
+    option (google.api.http) = {
+      get: "/api/folders/{folder_id}/contents"
+    };
+  }
+
 }
 
 message PingRequest {}
@@ -66,9 +114,85 @@ message AuthRefreshResponse {
   int64 expires_in_seconds = 2;
 }
 
+message GatewayGetFileRequest {
+  string id = 1;
+}
+
+message GatewayGetFolderRequest {
+  string id = 1;
+}
+
+message GatewayFileMetadataReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message GatewayFolderMetadataReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message GatewayCreateFileRequest {
+  reserved 4;
+  reserved "storage_key";
+
+  string name = 1;
+  uint64 size = 2;
+  string content_type = 3;
+  string parent_id = 5;
+}
+
+message GatewayCreatedFileReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message GatewayCreateFolderRequest {
+  string name = 1;
+  string parent_id = 2;
+}
+
+message GatewayCreatedFolderReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+}
+
+message GatewayRenameRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message GatewayEmptyReply {}
+
+message GatewayListFolderContentsRequest {
+  string folder_id = 1;
+}
+
+message GatewayFolderContentsReply {
+  repeated GatewayFileMetadataReply files = 1;
+  repeated GatewayFolderMetadataReply folders = 2;
+}
 message AuthVerifyRegistrationRequest {
   string verification_token = 1;
 }
 
 message AuthVerifyRegistrationResponse {}
-
