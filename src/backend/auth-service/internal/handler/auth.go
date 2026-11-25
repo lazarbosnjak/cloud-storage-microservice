@@ -26,10 +26,10 @@ type AuthService interface {
 
 type AuthHandler struct {
 	pb.AuthServer
-	service AuthService
+	service service.AuthService
 }
 
-func NewAuthHandler(service AuthService) *AuthHandler {
+func NewAuthHandler(service service.AuthService) *AuthHandler {
 	return &AuthHandler{service: service}
 }
 
@@ -67,19 +67,20 @@ func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 func (h *AuthHandler) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
 	res, err := h.service.SignIn(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
-		if errors.Is(err, domain.ErrInvalidCredentials) || errors.Is(err, domain.ErrAccountLocked) {
+		if errors.Is(err, domain.ErrInvalidCredentials) {
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
 		}
 
-		// We are deliberately avoiding throwing this error since it can tell the hacker that account exists.
-		/*if errors.Is(err, domain.ErrAccountLocked) {
+		if errors.Is(err, domain.ErrAccountLocked) {
 			return nil, status.Error(codes.ResourceExhausted, "account temporarly locked, try again later")
-		}*/
+		}
 		slog.ErrorContext(ctx, "sign in failed", "error", err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	return &pb.SignInResponse{
+		OtpRequired:        res.OtpRequired,
+		OtpChallenge:       res.OtpChallenge,
 		AccessToken:        res.AccessToken,
 		ExpiresInSeconds:   int64(res.ExpiresIn.Seconds()),
 		MustChangePassword: res.MustChangePassword,
@@ -96,21 +97,16 @@ func (h *AuthHandler) ChangePassword(ctx context.Context, req *pb.ChangePassword
 		case errors.Is(err, domain.ErrPasswordUnchanged):
 			return nil, status.Error(codes.InvalidArgument, "new password must differ from the current one")
 		case errors.Is(err, domain.ErrPassword):
-			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+			return nil, status.Error(codes.InvalidArgument, "new password does not meet requirements")
 		case errors.Is(err, domain.ErrAccountLocked):
-			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
-		/*
-			case errors.Is(err, domain.ErrPasswordUnchanged):
-				return nil, status.Error(codes.InvalidArgument, "new password must differ from the current one")
-			case errors.Is(err, domain.ErrPassword):
-				return nil, status.Error(codes.InvalidArgument, "new password does not meet requirements")
-			case errors.Is(err, domain.ErrAccountLocked):
-				return nil, status.Error(codes.ResourceExhausted, "account temporarily locked, try again later")
-		*/
+			return nil, status.Error(codes.ResourceExhausted, "account temporarily locked, try again later")
+		case errors.Is(err, domain.ErrFirstName):
+			return nil, status.Error(codes.InvalidArgument, "first name is not valid")
+		case errors.Is(err, domain.ErrLastName):
+			return nil, status.Error(codes.InvalidArgument, "last name is not valid")
 		default:
 			slog.ErrorContext(ctx, "change password failed", "error", err)
 			return nil, status.Error(codes.Internal, "internal error")
-
 		}
 	}
 
@@ -155,4 +151,31 @@ func (h *AuthHandler) VerifyRegistration(
 	}
 
 	return &pb.VerifyRegistrationResponse{}, nil
+}
+
+func (h *AuthHandler) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest) (*pb.VerifyOtpResponse, error) {
+	res, err := h.service.VerifyOtp(ctx, req.GetOtpChallenge(), req.GetCode())
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrOtpInvalid):
+			return nil, status.Error(codes.Unauthenticated, "invalid verification code")
+		case errors.Is(err, domain.ErrOtpExpired):
+			return nil, status.Error(codes.DeadlineExceeded, "verification code expired, sign in again")
+		case errors.Is(err, domain.ErrOtpTooMany):
+			return nil, status.Error(codes.ResourceExhausted, "too many incorrect codes, sign up again")
+		case errors.Is(err, domain.ErrConcurrentRefresh):
+			return nil, status.Error(codes.Unauthenticated, "verification code already used")
+		default:
+			slog.ErrorContext(ctx, "verify otp failed", "error", err)
+			return nil, status.Error(codes.Internal, "internal error")
+		}
+	}
+
+	return &pb.VerifyOtpResponse{
+		AccessToken:        res.AccessToken,
+		ExpiresInSeconds:   int64(res.ExpiresIn.Seconds()),
+		MustChangePassword: res.MustChangePassword,
+		RefreshToken:       res.RefreshToken,
+	}, nil
+
 }

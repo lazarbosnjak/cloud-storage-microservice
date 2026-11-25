@@ -29,7 +29,8 @@ type Credential struct {
 	FailedAttempts    uint8
 	LockedUntil       *time.Time
 	LastFailedAt      *time.Time
-	EmailVerified     bool
+	IsLocked          bool
+	LockedReason      string
 	CreatedAt         time.Time
 	IsEnabled         bool
 }

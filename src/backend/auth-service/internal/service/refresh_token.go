@@ -45,7 +45,7 @@ func (s *AuthService) Refresh(ctx context.Context, raw string) (RefreshResult, e
 	rt, err := s.refresh.GetByHash(ctx, hashToken(raw))
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
-			return RefreshResult{}, domain.ErrInvalidToken
+			return RefreshResult{}, domain.ErrNotFound
 		}
 		return RefreshResult{}, fmt.Errorf("get refresh token: %w", err)
 	}

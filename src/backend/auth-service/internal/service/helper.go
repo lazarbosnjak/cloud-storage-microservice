@@ -18,16 +18,20 @@ func (s *AuthService) nextStreak(prev uint8, LastFailedAt *time.Time, now time.T
 	return prev + 1
 }
 
-func (s *AuthService) lockoutFor(streak uint8) (time.Duration, bool) {
+func (s *AuthService) lockedFor(streak uint8) (time.Duration, bool) {
 	treshold := uint8(s.config.Lockout.Treshold)
 	if streak < treshold {
 		return 0, false
 	}
 
+	// d stands for duration
 	d := s.config.Lockout.BaseDuration
+
+	// Code below calculates how much "locked" time should account have based on streak (streak is number of tries within "Reset Window")
 	for i := int(streak - treshold); i > 0 && d < s.config.Lockout.MaxDuration; i-- {
 		d *= 2
 	}
+	// We must check that if our calculated duration is larger than our allowed max duration, to set duration to max allowed duration
 	if d > s.config.Lockout.MaxDuration {
 		d = s.config.Lockout.MaxDuration
 	}
@@ -38,7 +42,7 @@ func (s *AuthService) recordFailedSignIn(ctx context.Context, cred *domain.Crede
 	streak := s.nextStreak(cred.FailedAttempts, cred.LastFailedAt, now)
 
 	var lockedUntil *time.Time
-	if d, locked := s.lockoutFor(streak); locked {
+	if d, locked := s.lockedFor(streak); locked {
 		deadline := now.Add(d)
 		lockedUntil = &deadline
 
