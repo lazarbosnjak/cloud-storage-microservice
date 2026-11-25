@@ -86,7 +86,7 @@ func (r *OtpCodeRepository) IncrementAttempts(ctx context.Context, id string, at
 		WHERE id = $1
 	`
 
-	_, err := r.pool.Exec(ctx, query, id)
+	_, err := r.pool.Exec(ctx, query, id, attempts)
 	return err
 }
 
