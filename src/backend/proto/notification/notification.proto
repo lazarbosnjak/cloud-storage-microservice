@@ -1,10 +1,10 @@
-
 syntax = "proto3";
 
 option go_package = "proto/notification";
 
 service Notification {
   rpc Ping (PingRequest) returns (PingReply) {}
+  rpc GetAllByUser (GetAllByUserRequest) returns (GetAllByUserResponse) {}
 }
 
 message PingRequest {
@@ -13,4 +13,54 @@ message PingRequest {
 
 message PingReply {
   string message = 1;
+}
+
+message GetAllByUserRequest {
+  string user_id = 1;
+}
+
+message GetAllByUserResponseItem {
+  string notification_id = 1;
+  string user_id = 2;
+  string event_type = 3;
+  oneof payload {
+    FileShared file_shared = 10;
+    FolderShared folder_shared = 11;
+    FileAddedToSharedFolder file_added_to_shared_folder = 12;
+    SharedFileNewVersion shared_file_new_version = 13;
+  }
+}
+
+message GetAllByUserResponse {
+  repeated GetAllByUserResponseItem items = 1;
+}
+
+message FileShared {
+	string file_id    = 1;
+	string file_name  = 2;
+	string actor_id   = 3;
+	string actor_name = 4;
+}
+
+message FolderShared {
+	string folder_id    = 1;
+	string folder_name  = 2;
+	string actor_id   = 3;
+	string actor_name = 4;
+}
+
+message FileAddedToSharedFolder {
+	string file_id    = 1;
+	string file_name  = 2;
+	string shared_folder_id    = 3;
+	string shared_folder_name  = 4;
+	string actor_id   = 5;
+	string actor_name = 6;
+}
+
+message SharedFileNewVersion {
+	string file_id    = 1;
+	string file_name  = 2;
+	string actor_id   = 3;
+	string actor_name = 4;
 }
