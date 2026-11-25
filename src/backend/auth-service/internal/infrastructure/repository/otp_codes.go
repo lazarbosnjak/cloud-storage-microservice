@@ -64,7 +64,7 @@ func (r *OtpCodeRepository) GetByID(ctx context.Context, id string) (*domain.Otp
 
 func (r *OtpCodeRepository) Consume(ctx context.Context, id string) error {
 	const query = `
-		UPDATE otp_codes SET used_at = NOW 
+		UPDATE otp_codes SET used_at = NOW() 
 		WHERE id = $1 AND used_at IS NULL
 	`
 
@@ -86,7 +86,7 @@ func (r *OtpCodeRepository) IncrementAttempts(ctx context.Context, id string, at
 		WHERE id = $1
 	`
 
-	_, err := r.pool.Exec(ctx, query, id)
+	_, err := r.pool.Exec(ctx, query, id, attempts)
 	return err
 }
 

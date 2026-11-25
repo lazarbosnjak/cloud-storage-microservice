@@ -66,6 +66,8 @@ func (c *GRPCClient) Login(ctx context.Context, dto auth.LoginDTO) (*auth.LoginR
 		AccessToken:      res.GetAccessToken(),
 		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
 		RefreshToken:     res.GetRefreshToken(),
+		OtpRequired:      res.GetOtpRequired(),
+		OtpChallenge:     res.GetOtpChallenge(),
 	}, nil
 }
 
@@ -97,4 +99,23 @@ func (c *GRPCClient) VerifyRegistration(ctx context.Context, dto auth.VerifyRegi
 	}
 
 	return nil
+}
+
+func (c *GRPCClient) VerifyOtp(ctx context.Context, dto auth.VerifyOtpDTO) (*auth.VerifyOtpResponseDTO, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	res, err := c.client.VerifyOtp(ctx, &authPb.VerifyOtpRequest{
+		OtpChallenge: dto.ChallengeID,
+		Code:         dto.Code,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth.VerifyOtpResponseDTO{
+		AccessToken:      res.GetAccessToken(),
+		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
+		RefreshToken:     res.GetRefreshToken(),
+	}, nil
 }
