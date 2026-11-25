@@ -46,12 +46,12 @@ func (r *CredentialRepository) Create(ctx context.Context, email string, passwor
 func (r *CredentialRepository) GetByEmail(ctx context.Context, email string) (*domain.Credential, error) {
 	const query = `
 		SELECT id, email, password_hash, user_role, password_changed_at, failed_attempts,
-		locked_until, last_failed_at, email_verified, created_at, is_enabled
+		locked_until, last_failed_at, is_locked, locked_reason, created_at, is_enabled
 		FROM credentials
 		WHERE email = $1`
 
 	var c domain.Credential
-	err := r.pool.QueryRow(ctx, query, email).Scan(&c.ID, &c.Email, &c.PasswordHash, &c.UserRole, &c.PasswordChangedAt, &c.FailedAttempts, &c.LockedUntil, &c.LastFailedAt, &c.EmailVerified, &c.CreatedAt, &c.IsEnabled)
+	err := r.pool.QueryRow(ctx, query, email).Scan(&c.ID, &c.Email, &c.PasswordHash, &c.UserRole, &c.PasswordChangedAt, &c.FailedAttempts, &c.LockedUntil, &c.LastFailedAt, &c.IsLocked, &c.LockedReason, &c.CreatedAt, &c.IsEnabled)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, domain.ErrNotFound
@@ -150,4 +150,23 @@ func (r *CredentialRepository) UpdateIsEnabled(
 		return fmt.Errorf("error updating is_enabled: %w", err)
 	}
 	return nil
+}
+
+func (r *CredentialRepository) GetByID(ctx context.Context, userID string) (*domain.Credential, error) {
+	const query = `
+		SELECT id, email, password_hash, user_role, password_changed_at, failed_attempts,
+		locked_until, last_failed_at, is_locked, locked_reason, created_at, is_enabled
+		FROM credentials
+		WHERE id = $1`
+
+	var c domain.Credential
+	err := r.pool.QueryRow(ctx, query, userID).Scan(&c.ID, &c.Email, &c.PasswordHash, &c.UserRole, &c.PasswordChangedAt, &c.FailedAttempts, &c.LockedUntil, &c.LastFailedAt, &c.IsLocked, &c.LockedReason, &c.CreatedAt, &c.IsEnabled)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrNotFound
+		}
+		slog.Error("get email", "error", err)
+		return nil, fmt.Errorf("failed to get by email: %w", err)
+	}
+	return &c, nil
 }
