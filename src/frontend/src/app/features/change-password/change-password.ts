@@ -1,12 +1,14 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  FormField,
+  form,
+  minLength,
+  required,
+  submit,
+} from '@angular/forms/signals';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { Auth } from '../../core/services/auth';
 
@@ -14,56 +16,78 @@ type Stage = 'form' | 'done';
 
 @Component({
   selector: 'app-change-password',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [FormField, RouterLink],
   templateUrl: './change-password.html',
   styleUrl: './change-password.css',
 })
 export class ChangePassword {
-  private readonly fb = inject(FormBuilder);
   private readonly auth = inject(Auth);
 
   readonly stage = signal<Stage>('form');
   readonly loading = signal(false);
   readonly errorMessage = signal('');
 
-  readonly form = this.fb.nonNullable.group({
-    email: [''],
-    currentPassword: ['', Validators.required],
-    newPassword: ['', [Validators.required, Validators.minLength(8)]],
-    repeatedPassword: ['', Validators.required],
+  readonly model = signal({
+    email: '',
+    currentPassword: '',
+    newPassword: '',
+    repeatedPassword: '',
+  });
+  readonly form = form(this.model, (f) => {
+    required(f.currentPassword);
+    required(f.newPassword);
+    minLength(f.newPassword, 8);
+    required(f.repeatedPassword);
+  });
+
+  readonly passwordsDoNotMatch = computed(() => {
+    const newPassword = this.form.newPassword().value();
+    const repeatedPassword = this.form.repeatedPassword().value();
+
+    return repeatedPassword.length > 0 && newPassword !== repeatedPassword;
   });
 
   constructor() {
     const email = history.state?.email;
 
     if (typeof email === 'string' && email) {
-      this.form.patchValue({ email });
+      this.model.update((m) => ({ ...m, email }));
     }
   }
 
-  get passwordsDoNotMatch(): boolean {
-    const newPassword = this.form.controls.newPassword.value;
-    const repeatedPassword = this.form.controls.repeatedPassword.value;
-
-    return repeatedPassword.length > 0 && newPassword !== repeatedPassword;
-  }
-
-  submit(): void {
+  async submit(event: Event): Promise<void> {
+    event.preventDefault();
     this.errorMessage.set('');
 
-    if (this.form.invalid || this.passwordsDoNotMatch) {
-      this.form.markAllAsTouched();
+    if (this.passwordsDoNotMatch()) {
+      this.form.repeatedPassword().markAsTouched();
       return;
     }
 
     this.loading.set(true);
 
-    this.auth.changePassword(this.form.getRawValue())
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: () => this.stage.set('done'),
-        error: (error: HttpErrorResponse) => this.showError(error),
-      });
+    await submit(this.form, async () => {
+      try {
+        await firstValueFrom(
+          this.auth.changePassword({
+            email: this.model().email,
+            currentPassword: this.model().currentPassword,
+            newPassword: this.model().newPassword,
+          }),
+        );
+        this.stage.set('done');
+      } catch (error) {
+        if (error instanceof HttpErrorResponse) {
+          this.showError(error);
+        } else {
+          throw error;
+        }
+      } finally {
+        this.loading.set(false);
+      }
+
+      return [];
+    });
   }
 
   private showError(error: HttpErrorResponse): void {
