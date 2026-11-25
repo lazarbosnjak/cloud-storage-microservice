@@ -20,9 +20,10 @@ func (s *Server) AuthSignIn(ctx context.Context, in *authPb.SignInRequest) (*pb.
 	}
 
 	return &pb.AuthSignInResponse{
-		AccessToken:      handleRes.AccessToken,
-		ExpiresInSeconds: handleRes.ExpiresInSeconds,
-		OtpRequired:      handleRes.OtpRequired,
-		OtpChallenge:     handleRes.OtpChallenge,
+		AccessToken:        handleRes.AccessToken,
+		ExpiresInSeconds:   handleRes.ExpiresInSeconds,
+		OtpRequired:        handleRes.OtpRequired,
+		OtpChallenge:       handleRes.OtpChallenge,
+		MustChangePassword: handleRes.MustChangePassword,
 	}, nil
 }

@@ -18,6 +18,7 @@ import (
 	"api-gateway/internal/application/auth/register"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
+	changePassword "api-gateway/internal/application/auth/change_password"
 	"api-gateway/internal/application/user/ping"
 	"api-gateway/internal/infrastructure/clients/auth"
 	"api-gateway/internal/infrastructure/clients/user"
@@ -201,6 +202,7 @@ func (s *Server) newAPIServer(
 	authRefreshHandler := refresh.NewHandler(authClient)
 	authVerifyRegistrationHandler := verifyregistration.NewHandler(authClient)
 	authVerifyOtpHandler := verifyotp.NewHandler(authClient)
+	authChangePasswordHandler := changePassword.NewHandler(authClient)
 
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
 		UserPingHandler:               userPingHandler,
@@ -209,5 +211,6 @@ func (s *Server) newAPIServer(
 		AuthRefreshHandler:            authRefreshHandler,
 		AuthVerifyRegistrationHandler: authVerifyRegistrationHandler,
 		AuthVerifyOtpHandler:          authVerifyOtpHandler,
+		AuthChangePasswordHandler:     authChangePasswordHandler,
 	})
 }

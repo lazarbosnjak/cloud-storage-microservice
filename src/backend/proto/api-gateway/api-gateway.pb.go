@@ -104,13 +104,14 @@ func (x *PingReply) GetMessage() string {
 }
 
 type AuthSignInResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken      string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	ExpiresInSeconds int32                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
-	OtpRequired      bool                   `protobuf:"varint,3,opt,name=otp_required,json=otpRequired,proto3" json:"otp_required,omitempty"`
-	OtpChallenge     string                 `protobuf:"bytes,4,opt,name=otp_challenge,json=otpChallenge,proto3" json:"otp_challenge,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken        string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	ExpiresInSeconds   int32                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
+	OtpRequired        bool                   `protobuf:"varint,3,opt,name=otp_required,json=otpRequired,proto3" json:"otp_required,omitempty"`
+	OtpChallenge       string                 `protobuf:"bytes,4,opt,name=otp_challenge,json=otpChallenge,proto3" json:"otp_challenge,omitempty"`
+	MustChangePassword bool                   `protobuf:"varint,5,opt,name=must_change_password,json=mustChangePassword,proto3" json:"must_change_password,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *AuthSignInResponse) Reset() {
@@ -171,13 +172,19 @@ func (x *AuthSignInResponse) GetOtpChallenge() string {
 	return ""
 }
 
+func (x *AuthSignInResponse) GetMustChangePassword() bool {
+	if x != nil {
+		return x.MustChangePassword
+	}
+	return false
+}
+
 type AuthVerifyOtpResponse struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken        string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	ExpiresInSeconds   int32                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
-	MustChangePassword bool                   `protobuf:"varint,3,opt,name=must_change_password,json=mustChangePassword,proto3" json:"must_change_password,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken      string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	ExpiresInSeconds int32                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *AuthVerifyOtpResponse) Reset() {
@@ -222,13 +229,6 @@ func (x *AuthVerifyOtpResponse) GetExpiresInSeconds() int32 {
 		return x.ExpiresInSeconds
 	}
 	return 0
-}
-
-func (x *AuthVerifyOtpResponse) GetMustChangePassword() bool {
-	if x != nil {
-		return x.MustChangePassword
-	}
-	return false
 }
 
 type AuthRefreshRequest struct {
@@ -406,23 +406,23 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x11api-gateway.proto\x12\vapi_gateway\x1a\x1cgoogle/api/annotations.proto\x1a\x0fauth/auth.proto\"\r\n" +
 	"\vPingRequest\"%\n" +
 	"\tPingReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\xad\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xdf\x01\n" +
 	"\x12AuthSignInResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
 	"\x12expires_in_seconds\x18\x02 \x01(\x05R\x10expiresInSeconds\x12!\n" +
 	"\fotp_required\x18\x03 \x01(\bR\votpRequired\x12#\n" +
-	"\rotp_challenge\x18\x04 \x01(\tR\fotpChallenge\"\x9a\x01\n" +
+	"\rotp_challenge\x18\x04 \x01(\tR\fotpChallenge\x120\n" +
+	"\x14must_change_password\x18\x05 \x01(\bR\x12mustChangePassword\"h\n" +
 	"\x15AuthVerifyOtpResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
-	"\x12expires_in_seconds\x18\x02 \x01(\x05R\x10expiresInSeconds\x120\n" +
-	"\x14must_change_password\x18\x03 \x01(\bR\x12mustChangePassword\"\x14\n" +
+	"\x12expires_in_seconds\x18\x02 \x01(\x05R\x10expiresInSeconds\"\x14\n" +
 	"\x12AuthRefreshRequest\"f\n" +
 	"\x13AuthRefreshResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
 	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds\"N\n" +
 	"\x1dAuthVerifyRegistrationRequest\x12-\n" +
 	"\x12verification_token\x18\x01 \x01(\tR\x11verificationToken\" \n" +
-	"\x1eAuthVerifyRegistrationResponse2\xd1\x05\n" +
+	"\x1eAuthVerifyRegistrationResponse2\xc8\x06\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
@@ -431,7 +431,8 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x16AuthVerifyRegistration\x12*.api_gateway.AuthVerifyRegistrationRequest\x1a+.api_gateway.AuthVerifyRegistrationResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/auth/register/verify\x12^\n" +
 	"\n" +
 	"AuthSignIn\x12\x13.auth.SignInRequest\x1a\x1f.api_gateway.AuthSignInResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/auth/login\x12l\n" +
-	"\rAuthVerifyOtp\x12\x16.auth.VerifyOtpRequest\x1a\".api_gateway.AuthVerifyOtpResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/auth/otp/verify\x12k\n" +
+	"\rAuthVerifyOtp\x12\x16.auth.VerifyOtpRequest\x1a\".api_gateway.AuthVerifyOtpResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/auth/otp/verify\x12u\n" +
+	"\x12AuthChangePassword\x12\x1b.auth.ChangePasswordRequest\x1a\x1c.auth.ChangePasswordResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/auth/change-password\x12k\n" +
 	"\vAuthRefresh\x12\x1f.api_gateway.AuthRefreshRequest\x1a .api_gateway.AuthRefreshResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/refreshB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
 
 var (
@@ -459,7 +460,9 @@ var file_api_gateway_proto_goTypes = []any{
 	(*auth.RegisterRequest)(nil),           // 8: auth.RegisterRequest
 	(*auth.SignInRequest)(nil),             // 9: auth.SignInRequest
 	(*auth.VerifyOtpRequest)(nil),          // 10: auth.VerifyOtpRequest
-	(*auth.RegisterResponse)(nil),          // 11: auth.RegisterResponse
+	(*auth.ChangePasswordRequest)(nil),     // 11: auth.ChangePasswordRequest
+	(*auth.RegisterResponse)(nil),          // 12: auth.RegisterResponse
+	(*auth.ChangePasswordResponse)(nil),    // 13: auth.ChangePasswordResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
 	0,  // 0: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
@@ -468,16 +471,18 @@ var file_api_gateway_proto_depIdxs = []int32{
 	6,  // 3: api_gateway.ApiGateway.AuthVerifyRegistration:input_type -> api_gateway.AuthVerifyRegistrationRequest
 	9,  // 4: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
 	10, // 5: api_gateway.ApiGateway.AuthVerifyOtp:input_type -> auth.VerifyOtpRequest
-	4,  // 6: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
-	1,  // 7: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1,  // 8: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	11, // 9: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	7,  // 10: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
-	2,  // 11: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
-	3,  // 12: api_gateway.ApiGateway.AuthVerifyOtp:output_type -> api_gateway.AuthVerifyOtpResponse
-	5,  // 13: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
-	7,  // [7:14] is the sub-list for method output_type
-	0,  // [0:7] is the sub-list for method input_type
+	11, // 6: api_gateway.ApiGateway.AuthChangePassword:input_type -> auth.ChangePasswordRequest
+	4,  // 7: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
+	1,  // 8: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1,  // 9: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	12, // 10: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	7,  // 11: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
+	2,  // 12: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
+	3,  // 13: api_gateway.ApiGateway.AuthVerifyOtp:output_type -> api_gateway.AuthVerifyOtpResponse
+	13, // 14: api_gateway.ApiGateway.AuthChangePassword:output_type -> auth.ChangePasswordResponse
+	5,  // 15: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
+	8,  // [8:16] is the sub-list for method output_type
+	0,  // [0:8] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
