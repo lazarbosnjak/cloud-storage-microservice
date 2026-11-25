@@ -28,6 +28,13 @@ const (
 	ApiGateway_AuthVerifyOtp_FullMethodName          = "/api_gateway.ApiGateway/AuthVerifyOtp"
 	ApiGateway_AuthChangePassword_FullMethodName     = "/api_gateway.ApiGateway/AuthChangePassword"
 	ApiGateway_AuthRefresh_FullMethodName            = "/api_gateway.ApiGateway/AuthRefresh"
+	ApiGateway_GetFile_FullMethodName                = "/api_gateway.ApiGateway/GetFile"
+	ApiGateway_GetFolder_FullMethodName              = "/api_gateway.ApiGateway/GetFolder"
+	ApiGateway_CreateFile_FullMethodName             = "/api_gateway.ApiGateway/CreateFile"
+	ApiGateway_RenameFile_FullMethodName             = "/api_gateway.ApiGateway/RenameFile"
+	ApiGateway_CreateFolder_FullMethodName           = "/api_gateway.ApiGateway/CreateFolder"
+	ApiGateway_RenameFolder_FullMethodName           = "/api_gateway.ApiGateway/RenameFolder"
+	ApiGateway_ListFolderContents_FullMethodName     = "/api_gateway.ApiGateway/ListFolderContents"
 )
 
 // ApiGatewayClient is the client API for ApiGateway service.
@@ -42,6 +49,13 @@ type ApiGatewayClient interface {
 	AuthVerifyOtp(ctx context.Context, in *auth.VerifyOtpRequest, opts ...grpc.CallOption) (*AuthVerifyOtpResponse, error)
 	AuthChangePassword(ctx context.Context, in *auth.ChangePasswordRequest, opts ...grpc.CallOption) (*auth.ChangePasswordResponse, error)
 	AuthRefresh(ctx context.Context, in *AuthRefreshRequest, opts ...grpc.CallOption) (*AuthRefreshResponse, error)
+	GetFile(ctx context.Context, in *GatewayGetFileRequest, opts ...grpc.CallOption) (*GatewayFileMetadataReply, error)
+	GetFolder(ctx context.Context, in *GatewayGetFolderRequest, opts ...grpc.CallOption) (*GatewayFolderMetadataReply, error)
+	CreateFile(ctx context.Context, in *GatewayCreateFileRequest, opts ...grpc.CallOption) (*GatewayCreatedFileReply, error)
+	RenameFile(ctx context.Context, in *GatewayRenameRequest, opts ...grpc.CallOption) (*GatewayEmptyReply, error)
+	CreateFolder(ctx context.Context, in *GatewayCreateFolderRequest, opts ...grpc.CallOption) (*GatewayCreatedFolderReply, error)
+	RenameFolder(ctx context.Context, in *GatewayRenameRequest, opts ...grpc.CallOption) (*GatewayEmptyReply, error)
+	ListFolderContents(ctx context.Context, in *GatewayListFolderContentsRequest, opts ...grpc.CallOption) (*GatewayFolderContentsReply, error)
 }
 
 type apiGatewayClient struct {
@@ -132,6 +146,76 @@ func (c *apiGatewayClient) AuthRefresh(ctx context.Context, in *AuthRefreshReque
 	return out, nil
 }
 
+func (c *apiGatewayClient) GetFile(ctx context.Context, in *GatewayGetFileRequest, opts ...grpc.CallOption) (*GatewayFileMetadataReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayFileMetadataReply)
+	err := c.cc.Invoke(ctx, ApiGateway_GetFile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) GetFolder(ctx context.Context, in *GatewayGetFolderRequest, opts ...grpc.CallOption) (*GatewayFolderMetadataReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayFolderMetadataReply)
+	err := c.cc.Invoke(ctx, ApiGateway_GetFolder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) CreateFile(ctx context.Context, in *GatewayCreateFileRequest, opts ...grpc.CallOption) (*GatewayCreatedFileReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayCreatedFileReply)
+	err := c.cc.Invoke(ctx, ApiGateway_CreateFile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) RenameFile(ctx context.Context, in *GatewayRenameRequest, opts ...grpc.CallOption) (*GatewayEmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayEmptyReply)
+	err := c.cc.Invoke(ctx, ApiGateway_RenameFile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) CreateFolder(ctx context.Context, in *GatewayCreateFolderRequest, opts ...grpc.CallOption) (*GatewayCreatedFolderReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayCreatedFolderReply)
+	err := c.cc.Invoke(ctx, ApiGateway_CreateFolder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) RenameFolder(ctx context.Context, in *GatewayRenameRequest, opts ...grpc.CallOption) (*GatewayEmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayEmptyReply)
+	err := c.cc.Invoke(ctx, ApiGateway_RenameFolder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) ListFolderContents(ctx context.Context, in *GatewayListFolderContentsRequest, opts ...grpc.CallOption) (*GatewayFolderContentsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GatewayFolderContentsReply)
+	err := c.cc.Invoke(ctx, ApiGateway_ListFolderContents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiGatewayServer is the server API for ApiGateway service.
 // All implementations must embed UnimplementedApiGatewayServer
 // for forward compatibility.
@@ -144,6 +228,13 @@ type ApiGatewayServer interface {
 	AuthVerifyOtp(context.Context, *auth.VerifyOtpRequest) (*AuthVerifyOtpResponse, error)
 	AuthChangePassword(context.Context, *auth.ChangePasswordRequest) (*auth.ChangePasswordResponse, error)
 	AuthRefresh(context.Context, *AuthRefreshRequest) (*AuthRefreshResponse, error)
+	GetFile(context.Context, *GatewayGetFileRequest) (*GatewayFileMetadataReply, error)
+	GetFolder(context.Context, *GatewayGetFolderRequest) (*GatewayFolderMetadataReply, error)
+	CreateFile(context.Context, *GatewayCreateFileRequest) (*GatewayCreatedFileReply, error)
+	RenameFile(context.Context, *GatewayRenameRequest) (*GatewayEmptyReply, error)
+	CreateFolder(context.Context, *GatewayCreateFolderRequest) (*GatewayCreatedFolderReply, error)
+	RenameFolder(context.Context, *GatewayRenameRequest) (*GatewayEmptyReply, error)
+	ListFolderContents(context.Context, *GatewayListFolderContentsRequest) (*GatewayFolderContentsReply, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -177,6 +268,27 @@ func (UnimplementedApiGatewayServer) AuthChangePassword(context.Context, *auth.C
 }
 func (UnimplementedApiGatewayServer) AuthRefresh(context.Context, *AuthRefreshRequest) (*AuthRefreshResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthRefresh not implemented")
+}
+func (UnimplementedApiGatewayServer) GetFile(context.Context, *GatewayGetFileRequest) (*GatewayFileMetadataReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetFile not implemented")
+}
+func (UnimplementedApiGatewayServer) GetFolder(context.Context, *GatewayGetFolderRequest) (*GatewayFolderMetadataReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetFolder not implemented")
+}
+func (UnimplementedApiGatewayServer) CreateFile(context.Context, *GatewayCreateFileRequest) (*GatewayCreatedFileReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateFile not implemented")
+}
+func (UnimplementedApiGatewayServer) RenameFile(context.Context, *GatewayRenameRequest) (*GatewayEmptyReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenameFile not implemented")
+}
+func (UnimplementedApiGatewayServer) CreateFolder(context.Context, *GatewayCreateFolderRequest) (*GatewayCreatedFolderReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateFolder not implemented")
+}
+func (UnimplementedApiGatewayServer) RenameFolder(context.Context, *GatewayRenameRequest) (*GatewayEmptyReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenameFolder not implemented")
+}
+func (UnimplementedApiGatewayServer) ListFolderContents(context.Context, *GatewayListFolderContentsRequest) (*GatewayFolderContentsReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListFolderContents not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
 func (UnimplementedApiGatewayServer) testEmbeddedByValue()                    {}
@@ -343,6 +455,132 @@ func _ApiGateway_AuthRefresh_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_GetFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayGetFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).GetFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_GetFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).GetFile(ctx, req.(*GatewayGetFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_GetFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayGetFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).GetFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_GetFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).GetFolder(ctx, req.(*GatewayGetFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_CreateFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayCreateFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).CreateFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_CreateFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).CreateFile(ctx, req.(*GatewayCreateFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_RenameFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayRenameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).RenameFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_RenameFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).RenameFile(ctx, req.(*GatewayRenameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_CreateFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayCreateFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).CreateFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_CreateFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).CreateFolder(ctx, req.(*GatewayCreateFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_RenameFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayRenameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).RenameFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_RenameFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).RenameFolder(ctx, req.(*GatewayRenameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_ListFolderContents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayListFolderContentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).ListFolderContents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_ListFolderContents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).ListFolderContents(ctx, req.(*GatewayListFolderContentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiGateway_ServiceDesc is the grpc.ServiceDesc for ApiGateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -381,6 +619,34 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthRefresh",
 			Handler:    _ApiGateway_AuthRefresh_Handler,
+		},
+		{
+			MethodName: "GetFile",
+			Handler:    _ApiGateway_GetFile_Handler,
+		},
+		{
+			MethodName: "GetFolder",
+			Handler:    _ApiGateway_GetFolder_Handler,
+		},
+		{
+			MethodName: "CreateFile",
+			Handler:    _ApiGateway_CreateFile_Handler,
+		},
+		{
+			MethodName: "RenameFile",
+			Handler:    _ApiGateway_RenameFile_Handler,
+		},
+		{
+			MethodName: "CreateFolder",
+			Handler:    _ApiGateway_CreateFolder_Handler,
+		},
+		{
+			MethodName: "RenameFolder",
+			Handler:    _ApiGateway_RenameFolder_Handler,
+		},
+		{
+			MethodName: "ListFolderContents",
+			Handler:    _ApiGateway_ListFolderContents_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

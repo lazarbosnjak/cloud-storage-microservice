@@ -15,6 +15,7 @@ type Config struct {
 	UserServiceGRPCAddr     string
 	AuthServiceGRPCAddr     string
 	JwtPublicKeyPath        string
+	FileServiceGRPCAddr     string
 }
 
 func NewConfig(logger *slog.Logger) *Config {
@@ -23,6 +24,7 @@ func NewConfig(logger *slog.Logger) *Config {
 	userServiceGRPCAddr := getEnv("USER_SERVICE_GRPC_ADDR", logger)
 	authServiceGRPCAddr := getEnv("AUTH_SERVICE_GRPC_ADDR", logger)
 	jwtPublicKeyPath := getEnv("JWT_PUBLIC_KEY_PATH", logger)
+	fileServiceGRPCAddr := getEnv("FILE_SERVICE_GRPC_ADDR", logger)
 
 	res, err := strconv.Atoi(os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"))
 	if err != nil || res == 0 {
@@ -38,6 +40,7 @@ func NewConfig(logger *slog.Logger) *Config {
 		UserServiceGRPCAddr:     userServiceGRPCAddr,
 		AuthServiceGRPCAddr:     authServiceGRPCAddr,
 		JwtPublicKeyPath:        jwtPublicKeyPath,
+		FileServiceGRPCAddr:     fileServiceGRPCAddr,
 	}
 }
 

@@ -319,6 +319,766 @@ func (x *AuthRefreshResponse) GetExpiresInSeconds() int64 {
 	return 0
 }
 
+type GatewayGetFileRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayGetFileRequest) Reset() {
+	*x = GatewayGetFileRequest{}
+	mi := &file_api_gateway_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayGetFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayGetFileRequest) ProtoMessage() {}
+
+func (x *GatewayGetFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayGetFileRequest.ProtoReflect.Descriptor instead.
+func (*GatewayGetFileRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GatewayGetFileRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GatewayGetFolderRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayGetFolderRequest) Reset() {
+	*x = GatewayGetFolderRequest{}
+	mi := &file_api_gateway_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayGetFolderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayGetFolderRequest) ProtoMessage() {}
+
+func (x *GatewayGetFolderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayGetFolderRequest.ProtoReflect.Descriptor instead.
+func (*GatewayGetFolderRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GatewayGetFolderRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GatewayFileMetadataReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Size          uint64                 `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	ContentType   string                 `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	ParentId      string                 `protobuf:"bytes,5,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,6,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayFileMetadataReply) Reset() {
+	*x = GatewayFileMetadataReply{}
+	mi := &file_api_gateway_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayFileMetadataReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayFileMetadataReply) ProtoMessage() {}
+
+func (x *GatewayFileMetadataReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayFileMetadataReply.ProtoReflect.Descriptor instead.
+func (*GatewayFileMetadataReply) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GatewayFileMetadataReply) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GatewayFileMetadataReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GatewayFileMetadataReply) GetSize() uint64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *GatewayFileMetadataReply) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *GatewayFileMetadataReply) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *GatewayFileMetadataReply) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *GatewayFileMetadataReply) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *GatewayFileMetadataReply) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type GatewayFolderMetadataReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ParentId      string                 `protobuf:"bytes,3,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,4,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayFolderMetadataReply) Reset() {
+	*x = GatewayFolderMetadataReply{}
+	mi := &file_api_gateway_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayFolderMetadataReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayFolderMetadataReply) ProtoMessage() {}
+
+func (x *GatewayFolderMetadataReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayFolderMetadataReply.ProtoReflect.Descriptor instead.
+func (*GatewayFolderMetadataReply) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GatewayFolderMetadataReply) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GatewayFolderMetadataReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GatewayFolderMetadataReply) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *GatewayFolderMetadataReply) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *GatewayFolderMetadataReply) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *GatewayFolderMetadataReply) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type GatewayCreateFileRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Size          uint64                 `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	StorageKey    string                 `protobuf:"bytes,4,opt,name=storage_key,json=storageKey,proto3" json:"storage_key,omitempty"`
+	ParentId      string                 `protobuf:"bytes,5,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayCreateFileRequest) Reset() {
+	*x = GatewayCreateFileRequest{}
+	mi := &file_api_gateway_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayCreateFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayCreateFileRequest) ProtoMessage() {}
+
+func (x *GatewayCreateFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayCreateFileRequest.ProtoReflect.Descriptor instead.
+func (*GatewayCreateFileRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GatewayCreateFileRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GatewayCreateFileRequest) GetSize() uint64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *GatewayCreateFileRequest) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *GatewayCreateFileRequest) GetStorageKey() string {
+	if x != nil {
+		return x.StorageKey
+	}
+	return ""
+}
+
+func (x *GatewayCreateFileRequest) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+type GatewayCreatedFileReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Size          uint64                 `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	ContentType   string                 `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	ParentId      string                 `protobuf:"bytes,5,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,6,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayCreatedFileReply) Reset() {
+	*x = GatewayCreatedFileReply{}
+	mi := &file_api_gateway_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayCreatedFileReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayCreatedFileReply) ProtoMessage() {}
+
+func (x *GatewayCreatedFileReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayCreatedFileReply.ProtoReflect.Descriptor instead.
+func (*GatewayCreatedFileReply) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GatewayCreatedFileReply) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFileReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFileReply) GetSize() uint64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *GatewayCreatedFileReply) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFileReply) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFileReply) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFileReply) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFileReply) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type GatewayCreateFolderRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	ParentId      string                 `protobuf:"bytes,2,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayCreateFolderRequest) Reset() {
+	*x = GatewayCreateFolderRequest{}
+	mi := &file_api_gateway_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayCreateFolderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayCreateFolderRequest) ProtoMessage() {}
+
+func (x *GatewayCreateFolderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayCreateFolderRequest.ProtoReflect.Descriptor instead.
+func (*GatewayCreateFolderRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GatewayCreateFolderRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GatewayCreateFolderRequest) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+type GatewayCreatedFolderReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ParentId      string                 `protobuf:"bytes,3,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,4,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayCreatedFolderReply) Reset() {
+	*x = GatewayCreatedFolderReply{}
+	mi := &file_api_gateway_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayCreatedFolderReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayCreatedFolderReply) ProtoMessage() {}
+
+func (x *GatewayCreatedFolderReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayCreatedFolderReply.ProtoReflect.Descriptor instead.
+func (*GatewayCreatedFolderReply) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GatewayCreatedFolderReply) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFolderReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFolderReply) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFolderReply) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *GatewayCreatedFolderReply) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type GatewayRenameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayRenameRequest) Reset() {
+	*x = GatewayRenameRequest{}
+	mi := &file_api_gateway_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayRenameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayRenameRequest) ProtoMessage() {}
+
+func (x *GatewayRenameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayRenameRequest.ProtoReflect.Descriptor instead.
+func (*GatewayRenameRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GatewayRenameRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GatewayRenameRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type GatewayEmptyReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayEmptyReply) Reset() {
+	*x = GatewayEmptyReply{}
+	mi := &file_api_gateway_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayEmptyReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayEmptyReply) ProtoMessage() {}
+
+func (x *GatewayEmptyReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayEmptyReply.ProtoReflect.Descriptor instead.
+func (*GatewayEmptyReply) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{15}
+}
+
+type GatewayListFolderContentsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FolderId      string                 `protobuf:"bytes,1,opt,name=folder_id,json=folderId,proto3" json:"folder_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayListFolderContentsRequest) Reset() {
+	*x = GatewayListFolderContentsRequest{}
+	mi := &file_api_gateway_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayListFolderContentsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayListFolderContentsRequest) ProtoMessage() {}
+
+func (x *GatewayListFolderContentsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayListFolderContentsRequest.ProtoReflect.Descriptor instead.
+func (*GatewayListFolderContentsRequest) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GatewayListFolderContentsRequest) GetFolderId() string {
+	if x != nil {
+		return x.FolderId
+	}
+	return ""
+}
+
+type GatewayFolderContentsReply struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Files         []*GatewayFileMetadataReply   `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	Folders       []*GatewayFolderMetadataReply `protobuf:"bytes,2,rep,name=folders,proto3" json:"folders,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayFolderContentsReply) Reset() {
+	*x = GatewayFolderContentsReply{}
+	mi := &file_api_gateway_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayFolderContentsReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayFolderContentsReply) ProtoMessage() {}
+
+func (x *GatewayFolderContentsReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_gateway_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayFolderContentsReply.ProtoReflect.Descriptor instead.
+func (*GatewayFolderContentsReply) Descriptor() ([]byte, []int) {
+	return file_api_gateway_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GatewayFolderContentsReply) GetFiles() []*GatewayFileMetadataReply {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+func (x *GatewayFolderContentsReply) GetFolders() []*GatewayFolderMetadataReply {
+	if x != nil {
+		return x.Folders
+	}
+	return nil
+}
+
 type AuthVerifyRegistrationRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	VerificationToken string                 `protobuf:"bytes,1,opt,name=verification_token,json=verificationToken,proto3" json:"verification_token,omitempty"`
@@ -328,7 +1088,7 @@ type AuthVerifyRegistrationRequest struct {
 
 func (x *AuthVerifyRegistrationRequest) Reset() {
 	*x = AuthVerifyRegistrationRequest{}
-	mi := &file_api_gateway_proto_msgTypes[6]
+	mi := &file_api_gateway_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -340,7 +1100,7 @@ func (x *AuthVerifyRegistrationRequest) String() string {
 func (*AuthVerifyRegistrationRequest) ProtoMessage() {}
 
 func (x *AuthVerifyRegistrationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_gateway_proto_msgTypes[6]
+	mi := &file_api_gateway_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -353,7 +1113,7 @@ func (x *AuthVerifyRegistrationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthVerifyRegistrationRequest.ProtoReflect.Descriptor instead.
 func (*AuthVerifyRegistrationRequest) Descriptor() ([]byte, []int) {
-	return file_api_gateway_proto_rawDescGZIP(), []int{6}
+	return file_api_gateway_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AuthVerifyRegistrationRequest) GetVerificationToken() string {
@@ -371,7 +1131,7 @@ type AuthVerifyRegistrationResponse struct {
 
 func (x *AuthVerifyRegistrationResponse) Reset() {
 	*x = AuthVerifyRegistrationResponse{}
-	mi := &file_api_gateway_proto_msgTypes[7]
+	mi := &file_api_gateway_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -383,7 +1143,7 @@ func (x *AuthVerifyRegistrationResponse) String() string {
 func (*AuthVerifyRegistrationResponse) ProtoMessage() {}
 
 func (x *AuthVerifyRegistrationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_gateway_proto_msgTypes[7]
+	mi := &file_api_gateway_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -396,7 +1156,7 @@ func (x *AuthVerifyRegistrationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthVerifyRegistrationResponse.ProtoReflect.Descriptor instead.
 func (*AuthVerifyRegistrationResponse) Descriptor() ([]byte, []int) {
-	return file_api_gateway_proto_rawDescGZIP(), []int{7}
+	return file_api_gateway_proto_rawDescGZIP(), []int{19}
 }
 
 var File_api_gateway_proto protoreflect.FileDescriptor
@@ -419,10 +1179,71 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x12AuthRefreshRequest\"f\n" +
 	"\x13AuthRefreshResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
-	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds\"N\n" +
+	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds\"'\n" +
+	"\x15GatewayGetFileRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\")\n" +
+	"\x17GatewayGetFolderRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xeb\x01\n" +
+	"\x18GatewayFileMetadataReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x04R\x04size\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12\x1b\n" +
+	"\tparent_id\x18\x05 \x01(\tR\bparentId\x12\x19\n" +
+	"\bowner_id\x18\x06 \x01(\tR\aownerId\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\a \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\tR\tupdatedAt\"\xb6\x01\n" +
+	"\x1aGatewayFolderMetadataReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
+	"\tparent_id\x18\x03 \x01(\tR\bparentId\x12\x19\n" +
+	"\bowner_id\x18\x04 \x01(\tR\aownerId\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x05 \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\x06 \x01(\tR\tupdatedAt\"\xa3\x01\n" +
+	"\x18GatewayCreateFileRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04size\x18\x02 \x01(\x04R\x04size\x12!\n" +
+	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1f\n" +
+	"\vstorage_key\x18\x04 \x01(\tR\n" +
+	"storageKey\x12\x1b\n" +
+	"\tparent_id\x18\x05 \x01(\tR\bparentId\"\xea\x01\n" +
+	"\x17GatewayCreatedFileReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x04R\x04size\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12\x1b\n" +
+	"\tparent_id\x18\x05 \x01(\tR\bparentId\x12\x19\n" +
+	"\bowner_id\x18\x06 \x01(\tR\aownerId\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\a \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\tR\tupdatedAt\"M\n" +
+	"\x1aGatewayCreateFolderRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
+	"\tparent_id\x18\x02 \x01(\tR\bparentId\"\x96\x01\n" +
+	"\x19GatewayCreatedFolderReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
+	"\tparent_id\x18\x03 \x01(\tR\bparentId\x12\x19\n" +
+	"\bowner_id\x18\x04 \x01(\tR\aownerId\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x05 \x01(\tR\tcreatedAt\":\n" +
+	"\x14GatewayRenameRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\x13\n" +
+	"\x11GatewayEmptyReply\"?\n" +
+	" GatewayListFolderContentsRequest\x12\x1b\n" +
+	"\tfolder_id\x18\x01 \x01(\tR\bfolderId\"\x9c\x01\n" +
+	"\x1aGatewayFolderContentsReply\x12;\n" +
+	"\x05files\x18\x01 \x03(\v2%.api_gateway.GatewayFileMetadataReplyR\x05files\x12A\n" +
+	"\afolders\x18\x02 \x03(\v2'.api_gateway.GatewayFolderMetadataReplyR\afolders\"N\n" +
 	"\x1dAuthVerifyRegistrationRequest\x12-\n" +
 	"\x12verification_token\x18\x01 \x01(\tR\x11verificationToken\" \n" +
-	"\x1eAuthVerifyRegistrationResponse2\xc8\x06\n" +
+	"\x1eAuthVerifyRegistrationResponse2\x9c\r\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
@@ -433,7 +1254,17 @@ const file_api_gateway_proto_rawDesc = "" +
 	"AuthSignIn\x12\x13.auth.SignInRequest\x1a\x1f.api_gateway.AuthSignInResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/auth/login\x12l\n" +
 	"\rAuthVerifyOtp\x12\x16.auth.VerifyOtpRequest\x1a\".api_gateway.AuthVerifyOtpResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/auth/otp/verify\x12u\n" +
 	"\x12AuthChangePassword\x12\x1b.auth.ChangePasswordRequest\x1a\x1c.auth.ChangePasswordResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/auth/change-password\x12k\n" +
-	"\vAuthRefresh\x12\x1f.api_gateway.AuthRefreshRequest\x1a .api_gateway.AuthRefreshResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/refreshB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
+	"\vAuthRefresh\x12\x1f.api_gateway.AuthRefreshRequest\x1a .api_gateway.AuthRefreshResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/refresh\x12m\n" +
+	"\aGetFile\x12\".api_gateway.GatewayGetFileRequest\x1a%.api_gateway.GatewayFileMetadataReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/files/{id}\x12u\n" +
+	"\tGetFolder\x12$.api_gateway.GatewayGetFolderRequest\x1a'.api_gateway.GatewayFolderMetadataReply\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/api/folders/{id}\x12p\n" +
+	"\n" +
+	"CreateFile\x12%.api_gateway.GatewayCreateFileRequest\x1a$.api_gateway.GatewayCreatedFileReply\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
+	"/api/files\x12p\n" +
+	"\n" +
+	"RenameFile\x12!.api_gateway.GatewayRenameRequest\x1a\x1e.api_gateway.GatewayEmptyReply\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*2\x14/api/files/{id}/name\x12x\n" +
+	"\fCreateFolder\x12'.api_gateway.GatewayCreateFolderRequest\x1a&.api_gateway.GatewayCreatedFolderReply\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/api/folders\x12t\n" +
+	"\fRenameFolder\x12!.api_gateway.GatewayRenameRequest\x1a\x1e.api_gateway.GatewayEmptyReply\"!\x82\xd3\xe4\x93\x02\x1b:\x01*2\x16/api/folders/{id}/name\x12\x97\x01\n" +
+	"\x12ListFolderContents\x12-.api_gateway.GatewayListFolderContentsRequest\x1a'.api_gateway.GatewayFolderContentsReply\")\x82\xd3\xe4\x93\x02#\x12!/api/folders/{folder_id}/contentsB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
 
 var (
 	file_api_gateway_proto_rawDescOnce sync.Once
@@ -447,45 +1278,73 @@ func file_api_gateway_proto_rawDescGZIP() []byte {
 	return file_api_gateway_proto_rawDescData
 }
 
-var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_api_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_api_gateway_proto_goTypes = []any{
-	(*PingRequest)(nil),                    // 0: api_gateway.PingRequest
-	(*PingReply)(nil),                      // 1: api_gateway.PingReply
-	(*AuthSignInResponse)(nil),             // 2: api_gateway.AuthSignInResponse
-	(*AuthVerifyOtpResponse)(nil),          // 3: api_gateway.AuthVerifyOtpResponse
-	(*AuthRefreshRequest)(nil),             // 4: api_gateway.AuthRefreshRequest
-	(*AuthRefreshResponse)(nil),            // 5: api_gateway.AuthRefreshResponse
-	(*AuthVerifyRegistrationRequest)(nil),  // 6: api_gateway.AuthVerifyRegistrationRequest
-	(*AuthVerifyRegistrationResponse)(nil), // 7: api_gateway.AuthVerifyRegistrationResponse
-	(*auth.RegisterRequest)(nil),           // 8: auth.RegisterRequest
-	(*auth.SignInRequest)(nil),             // 9: auth.SignInRequest
-	(*auth.VerifyOtpRequest)(nil),          // 10: auth.VerifyOtpRequest
-	(*auth.ChangePasswordRequest)(nil),     // 11: auth.ChangePasswordRequest
-	(*auth.RegisterResponse)(nil),          // 12: auth.RegisterResponse
-	(*auth.ChangePasswordResponse)(nil),    // 13: auth.ChangePasswordResponse
+	(*PingRequest)(nil),                      // 0: api_gateway.PingRequest
+	(*PingReply)(nil),                        // 1: api_gateway.PingReply
+	(*AuthSignInResponse)(nil),               // 2: api_gateway.AuthSignInResponse
+	(*AuthVerifyOtpResponse)(nil),            // 3: api_gateway.AuthVerifyOtpResponse
+	(*AuthRefreshRequest)(nil),               // 4: api_gateway.AuthRefreshRequest
+	(*AuthRefreshResponse)(nil),              // 5: api_gateway.AuthRefreshResponse
+	(*GatewayGetFileRequest)(nil),            // 6: api_gateway.GatewayGetFileRequest
+	(*GatewayGetFolderRequest)(nil),          // 7: api_gateway.GatewayGetFolderRequest
+	(*GatewayFileMetadataReply)(nil),         // 8: api_gateway.GatewayFileMetadataReply
+	(*GatewayFolderMetadataReply)(nil),       // 9: api_gateway.GatewayFolderMetadataReply
+	(*GatewayCreateFileRequest)(nil),         // 10: api_gateway.GatewayCreateFileRequest
+	(*GatewayCreatedFileReply)(nil),          // 11: api_gateway.GatewayCreatedFileReply
+	(*GatewayCreateFolderRequest)(nil),       // 12: api_gateway.GatewayCreateFolderRequest
+	(*GatewayCreatedFolderReply)(nil),        // 13: api_gateway.GatewayCreatedFolderReply
+	(*GatewayRenameRequest)(nil),             // 14: api_gateway.GatewayRenameRequest
+	(*GatewayEmptyReply)(nil),                // 15: api_gateway.GatewayEmptyReply
+	(*GatewayListFolderContentsRequest)(nil), // 16: api_gateway.GatewayListFolderContentsRequest
+	(*GatewayFolderContentsReply)(nil),       // 17: api_gateway.GatewayFolderContentsReply
+	(*AuthVerifyRegistrationRequest)(nil),    // 18: api_gateway.AuthVerifyRegistrationRequest
+	(*AuthVerifyRegistrationResponse)(nil),   // 19: api_gateway.AuthVerifyRegistrationResponse
+	(*auth.RegisterRequest)(nil),             // 20: auth.RegisterRequest
+	(*auth.SignInRequest)(nil),               // 21: auth.SignInRequest
+	(*auth.VerifyOtpRequest)(nil),            // 22: auth.VerifyOtpRequest
+	(*auth.ChangePasswordRequest)(nil),       // 23: auth.ChangePasswordRequest
+	(*auth.RegisterResponse)(nil),            // 24: auth.RegisterResponse
+	(*auth.ChangePasswordResponse)(nil),      // 25: auth.ChangePasswordResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
-	0,  // 0: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
-	0,  // 1: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
-	8,  // 2: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
-	6,  // 3: api_gateway.ApiGateway.AuthVerifyRegistration:input_type -> api_gateway.AuthVerifyRegistrationRequest
-	9,  // 4: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
-	10, // 5: api_gateway.ApiGateway.AuthVerifyOtp:input_type -> auth.VerifyOtpRequest
-	11, // 6: api_gateway.ApiGateway.AuthChangePassword:input_type -> auth.ChangePasswordRequest
-	4,  // 7: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
-	1,  // 8: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1,  // 9: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	12, // 10: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	7,  // 11: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
-	2,  // 12: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
-	3,  // 13: api_gateway.ApiGateway.AuthVerifyOtp:output_type -> api_gateway.AuthVerifyOtpResponse
-	13, // 14: api_gateway.ApiGateway.AuthChangePassword:output_type -> auth.ChangePasswordResponse
-	5,  // 15: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
-	8,  // [8:16] is the sub-list for method output_type
-	0,  // [0:8] is the sub-list for method input_type
-	0,  // [0:0] is the sub-list for extension type_name
-	0,  // [0:0] is the sub-list for extension extendee
-	0,  // [0:0] is the sub-list for field type_name
+	8,  // 0: api_gateway.GatewayFolderContentsReply.files:type_name -> api_gateway.GatewayFileMetadataReply
+	9,  // 1: api_gateway.GatewayFolderContentsReply.folders:type_name -> api_gateway.GatewayFolderMetadataReply
+	0,  // 2: api_gateway.ApiGateway.Ping:input_type -> api_gateway.PingRequest
+	0,  // 3: api_gateway.ApiGateway.PingUser:input_type -> api_gateway.PingRequest
+	20, // 4: api_gateway.ApiGateway.AuthRegister:input_type -> auth.RegisterRequest
+	18, // 5: api_gateway.ApiGateway.AuthVerifyRegistration:input_type -> api_gateway.AuthVerifyRegistrationRequest
+	21, // 6: api_gateway.ApiGateway.AuthSignIn:input_type -> auth.SignInRequest
+	22, // 7: api_gateway.ApiGateway.AuthVerifyOtp:input_type -> auth.VerifyOtpRequest
+	23, // 8: api_gateway.ApiGateway.AuthChangePassword:input_type -> auth.ChangePasswordRequest
+	4,  // 9: api_gateway.ApiGateway.AuthRefresh:input_type -> api_gateway.AuthRefreshRequest
+	6,  // 10: api_gateway.ApiGateway.GetFile:input_type -> api_gateway.GatewayGetFileRequest
+	7,  // 11: api_gateway.ApiGateway.GetFolder:input_type -> api_gateway.GatewayGetFolderRequest
+	10, // 12: api_gateway.ApiGateway.CreateFile:input_type -> api_gateway.GatewayCreateFileRequest
+	14, // 13: api_gateway.ApiGateway.RenameFile:input_type -> api_gateway.GatewayRenameRequest
+	12, // 14: api_gateway.ApiGateway.CreateFolder:input_type -> api_gateway.GatewayCreateFolderRequest
+	14, // 15: api_gateway.ApiGateway.RenameFolder:input_type -> api_gateway.GatewayRenameRequest
+	16, // 16: api_gateway.ApiGateway.ListFolderContents:input_type -> api_gateway.GatewayListFolderContentsRequest
+	1,  // 17: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1,  // 18: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	24, // 19: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	19, // 20: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
+	2,  // 21: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
+	3,  // 22: api_gateway.ApiGateway.AuthVerifyOtp:output_type -> api_gateway.AuthVerifyOtpResponse
+	25, // 23: api_gateway.ApiGateway.AuthChangePassword:output_type -> auth.ChangePasswordResponse
+	5,  // 24: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
+	8,  // 25: api_gateway.ApiGateway.GetFile:output_type -> api_gateway.GatewayFileMetadataReply
+	9,  // 26: api_gateway.ApiGateway.GetFolder:output_type -> api_gateway.GatewayFolderMetadataReply
+	11, // 27: api_gateway.ApiGateway.CreateFile:output_type -> api_gateway.GatewayCreatedFileReply
+	15, // 28: api_gateway.ApiGateway.RenameFile:output_type -> api_gateway.GatewayEmptyReply
+	13, // 29: api_gateway.ApiGateway.CreateFolder:output_type -> api_gateway.GatewayCreatedFolderReply
+	15, // 30: api_gateway.ApiGateway.RenameFolder:output_type -> api_gateway.GatewayEmptyReply
+	17, // 31: api_gateway.ApiGateway.ListFolderContents:output_type -> api_gateway.GatewayFolderContentsReply
+	17, // [17:32] is the sub-list for method output_type
+	2,  // [2:17] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_api_gateway_proto_init() }
@@ -499,7 +1358,7 @@ func file_api_gateway_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_gateway_proto_rawDesc), len(file_api_gateway_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

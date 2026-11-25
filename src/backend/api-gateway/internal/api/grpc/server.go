@@ -3,13 +3,15 @@ package grpc
 import (
 	pb "proto/api-gateway"
 
+	changePassword "api-gateway/internal/application/auth/change_password"
 	authlogin "api-gateway/internal/application/auth/login"
 	authrefresh "api-gateway/internal/application/auth/refresh"
 	authregister "api-gateway/internal/application/auth/register"
-	authverifyregistration "api-gateway/internal/application/auth/verify_registration"
-	changePassword "api-gateway/internal/application/auth/change_password"
-
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
+	authverifyregistration "api-gateway/internal/application/auth/verify_registration"
+
+	filehandler "api-gateway/internal/application/file/file"
+	folderhandler "api-gateway/internal/application/file/folder"
 	userping "api-gateway/internal/application/user/ping"
 )
 
@@ -26,6 +28,8 @@ type Handlers struct {
 	AuthVerifyRegistrationHandler *authverifyregistration.Handler
 	AuthVerifyOtpHandler          *verifyotp.Handler
 	AuthChangePasswordHandler     *changePassword.Handler
+	FileHandler                   *filehandler.Handler
+	FolderHandler                 *folderhandler.Handler
 }
 
 func NewServer(handlers *Handlers) *Server {
