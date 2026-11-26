@@ -12,6 +12,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	auth "proto/auth"
+	notification "proto/notification"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,26 +21,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApiGateway_Ping_FullMethodName                   = "/api_gateway.ApiGateway/Ping"
-	ApiGateway_PingUser_FullMethodName               = "/api_gateway.ApiGateway/PingUser"
-	ApiGateway_AuthRegister_FullMethodName           = "/api_gateway.ApiGateway/AuthRegister"
-	ApiGateway_AuthVerifyRegistration_FullMethodName = "/api_gateway.ApiGateway/AuthVerifyRegistration"
-	ApiGateway_AuthSignIn_FullMethodName             = "/api_gateway.ApiGateway/AuthSignIn"
-	ApiGateway_AuthVerifyOtp_FullMethodName          = "/api_gateway.ApiGateway/AuthVerifyOtp"
-	ApiGateway_AuthChangePassword_FullMethodName     = "/api_gateway.ApiGateway/AuthChangePassword"
-	ApiGateway_AuthRefresh_FullMethodName            = "/api_gateway.ApiGateway/AuthRefresh"
-	ApiGateway_GetFile_FullMethodName                = "/api_gateway.ApiGateway/GetFile"
-	ApiGateway_GetFolder_FullMethodName              = "/api_gateway.ApiGateway/GetFolder"
-	ApiGateway_CreateFile_FullMethodName             = "/api_gateway.ApiGateway/CreateFile"
-	ApiGateway_RenameFile_FullMethodName             = "/api_gateway.ApiGateway/RenameFile"
-	ApiGateway_CreateFolder_FullMethodName           = "/api_gateway.ApiGateway/CreateFolder"
-	ApiGateway_RenameFolder_FullMethodName           = "/api_gateway.ApiGateway/RenameFolder"
-	ApiGateway_ListFolderContents_FullMethodName     = "/api_gateway.ApiGateway/ListFolderContents"
-	ApiGateway_GetStorage_FullMethodName             = "/api_gateway.ApiGateway/GetStorage"
-	ApiGateway_AuthForgotPassword_FullMethodName     = "/api_gateway.ApiGateway/AuthForgotPassword"
-	ApiGateway_AuthResetPassword_FullMethodName      = "/api_gateway.ApiGateway/AuthResetPassword"
-	ApiGateway_AuthRequestMagicLink_FullMethodName   = "/api_gateway.ApiGateway/AuthRequestMagicLink"
-	ApiGateway_AuthMagicLinkSignIn_FullMethodName    = "/api_gateway.ApiGateway/AuthMagicLinkSignIn"
+	ApiGateway_Ping_FullMethodName                      = "/api_gateway.ApiGateway/Ping"
+	ApiGateway_PingUser_FullMethodName                  = "/api_gateway.ApiGateway/PingUser"
+	ApiGateway_AuthRegister_FullMethodName              = "/api_gateway.ApiGateway/AuthRegister"
+	ApiGateway_AuthVerifyRegistration_FullMethodName    = "/api_gateway.ApiGateway/AuthVerifyRegistration"
+	ApiGateway_AuthSignIn_FullMethodName                = "/api_gateway.ApiGateway/AuthSignIn"
+	ApiGateway_AuthVerifyOtp_FullMethodName             = "/api_gateway.ApiGateway/AuthVerifyOtp"
+	ApiGateway_AuthChangePassword_FullMethodName        = "/api_gateway.ApiGateway/AuthChangePassword"
+	ApiGateway_AuthRefresh_FullMethodName               = "/api_gateway.ApiGateway/AuthRefresh"
+	ApiGateway_GetFile_FullMethodName                   = "/api_gateway.ApiGateway/GetFile"
+	ApiGateway_GetFolder_FullMethodName                 = "/api_gateway.ApiGateway/GetFolder"
+	ApiGateway_CreateFile_FullMethodName                = "/api_gateway.ApiGateway/CreateFile"
+	ApiGateway_RenameFile_FullMethodName                = "/api_gateway.ApiGateway/RenameFile"
+	ApiGateway_CreateFolder_FullMethodName              = "/api_gateway.ApiGateway/CreateFolder"
+	ApiGateway_RenameFolder_FullMethodName              = "/api_gateway.ApiGateway/RenameFolder"
+	ApiGateway_ListFolderContents_FullMethodName        = "/api_gateway.ApiGateway/ListFolderContents"
+	ApiGateway_GetStorage_FullMethodName                = "/api_gateway.ApiGateway/GetStorage"
+	ApiGateway_AuthForgotPassword_FullMethodName        = "/api_gateway.ApiGateway/AuthForgotPassword"
+	ApiGateway_AuthResetPassword_FullMethodName         = "/api_gateway.ApiGateway/AuthResetPassword"
+	ApiGateway_AuthRequestMagicLink_FullMethodName      = "/api_gateway.ApiGateway/AuthRequestMagicLink"
+	ApiGateway_AuthMagicLinkSignIn_FullMethodName       = "/api_gateway.ApiGateway/AuthMagicLinkSignIn"
+	ApiGateway_NotificationsGetAllByUser_FullMethodName = "/api_gateway.ApiGateway/NotificationsGetAllByUser"
 )
 
 // ApiGatewayClient is the client API for ApiGateway service.
@@ -66,6 +68,7 @@ type ApiGatewayClient interface {
 	AuthResetPassword(ctx context.Context, in *auth.ResetPasswordRequest, opts ...grpc.CallOption) (*auth.ResetPasswordResponse, error)
 	AuthRequestMagicLink(ctx context.Context, in *auth.RequestMagicLinkRequest, opts ...grpc.CallOption) (*auth.RequestMagicLinkResponse, error)
 	AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*AuthMagicLinkSignInResponse, error)
+	NotificationsGetAllByUser(ctx context.Context, in *NotificationsGetAllByUserRequest, opts ...grpc.CallOption) (*notification.GetAllByUserResponse, error)
 }
 
 type apiGatewayClient struct {
@@ -276,6 +279,16 @@ func (c *apiGatewayClient) AuthMagicLinkSignIn(ctx context.Context, in *auth.Mag
 	return out, nil
 }
 
+func (c *apiGatewayClient) NotificationsGetAllByUser(ctx context.Context, in *NotificationsGetAllByUserRequest, opts ...grpc.CallOption) (*notification.GetAllByUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(notification.GetAllByUserResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_NotificationsGetAllByUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiGatewayServer is the server API for ApiGateway service.
 // All implementations must embed UnimplementedApiGatewayServer
 // for forward compatibility.
@@ -300,6 +313,7 @@ type ApiGatewayServer interface {
 	AuthResetPassword(context.Context, *auth.ResetPasswordRequest) (*auth.ResetPasswordResponse, error)
 	AuthRequestMagicLink(context.Context, *auth.RequestMagicLinkRequest) (*auth.RequestMagicLinkResponse, error)
 	AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*AuthMagicLinkSignInResponse, error)
+	NotificationsGetAllByUser(context.Context, *NotificationsGetAllByUserRequest) (*notification.GetAllByUserResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -369,6 +383,9 @@ func (UnimplementedApiGatewayServer) AuthRequestMagicLink(context.Context, *auth
 }
 func (UnimplementedApiGatewayServer) AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*AuthMagicLinkSignInResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthMagicLinkSignIn not implemented")
+}
+func (UnimplementedApiGatewayServer) NotificationsGetAllByUser(context.Context, *NotificationsGetAllByUserRequest) (*notification.GetAllByUserResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method NotificationsGetAllByUser not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
 func (UnimplementedApiGatewayServer) testEmbeddedByValue()                    {}
@@ -751,6 +768,24 @@ func _ApiGateway_AuthMagicLinkSignIn_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_NotificationsGetAllByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotificationsGetAllByUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).NotificationsGetAllByUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_NotificationsGetAllByUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).NotificationsGetAllByUser(ctx, req.(*NotificationsGetAllByUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiGateway_ServiceDesc is the grpc.ServiceDesc for ApiGateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -837,6 +872,10 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthMagicLinkSignIn",
 			Handler:    _ApiGateway_AuthMagicLinkSignIn_Handler,
+		},
+		{
+			MethodName: "NotificationsGetAllByUser",
+			Handler:    _ApiGateway_NotificationsGetAllByUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

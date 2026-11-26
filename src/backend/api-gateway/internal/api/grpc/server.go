@@ -9,6 +9,7 @@ import (
 	authregister "api-gateway/internal/application/auth/register"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	authverifyregistration "api-gateway/internal/application/auth/verify_registration"
+	notificationclient "api-gateway/internal/infrastructure/clients/notification"
 
 	filehandler "api-gateway/internal/application/file/file"
 	folderhandler "api-gateway/internal/application/file/folder"
@@ -16,9 +17,9 @@ import (
 	userstorage "api-gateway/internal/application/user/storage"
 
 	forgotPassword "api-gateway/internal/application/auth/forgot_password"
-	resetPassword "api-gateway/internal/application/auth/reset_password"
 	magiclinksignin "api-gateway/internal/application/auth/magic_link_sign_in"
 	requestmagiclink "api-gateway/internal/application/auth/request_magic_link"
+	resetPassword "api-gateway/internal/application/auth/reset_password"
 )
 
 type Server struct {
@@ -41,6 +42,10 @@ type Handlers struct {
 	AuthResetPasswordHandler      *resetPassword.Handler
 	AuthRequestMagicLinkHandler   *requestmagiclink.Handler
 	AuthMagicLinkSignInHandler    *magiclinksignin.Handler
+
+	// TODO: will figure out better way to handle notifications...
+	// For now they skip the application layer and just get forwarded to frontend
+	NotificationClient *notificationclient.GRPCClient
 }
 
 func NewServer(handlers *Handlers) *Server {

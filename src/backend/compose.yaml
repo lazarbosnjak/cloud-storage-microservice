@@ -61,6 +61,8 @@ services:
     container_name: mongodb-file-service
     restart: unless-stopped
     env_file: ./file-service/.env
+    ports:
+      - 27018:27017
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: ${MONGO_HEALTH_INTERVAL:-10s}
@@ -84,6 +86,27 @@ services:
       context: .
       dockerfile: ./notification-service/Dockerfile
     env_file: ./notification-service/.env
+    ports:
+      - 50055:50055
+    depends_on:
+      notification-service-cassandra:
+        condition: service_healthy
+
+  notification-service-cassandra:
+    image: cassandra:6.0
+    container_name: notification-service-cassandra
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 15s
+      timeout: 5s
+      retries: 15
+    environment:
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    volumes:
+      - notification_service_cass_store:/var/lib/cassandra/data
 
   analytics-service:
     image: analytics-service
@@ -133,3 +156,4 @@ volumes:
   auth_postgres_data:
   user_mongo_data:
   file_mongo_data:
+  notification_service_cass_store:
