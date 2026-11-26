@@ -53,15 +53,19 @@ func (s *AuthService) ResetPassword(ctx context.Context, tokenID, newPassword, r
 
 	token, err := s.verificationTokenStore.GetByID(ctx, tokenID)
 	if err != nil {
+		slog.WarnContext(ctx, "reset password: token lookup failed", "token_id", tokenID, "error", err)
 		return domain.ErrVerificationTokenNotFound
 	}
 	if token.Reason != domain.PasswordReset {
+		slog.WarnContext(ctx, "reset password: wrong token reason", "token_id", tokenID, "reason", token.Reason)
 		return domain.ErrInvalidVerificationToken
 	}
 	if token.UsedAt != nil {
+		slog.WarnContext(ctx, "reset password: token already used", "token_id", tokenID, "used_at", *token.UsedAt)
 		return domain.ErrInvalidVerificationToken
 	}
 	if token.ExpiresAt.Before(time.Now()) {
+		slog.WarnContext(ctx, "reset password: token expired", "token_id", tokenID, "expires_at", token.ExpiresAt)
 		return domain.ErrVerificationTokenExpired
 	}
 

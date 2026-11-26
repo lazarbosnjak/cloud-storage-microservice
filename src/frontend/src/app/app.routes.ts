@@ -26,7 +26,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: '/forgot-password', pathMatch: 'full' },
       {
-        path: ':id',
+        path: ':tokenId',
         loadComponent: () =>
           import('./features/reset-password/reset-password').then(
             (m) => m.ResetPassword,
