@@ -63,6 +63,7 @@ type EmailSender interface {
 	SendVerifyRegistrationMail(to []string, verificationLink string) error
 	SendOtpMail(to []string, code string, expiresIn time.Duration) error
 	SendPasswordResetMail(to []string, resetLink string) error
+	SendMagicLinkMail(to []string, magicLink string) error
 }
 
 // FIXME: move cfg to struct instead of constructor func
