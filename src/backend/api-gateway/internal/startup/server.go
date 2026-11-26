@@ -167,9 +167,18 @@ func (s *Server) run() error {
 			status.Error(codes.Unauthenticated, "invalid token"))
 	}
 
+	rateLimiter := gateway.NewRateLimitHandler(s.config)
+
+	tooMany := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gateway.ProblemErrorHandler(r.Context(), gwMux, &runtime.JSONPb{}, w, r,
+			status.Error(codes.ResourceExhausted, "rate limit exceeded"))
+	})
+
+	rootHandler := rateLimiter.Middleware(jwtHandler.Middleware(gwMux, reject), tooMany)
+
 	gwServer := &http.Server{
 		Addr:    ":" + s.config.RestServerPort,
-		Handler: jwtHandler.Middleware(gwMux, reject),
+		Handler: rootHandler,
 	}
 
 	g, gctx := errgroup.WithContext(ctx)
@@ -187,6 +196,11 @@ func (s *Server) run() error {
 		if err := gwServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			return fmt.Errorf("rest server error: %w", err)
 		}
+		return nil
+	})
+
+	g.Go(func() error {
+		rateLimiter.RunCleanup(gctx)
 		return nil
 	})
 
