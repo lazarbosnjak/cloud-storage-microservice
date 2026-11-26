@@ -9,6 +9,7 @@ import (
 	authregister "api-gateway/internal/application/auth/register"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	authverifyregistration "api-gateway/internal/application/auth/verify_registration"
+	notificationclient "api-gateway/internal/infrastructure/clients/notification"
 
 	filehandler "api-gateway/internal/application/file/file"
 	folderhandler "api-gateway/internal/application/file/folder"
@@ -37,6 +38,10 @@ type Handlers struct {
 	UserStorageHandler            *userstorage.Handler
 	AuthForgotPasswordHandler     *forgotPassword.Handler
 	AuthResetPasswordHandler      *resetPassword.Handler
+
+	// TODO: will figure out better way to handle notifications...
+	// For now they skip the application layer and just get forwarded to frontend
+	NotificationClient *notificationclient.GRPCClient
 }
 
 func NewServer(handlers *Handlers) *Server {

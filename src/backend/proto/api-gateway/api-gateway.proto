@@ -6,6 +6,7 @@ option go_package = "proto/api-gateway;api_gateway";
 
 import "google/api/annotations.proto";
 import "auth/auth.proto";
+import "notification/notification.proto";
 
 service ApiGateway {
   rpc Ping (PingRequest) returns (PingReply) {
@@ -128,6 +129,12 @@ service ApiGateway {
     };
   }
 
+  rpc NotificationsGetAllByUser (NotificationsGetAllByUserRequest) returns (notification.GetAllByUserResponse) {
+    option (google.api.http) = {
+      get: "/api/notifications"
+    };
+  }
+
 }
 
 message PingRequest {}
@@ -246,3 +253,5 @@ message GatewayStorageReply {
   int64 used = 2;
   int64 available = 3;
 }
+
+message NotificationsGetAllByUserRequest {}

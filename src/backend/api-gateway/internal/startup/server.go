@@ -1,6 +1,15 @@
 package startup
 
 import (
+	"api-gateway/internal/api/gateway"
+	"api-gateway/internal/application/auth/login"
+	"api-gateway/internal/application/auth/refresh"
+	"api-gateway/internal/application/user/ping"
+	"api-gateway/internal/application/user/storage"
+	"api-gateway/internal/infrastructure/clients/auth"
+	"api-gateway/internal/infrastructure/clients/notification"
+	"api-gateway/internal/infrastructure/clients/user"
+	"api-gateway/internal/startup/config"
 	"context"
 	"errors"
 	"fmt"
@@ -11,21 +20,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"api-gateway/internal/api/gateway"
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	changePassword "api-gateway/internal/application/auth/change_password"
 	forgotPassword "api-gateway/internal/application/auth/forgot_password"
-	"api-gateway/internal/application/auth/login"
-	"api-gateway/internal/application/auth/refresh"
 	register "api-gateway/internal/application/auth/register"
 	resetPassword "api-gateway/internal/application/auth/reset_password"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
-	"api-gateway/internal/application/user/ping"
-	"api-gateway/internal/application/user/storage"
-	"api-gateway/internal/infrastructure/clients/auth"
-	"api-gateway/internal/infrastructure/clients/user"
-	"api-gateway/internal/startup/config"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/sync/errgroup"
@@ -37,6 +38,7 @@ import (
 
 	pb "proto/api-gateway"
 	authPb "proto/auth"
+	notifPb "proto/notification"
 	userPb "proto/user"
 
 	filehandler "api-gateway/internal/application/file/file"
@@ -106,7 +108,20 @@ func (s *Server) run() error {
 		}
 	}()
 
-	grpcAPIServer := s.newAPIServer(userConn, authConn, fileConn)
+	notifConn, err := grpc.NewClient(
+		s.config.NotificaitonServiceGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("create file gRPC connection: %w", err)
+	}
+	defer func() {
+		if err := fileConn.Close(); err != nil {
+			s.logger.Error("close connection ")
+		}
+	}()
+
+	grpcAPIServer := s.newAPIServer(userConn, authConn, fileConn, notifConn)
 
 	// gRPC server
 	grpcServer := grpc.NewServer()
@@ -154,9 +169,18 @@ func (s *Server) run() error {
 			status.Error(codes.Unauthenticated, "invalid token"))
 	}
 
+	rateLimiter := gateway.NewRateLimitHandler(s.config)
+
+	tooMany := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gateway.ProblemErrorHandler(r.Context(), gwMux, &runtime.JSONPb{}, w, r,
+			status.Error(codes.ResourceExhausted, "rate limit exceeded"))
+	})
+
+	rootHandler := rateLimiter.Middleware(jwtHandler.Middleware(gwMux, reject), tooMany)
+
 	gwServer := &http.Server{
 		Addr:    ":" + s.config.RestServerPort,
-		Handler: jwtHandler.Middleware(gwMux, reject),
+		Handler: rootHandler,
 	}
 
 	g, gctx := errgroup.WithContext(ctx)
@@ -174,6 +198,11 @@ func (s *Server) run() error {
 		if err := gwServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			return fmt.Errorf("rest server error: %w", err)
 		}
+		return nil
+	})
+
+	g.Go(func() error {
+		rateLimiter.RunCleanup(gctx)
 		return nil
 	})
 
@@ -214,6 +243,7 @@ func (s *Server) newAPIServer(
 	userConn *grpc.ClientConn,
 	authConn *grpc.ClientConn,
 	fileConn *grpc.ClientConn,
+	notifConn *grpc.ClientConn,
 ) pb.ApiGatewayServer {
 	userClient := user.NewGRPCClient(userPb.NewUserClient(userConn), s.logger)
 	userPingHandler := ping.NewHandler(userClient)
@@ -233,6 +263,8 @@ func (s *Server) newAPIServer(
 	fileHandler := filehandler.NewHandler(fileClient)
 	folderHandler := folderhandler.NewHandler(fileClient)
 
+	notifClient := notification.NewGRPCClient(notifPb.NewNotificationClient(notifConn))
+
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
 		UserPingHandler:               userPingHandler,
 		AuthRegisterHandler:           authRegisterHandler,
@@ -246,5 +278,6 @@ func (s *Server) newAPIServer(
 		UserStorageHandler:            userStorageHandler,
 		AuthForgotPasswordHandler:     authForgotPasswordHandler,
 		AuthResetPasswordHandler:      authResetPasswordHandler,
+		NotificationClient:            notifClient,
 	})
 }
