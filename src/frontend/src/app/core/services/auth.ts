@@ -50,6 +50,11 @@ export interface ResetPasswordRequest {
   repeatedPassword: string;
 }
 
+export interface MagicLinkSignInResponse {
+  accessToken: string;
+  expiresInSeconds: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -91,5 +96,17 @@ export class Auth {
 
   resetPassword(data: ResetPasswordRequest): Observable<unknown> {
     return this.http.post('/api/auth/reset-password', data);
+  }
+
+  requestMagicLink(data: ForgotPasswordRequest): Observable<unknown> {
+    return this.http.post('/api/auth/magic-link', data);
+  }
+
+  magicLinkSignIn(tokenId: string): Observable<MagicLinkSignInResponse> {
+    return this.http.post<MagicLinkSignInResponse>(
+      '/api/auth/magic-link/sign-in',
+      { tokenId },
+      { withCredentials: true },
+    );
   }
 }

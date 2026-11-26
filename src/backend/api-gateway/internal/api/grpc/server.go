@@ -17,6 +17,8 @@ import (
 	userstorage "api-gateway/internal/application/user/storage"
 
 	forgotPassword "api-gateway/internal/application/auth/forgot_password"
+	magiclinksignin "api-gateway/internal/application/auth/magic_link_sign_in"
+	requestmagiclink "api-gateway/internal/application/auth/request_magic_link"
 	resetPassword "api-gateway/internal/application/auth/reset_password"
 )
 
@@ -38,6 +40,8 @@ type Handlers struct {
 	UserStorageHandler            *userstorage.Handler
 	AuthForgotPasswordHandler     *forgotPassword.Handler
 	AuthResetPasswordHandler      *resetPassword.Handler
+	AuthRequestMagicLinkHandler   *requestmagiclink.Handler
+	AuthMagicLinkSignInHandler    *magiclinksignin.Handler
 
 	// TODO: will figure out better way to handle notifications...
 	// For now they skip the application layer and just get forwarded to frontend

@@ -23,7 +23,9 @@ import (
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	changePassword "api-gateway/internal/application/auth/change_password"
 	forgotPassword "api-gateway/internal/application/auth/forgot_password"
+	magiclinksignin "api-gateway/internal/application/auth/magic_link_sign_in"
 	register "api-gateway/internal/application/auth/register"
+	requestmagiclink "api-gateway/internal/application/auth/request_magic_link"
 	resetPassword "api-gateway/internal/application/auth/reset_password"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
@@ -258,6 +260,8 @@ func (s *Server) newAPIServer(
 	authChangePasswordHandler := changePassword.NewHandler(authClient)
 	authForgotPasswordHandler := forgotPassword.NewHandler(authClient)
 	authResetPasswordHandler := resetPassword.NewHandler(authClient)
+	authRequestMagicLinkHandler := requestmagiclink.NewHandler(authClient)
+	authMagicLinkSignInHandler := magiclinksignin.NewHandler(authClient)
 
 	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
 	fileHandler := filehandler.NewHandler(fileClient)
@@ -278,6 +282,8 @@ func (s *Server) newAPIServer(
 		UserStorageHandler:            userStorageHandler,
 		AuthForgotPasswordHandler:     authForgotPasswordHandler,
 		AuthResetPasswordHandler:      authResetPasswordHandler,
+		AuthRequestMagicLinkHandler:   authRequestMagicLinkHandler,
+		AuthMagicLinkSignInHandler:    authMagicLinkSignInHandler,
 		NotificationClient:            notifClient,
 	})
 }

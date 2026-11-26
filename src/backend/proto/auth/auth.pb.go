@@ -1021,6 +1021,190 @@ func (*ResetPasswordResponse) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{19}
 }
 
+type RequestMagicLinkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestMagicLinkRequest) Reset() {
+	*x = RequestMagicLinkRequest{}
+	mi := &file_auth_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestMagicLinkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestMagicLinkRequest) ProtoMessage() {}
+
+func (x *RequestMagicLinkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestMagicLinkRequest.ProtoReflect.Descriptor instead.
+func (*RequestMagicLinkRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *RequestMagicLinkRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+type RequestMagicLinkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestMagicLinkResponse) Reset() {
+	*x = RequestMagicLinkResponse{}
+	mi := &file_auth_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestMagicLinkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestMagicLinkResponse) ProtoMessage() {}
+
+func (x *RequestMagicLinkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestMagicLinkResponse.ProtoReflect.Descriptor instead.
+func (*RequestMagicLinkResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{21}
+}
+
+type MagicLinkSignInRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TokenId       string                 `protobuf:"bytes,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MagicLinkSignInRequest) Reset() {
+	*x = MagicLinkSignInRequest{}
+	mi := &file_auth_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MagicLinkSignInRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MagicLinkSignInRequest) ProtoMessage() {}
+
+func (x *MagicLinkSignInRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MagicLinkSignInRequest.ProtoReflect.Descriptor instead.
+func (*MagicLinkSignInRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *MagicLinkSignInRequest) GetTokenId() string {
+	if x != nil {
+		return x.TokenId
+	}
+	return ""
+}
+
+type MagicLinkSignInResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken      string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	ExpiresInSeconds int64                  `protobuf:"varint,2,opt,name=expires_in_seconds,json=expiresInSeconds,proto3" json:"expires_in_seconds,omitempty"`
+	RefreshToken     string                 `protobuf:"bytes,3,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *MagicLinkSignInResponse) Reset() {
+	*x = MagicLinkSignInResponse{}
+	mi := &file_auth_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MagicLinkSignInResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MagicLinkSignInResponse) ProtoMessage() {}
+
+func (x *MagicLinkSignInResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MagicLinkSignInResponse.ProtoReflect.Descriptor instead.
+func (*MagicLinkSignInResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *MagicLinkSignInResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *MagicLinkSignInResponse) GetExpiresInSeconds() int64 {
+	if x != nil {
+		return x.ExpiresInSeconds
+	}
+	return 0
+}
+
+func (x *MagicLinkSignInResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -1082,7 +1266,16 @@ const file_auth_proto_rawDesc = "" +
 	"\btoken_id\x18\x01 \x01(\tR\atokenId\x12!\n" +
 	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\x12+\n" +
 	"\x11repeated_password\x18\x03 \x01(\tR\x10repeatedPassword\"\x17\n" +
-	"\x15ResetPasswordResponse2\x8f\x05\n" +
+	"\x15ResetPasswordResponse\"/\n" +
+	"\x17RequestMagicLinkRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"\x1a\n" +
+	"\x18RequestMagicLinkResponse\"3\n" +
+	"\x16MagicLinkSignInRequest\x12\x19\n" +
+	"\btoken_id\x18\x01 \x01(\tR\atokenId\"\x8f\x01\n" +
+	"\x17MagicLinkSignInResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +
+	"\x12expires_in_seconds\x18\x02 \x01(\x03R\x10expiresInSeconds\x12#\n" +
+	"\rrefresh_token\x18\x03 \x01(\tR\frefreshToken2\xb2\x06\n" +
 	"\x04Auth\x12,\n" +
 	"\x04Ping\x12\x11.auth.PingRequest\x1a\x0f.auth.PingReply\"\x00\x129\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x123\n" +
@@ -1093,7 +1286,9 @@ const file_auth_proto_rawDesc = "" +
 	"\x0eChangePassword\x12\x1b.auth.ChangePasswordRequest\x1a\x1c.auth.ChangePasswordResponse\x12W\n" +
 	"\x12VerifyRegistration\x12\x1f.auth.VerifyRegistrationRequest\x1a .auth.VerifyRegistrationResponse\x12K\n" +
 	"\x0eForgotPassword\x12\x1b.auth.ForgotPasswordRequest\x1a\x1c.auth.ForgotPasswordResponse\x12H\n" +
-	"\rResetPassword\x12\x1a.auth.ResetPasswordRequest\x1a\x1b.auth.ResetPasswordResponseB\fZ\n" +
+	"\rResetPassword\x12\x1a.auth.ResetPasswordRequest\x1a\x1b.auth.ResetPasswordResponse\x12Q\n" +
+	"\x10RequestMagicLink\x12\x1d.auth.RequestMagicLinkRequest\x1a\x1e.auth.RequestMagicLinkResponse\x12N\n" +
+	"\x0fMagicLinkSignIn\x12\x1c.auth.MagicLinkSignInRequest\x1a\x1d.auth.MagicLinkSignInResponseB\fZ\n" +
 	"proto/authb\x06proto3"
 
 var (
@@ -1108,7 +1303,7 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_auth_proto_goTypes = []any{
 	(*PingRequest)(nil),                // 0: auth.PingRequest
 	(*PingReply)(nil),                  // 1: auth.PingReply
@@ -1130,6 +1325,10 @@ var file_auth_proto_goTypes = []any{
 	(*ForgotPasswordResponse)(nil),     // 17: auth.ForgotPasswordResponse
 	(*ResetPasswordRequest)(nil),       // 18: auth.ResetPasswordRequest
 	(*ResetPasswordResponse)(nil),      // 19: auth.ResetPasswordResponse
+	(*RequestMagicLinkRequest)(nil),    // 20: auth.RequestMagicLinkRequest
+	(*RequestMagicLinkResponse)(nil),   // 21: auth.RequestMagicLinkResponse
+	(*MagicLinkSignInRequest)(nil),     // 22: auth.MagicLinkSignInRequest
+	(*MagicLinkSignInResponse)(nil),    // 23: auth.MagicLinkSignInResponse
 }
 var file_auth_proto_depIdxs = []int32{
 	0,  // 0: auth.Auth.Ping:input_type -> auth.PingRequest
@@ -1142,18 +1341,22 @@ var file_auth_proto_depIdxs = []int32{
 	14, // 7: auth.Auth.VerifyRegistration:input_type -> auth.VerifyRegistrationRequest
 	16, // 8: auth.Auth.ForgotPassword:input_type -> auth.ForgotPasswordRequest
 	18, // 9: auth.Auth.ResetPassword:input_type -> auth.ResetPasswordRequest
-	1,  // 10: auth.Auth.Ping:output_type -> auth.PingReply
-	3,  // 11: auth.Auth.Register:output_type -> auth.RegisterResponse
-	5,  // 12: auth.Auth.SignIn:output_type -> auth.SignInResponse
-	7,  // 13: auth.Auth.VerifyOtp:output_type -> auth.VerifyOtpResponse
-	9,  // 14: auth.Auth.Refresh:output_type -> auth.RefreshResponse
-	11, // 15: auth.Auth.SignOut:output_type -> auth.SignOutResponse
-	13, // 16: auth.Auth.ChangePassword:output_type -> auth.ChangePasswordResponse
-	15, // 17: auth.Auth.VerifyRegistration:output_type -> auth.VerifyRegistrationResponse
-	17, // 18: auth.Auth.ForgotPassword:output_type -> auth.ForgotPasswordResponse
-	19, // 19: auth.Auth.ResetPassword:output_type -> auth.ResetPasswordResponse
-	10, // [10:20] is the sub-list for method output_type
-	0,  // [0:10] is the sub-list for method input_type
+	20, // 10: auth.Auth.RequestMagicLink:input_type -> auth.RequestMagicLinkRequest
+	22, // 11: auth.Auth.MagicLinkSignIn:input_type -> auth.MagicLinkSignInRequest
+	1,  // 12: auth.Auth.Ping:output_type -> auth.PingReply
+	3,  // 13: auth.Auth.Register:output_type -> auth.RegisterResponse
+	5,  // 14: auth.Auth.SignIn:output_type -> auth.SignInResponse
+	7,  // 15: auth.Auth.VerifyOtp:output_type -> auth.VerifyOtpResponse
+	9,  // 16: auth.Auth.Refresh:output_type -> auth.RefreshResponse
+	11, // 17: auth.Auth.SignOut:output_type -> auth.SignOutResponse
+	13, // 18: auth.Auth.ChangePassword:output_type -> auth.ChangePasswordResponse
+	15, // 19: auth.Auth.VerifyRegistration:output_type -> auth.VerifyRegistrationResponse
+	17, // 20: auth.Auth.ForgotPassword:output_type -> auth.ForgotPasswordResponse
+	19, // 21: auth.Auth.ResetPassword:output_type -> auth.ResetPasswordResponse
+	21, // 22: auth.Auth.RequestMagicLink:output_type -> auth.RequestMagicLinkResponse
+	23, // 23: auth.Auth.MagicLinkSignIn:output_type -> auth.MagicLinkSignInResponse
+	12, // [12:24] is the sub-list for method output_type
+	0,  // [0:12] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -1170,7 +1373,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -22,6 +22,26 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'recover-account',
+    loadComponent: () =>
+      import('./features/recover-account/recover-account').then(
+        (m) => m.RecoverAccount,
+      ),
+  },
+  {
+    path: 'auth/magic-link',
+    children: [
+      { path: '', redirectTo: '/recover-account', pathMatch: 'full' },
+      {
+        path: ':tokenId',
+        loadComponent: () =>
+          import('./features/magic-link-sign-in/magic-link-sign-in').then(
+            (m) => m.MagicLinkSignIn,
+          ),
+      },
+    ],
+  },
+  {
     path: 'password/reset',
     children: [
       { path: '', redirectTo: '/forgot-password', pathMatch: 'full' },
