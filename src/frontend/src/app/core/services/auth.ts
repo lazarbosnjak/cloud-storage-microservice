@@ -40,6 +40,16 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  tokenId: string;
+  newPassword: string;
+  repeatedPassword: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -73,5 +83,13 @@ export class Auth {
     return this.http.post('/api/auth/change-password', data, {
       withCredentials: true,
     });
+  }
+
+  forgotPassword(data: ForgotPasswordRequest): Observable<unknown> {
+    return this.http.post('/api/auth/forgot-password', data);
+  }
+
+  resetPassword(data: ResetPasswordRequest): Observable<unknown> {
+    return this.http.post('/api/auth/reset-password', data);
   }
 }

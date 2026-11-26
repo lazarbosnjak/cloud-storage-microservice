@@ -15,6 +15,26 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/forgot-password/forgot-password').then(
+        (m) => m.ForgotPassword,
+      ),
+  },
+  {
+    path: 'password/reset',
+    children: [
+      { path: '', redirectTo: '/forgot-password', pathMatch: 'full' },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/reset-password/reset-password').then(
+            (m) => m.ResetPassword,
+          ),
+      },
+    ],
+  },
+  {
     path: 'register',
     loadComponent: () => import('./features/registration/registration').then((m) => m.Registration),
   },
