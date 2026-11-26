@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Notification_Ping_FullMethodName         = "/Notification/Ping"
-	Notification_GetAllByUser_FullMethodName = "/Notification/GetAllByUser"
+	Notification_Ping_FullMethodName         = "/notification.Notification/Ping"
+	Notification_GetAllByUser_FullMethodName = "/notification.Notification/GetAllByUser"
 )
 
 // NotificationClient is the client API for Notification service.
@@ -142,7 +142,7 @@ func _Notification_GetAllByUser_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Notification_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Notification",
+	ServiceName: "notification.Notification",
 	HandlerType: (*NotificationServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

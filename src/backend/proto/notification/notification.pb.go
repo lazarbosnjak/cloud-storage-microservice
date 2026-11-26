@@ -627,27 +627,27 @@ var File_notification_proto protoreflect.FileDescriptor
 
 const file_notification_proto_rawDesc = "" +
 	"\n" +
-	"\x12notification.proto\")\n" +
+	"\x12notification.proto\x12\fnotification\")\n" +
 	"\vPingRequest\x12\x1a\n" +
 	"\bfromName\x18\x01 \x01(\tR\bfromName\"%\n" +
 	"\tPingReply\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\".\n" +
 	"\x13GetAllByUserRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x96\x03\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\xca\x03\n" +
 	"\x18GetAllByUserResponseItem\x12'\n" +
 	"\x0fnotification_id\x18\x01 \x01(\tR\x0enotificationId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"event_type\x18\x03 \x01(\tR\teventType\x12.\n" +
+	"event_type\x18\x03 \x01(\tR\teventType\x12;\n" +
 	"\vfile_shared\x18\n" +
-	" \x01(\v2\v.FileSharedH\x00R\n" +
-	"fileShared\x124\n" +
-	"\rfolder_shared\x18\v \x01(\v2\r.FolderSharedH\x00R\ffolderShared\x12X\n" +
-	"\x1bfile_added_to_shared_folder\x18\f \x01(\v2\x18.FileAddedToSharedFolderH\x00R\x17fileAddedToSharedFolder\x12N\n" +
-	"\x17shared_file_new_version\x18\r \x01(\v2\x15.SharedFileNewVersionH\x00R\x14sharedFileNewVersionB\t\n" +
-	"\apayload\"G\n" +
-	"\x14GetAllByUserResponse\x12/\n" +
-	"\x05items\x18\x01 \x03(\v2\x19.GetAllByUserResponseItemR\x05items\"|\n" +
+	" \x01(\v2\x18.notification.FileSharedH\x00R\n" +
+	"fileShared\x12A\n" +
+	"\rfolder_shared\x18\v \x01(\v2\x1a.notification.FolderSharedH\x00R\ffolderShared\x12e\n" +
+	"\x1bfile_added_to_shared_folder\x18\f \x01(\v2%.notification.FileAddedToSharedFolderH\x00R\x17fileAddedToSharedFolder\x12[\n" +
+	"\x17shared_file_new_version\x18\r \x01(\v2\".notification.SharedFileNewVersionH\x00R\x14sharedFileNewVersionB\t\n" +
+	"\apayload\"T\n" +
+	"\x14GetAllByUserResponse\x12<\n" +
+	"\x05items\x18\x01 \x03(\v2&.notification.GetAllByUserResponseItemR\x05items\"|\n" +
 	"\n" +
 	"FileShared\x12\x17\n" +
 	"\afile_id\x18\x01 \x01(\tR\x06fileId\x12\x1b\n" +
@@ -675,11 +675,10 @@ const file_notification_proto_rawDesc = "" +
 	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x19\n" +
 	"\bactor_id\x18\x03 \x01(\tR\aactorId\x12\x1d\n" +
 	"\n" +
-	"actor_name\x18\x04 \x01(\tR\tactorName2q\n" +
-	"\fNotification\x12\"\n" +
-	"\x04Ping\x12\f.PingRequest\x1a\n" +
-	".PingReply\"\x00\x12=\n" +
-	"\fGetAllByUser\x12\x14.GetAllByUserRequest\x1a\x15.GetAllByUserResponse\"\x00B\x14Z\x12proto/notificationb\x06proto3"
+	"actor_name\x18\x04 \x01(\tR\tactorName2\xa5\x01\n" +
+	"\fNotification\x12<\n" +
+	"\x04Ping\x12\x19.notification.PingRequest\x1a\x17.notification.PingReply\"\x00\x12W\n" +
+	"\fGetAllByUser\x12!.notification.GetAllByUserRequest\x1a\".notification.GetAllByUserResponse\"\x00B\x14Z\x12proto/notificationb\x06proto3"
 
 var (
 	file_notification_proto_rawDescOnce sync.Once
@@ -695,26 +694,26 @@ func file_notification_proto_rawDescGZIP() []byte {
 
 var file_notification_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_notification_proto_goTypes = []any{
-	(*PingRequest)(nil),              // 0: PingRequest
-	(*PingReply)(nil),                // 1: PingReply
-	(*GetAllByUserRequest)(nil),      // 2: GetAllByUserRequest
-	(*GetAllByUserResponseItem)(nil), // 3: GetAllByUserResponseItem
-	(*GetAllByUserResponse)(nil),     // 4: GetAllByUserResponse
-	(*FileShared)(nil),               // 5: FileShared
-	(*FolderShared)(nil),             // 6: FolderShared
-	(*FileAddedToSharedFolder)(nil),  // 7: FileAddedToSharedFolder
-	(*SharedFileNewVersion)(nil),     // 8: SharedFileNewVersion
+	(*PingRequest)(nil),              // 0: notification.PingRequest
+	(*PingReply)(nil),                // 1: notification.PingReply
+	(*GetAllByUserRequest)(nil),      // 2: notification.GetAllByUserRequest
+	(*GetAllByUserResponseItem)(nil), // 3: notification.GetAllByUserResponseItem
+	(*GetAllByUserResponse)(nil),     // 4: notification.GetAllByUserResponse
+	(*FileShared)(nil),               // 5: notification.FileShared
+	(*FolderShared)(nil),             // 6: notification.FolderShared
+	(*FileAddedToSharedFolder)(nil),  // 7: notification.FileAddedToSharedFolder
+	(*SharedFileNewVersion)(nil),     // 8: notification.SharedFileNewVersion
 }
 var file_notification_proto_depIdxs = []int32{
-	5, // 0: GetAllByUserResponseItem.file_shared:type_name -> FileShared
-	6, // 1: GetAllByUserResponseItem.folder_shared:type_name -> FolderShared
-	7, // 2: GetAllByUserResponseItem.file_added_to_shared_folder:type_name -> FileAddedToSharedFolder
-	8, // 3: GetAllByUserResponseItem.shared_file_new_version:type_name -> SharedFileNewVersion
-	3, // 4: GetAllByUserResponse.items:type_name -> GetAllByUserResponseItem
-	0, // 5: Notification.Ping:input_type -> PingRequest
-	2, // 6: Notification.GetAllByUser:input_type -> GetAllByUserRequest
-	1, // 7: Notification.Ping:output_type -> PingReply
-	4, // 8: Notification.GetAllByUser:output_type -> GetAllByUserResponse
+	5, // 0: notification.GetAllByUserResponseItem.file_shared:type_name -> notification.FileShared
+	6, // 1: notification.GetAllByUserResponseItem.folder_shared:type_name -> notification.FolderShared
+	7, // 2: notification.GetAllByUserResponseItem.file_added_to_shared_folder:type_name -> notification.FileAddedToSharedFolder
+	8, // 3: notification.GetAllByUserResponseItem.shared_file_new_version:type_name -> notification.SharedFileNewVersion
+	3, // 4: notification.GetAllByUserResponse.items:type_name -> notification.GetAllByUserResponseItem
+	0, // 5: notification.Notification.Ping:input_type -> notification.PingRequest
+	2, // 6: notification.Notification.GetAllByUser:input_type -> notification.GetAllByUserRequest
+	1, // 7: notification.Notification.Ping:output_type -> notification.PingReply
+	4, // 8: notification.Notification.GetAllByUser:output_type -> notification.GetAllByUserResponse
 	7, // [7:9] is the sub-list for method output_type
 	5, // [5:7] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
