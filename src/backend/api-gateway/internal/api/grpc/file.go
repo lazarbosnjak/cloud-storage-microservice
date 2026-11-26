@@ -221,8 +221,14 @@ func (s *Server) ListFolderContents(
 		return nil, status.Error(codes.InvalidArgument, "folder id is required")
 	}
 
+	folderID := req.GetFolderId()
+
+	if folderID == "root" {
+		folderID = ""
+	}
+
 	result, err := s.Handlers.FolderHandler.ListFolderContents(
-		ctx, req.GetFolderId(), ownerID,
+		ctx, folderID, ownerID,
 	)
 	if err != nil {
 		return nil, err

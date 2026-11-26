@@ -30,4 +30,11 @@ export const routes: Routes = [
     redirectTo: 'sign-in',
     pathMatch: 'full',
   },
+  {
+  path: 'files',
+  loadComponent: () =>
+    import('./features/file-browser/file-browser').then(
+      (m) => m.FileBrowser,
+    ),
+  },
 ];
