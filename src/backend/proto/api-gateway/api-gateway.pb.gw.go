@@ -516,6 +516,27 @@ func local_request_ApiGateway_GetStorage_0(ctx context.Context, marshaler runtim
 	return msg, metadata, err
 }
 
+func request_ApiGateway_NotificationsGetAllByUser_0(ctx context.Context, marshaler runtime.Marshaler, client ApiGatewayClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq NotificationsGetAllByUserRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.NotificationsGetAllByUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_ApiGateway_NotificationsGetAllByUser_0(ctx context.Context, marshaler runtime.Marshaler, server ApiGatewayServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq NotificationsGetAllByUserRequest
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.NotificationsGetAllByUser(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 // RegisterApiGatewayHandlerServer registers the http handlers for service ApiGateway to "mux".
 // UnaryRPC     :call ApiGatewayServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -842,6 +863,26 @@ func RegisterApiGatewayHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		}
 		forward_ApiGateway_GetStorage_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_ApiGateway_NotificationsGetAllByUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api_gateway.ApiGateway/NotificationsGetAllByUser", runtime.WithHTTPPathPattern("/api/notifications"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ApiGateway_NotificationsGetAllByUser_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ApiGateway_NotificationsGetAllByUser_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 
 	return nil
 }
@@ -1154,43 +1195,62 @@ func RegisterApiGatewayHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		}
 		forward_ApiGateway_GetStorage_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_ApiGateway_NotificationsGetAllByUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/api_gateway.ApiGateway/NotificationsGetAllByUser", runtime.WithHTTPPathPattern("/api/notifications"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ApiGateway_NotificationsGetAllByUser_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_ApiGateway_NotificationsGetAllByUser_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_ApiGateway_Ping_0                   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{""}, ""))
-	pattern_ApiGateway_PingUser_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"user"}, ""))
-	pattern_ApiGateway_AuthRegister_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "register"}, ""))
-	pattern_ApiGateway_AuthVerifyRegistration_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "auth", "register", "verify"}, ""))
-	pattern_ApiGateway_AuthSignIn_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "login"}, ""))
-	pattern_ApiGateway_AuthVerifyOtp_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "auth", "otp", "verify"}, ""))
-	pattern_ApiGateway_AuthChangePassword_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "change-password"}, ""))
-	pattern_ApiGateway_AuthRefresh_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "refresh"}, ""))
-	pattern_ApiGateway_GetFile_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "files", "id"}, ""))
-	pattern_ApiGateway_GetFolder_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "folders", "id"}, ""))
-	pattern_ApiGateway_CreateFile_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "files"}, ""))
-	pattern_ApiGateway_RenameFile_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "files", "id", "name"}, ""))
-	pattern_ApiGateway_CreateFolder_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "folders"}, ""))
-	pattern_ApiGateway_RenameFolder_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "folders", "id", "name"}, ""))
-	pattern_ApiGateway_ListFolderContents_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "folders", "folder_id", "contents"}, ""))
-	pattern_ApiGateway_GetStorage_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "users", "storage"}, ""))
+	pattern_ApiGateway_Ping_0                      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{""}, ""))
+	pattern_ApiGateway_PingUser_0                  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"user"}, ""))
+	pattern_ApiGateway_AuthRegister_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "register"}, ""))
+	pattern_ApiGateway_AuthVerifyRegistration_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "auth", "register", "verify"}, ""))
+	pattern_ApiGateway_AuthSignIn_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "login"}, ""))
+	pattern_ApiGateway_AuthVerifyOtp_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "auth", "otp", "verify"}, ""))
+	pattern_ApiGateway_AuthChangePassword_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "change-password"}, ""))
+	pattern_ApiGateway_AuthRefresh_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "refresh"}, ""))
+	pattern_ApiGateway_GetFile_0                   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "files", "id"}, ""))
+	pattern_ApiGateway_GetFolder_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "folders", "id"}, ""))
+	pattern_ApiGateway_CreateFile_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "files"}, ""))
+	pattern_ApiGateway_RenameFile_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "files", "id", "name"}, ""))
+	pattern_ApiGateway_CreateFolder_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "folders"}, ""))
+	pattern_ApiGateway_RenameFolder_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "folders", "id", "name"}, ""))
+	pattern_ApiGateway_ListFolderContents_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "folders", "folder_id", "contents"}, ""))
+	pattern_ApiGateway_GetStorage_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "users", "storage"}, ""))
+	pattern_ApiGateway_NotificationsGetAllByUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "notifications"}, ""))
 )
 
 var (
-	forward_ApiGateway_Ping_0                   = runtime.ForwardResponseMessage
-	forward_ApiGateway_PingUser_0               = runtime.ForwardResponseMessage
-	forward_ApiGateway_AuthRegister_0           = runtime.ForwardResponseMessage
-	forward_ApiGateway_AuthVerifyRegistration_0 = runtime.ForwardResponseMessage
-	forward_ApiGateway_AuthSignIn_0             = runtime.ForwardResponseMessage
-	forward_ApiGateway_AuthVerifyOtp_0          = runtime.ForwardResponseMessage
-	forward_ApiGateway_AuthChangePassword_0     = runtime.ForwardResponseMessage
-	forward_ApiGateway_AuthRefresh_0            = runtime.ForwardResponseMessage
-	forward_ApiGateway_GetFile_0                = runtime.ForwardResponseMessage
-	forward_ApiGateway_GetFolder_0              = runtime.ForwardResponseMessage
-	forward_ApiGateway_CreateFile_0             = runtime.ForwardResponseMessage
-	forward_ApiGateway_RenameFile_0             = runtime.ForwardResponseMessage
-	forward_ApiGateway_CreateFolder_0           = runtime.ForwardResponseMessage
-	forward_ApiGateway_RenameFolder_0           = runtime.ForwardResponseMessage
-	forward_ApiGateway_ListFolderContents_0     = runtime.ForwardResponseMessage
-	forward_ApiGateway_GetStorage_0             = runtime.ForwardResponseMessage
+	forward_ApiGateway_Ping_0                      = runtime.ForwardResponseMessage
+	forward_ApiGateway_PingUser_0                  = runtime.ForwardResponseMessage
+	forward_ApiGateway_AuthRegister_0              = runtime.ForwardResponseMessage
+	forward_ApiGateway_AuthVerifyRegistration_0    = runtime.ForwardResponseMessage
+	forward_ApiGateway_AuthSignIn_0                = runtime.ForwardResponseMessage
+	forward_ApiGateway_AuthVerifyOtp_0             = runtime.ForwardResponseMessage
+	forward_ApiGateway_AuthChangePassword_0        = runtime.ForwardResponseMessage
+	forward_ApiGateway_AuthRefresh_0               = runtime.ForwardResponseMessage
+	forward_ApiGateway_GetFile_0                   = runtime.ForwardResponseMessage
+	forward_ApiGateway_GetFolder_0                 = runtime.ForwardResponseMessage
+	forward_ApiGateway_CreateFile_0                = runtime.ForwardResponseMessage
+	forward_ApiGateway_RenameFile_0                = runtime.ForwardResponseMessage
+	forward_ApiGateway_CreateFolder_0              = runtime.ForwardResponseMessage
+	forward_ApiGateway_RenameFolder_0              = runtime.ForwardResponseMessage
+	forward_ApiGateway_ListFolderContents_0        = runtime.ForwardResponseMessage
+	forward_ApiGateway_GetStorage_0                = runtime.ForwardResponseMessage
+	forward_ApiGateway_NotificationsGetAllByUser_0 = runtime.ForwardResponseMessage
 )

@@ -9,13 +9,14 @@ import (
 )
 
 type Config struct {
-	GrpcServerPort          string
-	RestServerPort          string
-	GracefulShutdownTimeout time.Duration
-	UserServiceGRPCAddr     string
-	AuthServiceGRPCAddr     string
-	JwtPublicKeyPath        string
-	FileServiceGRPCAddr     string
+	GrpcServerPort              string
+	RestServerPort              string
+	GracefulShutdownTimeout     time.Duration
+	UserServiceGRPCAddr         string
+	AuthServiceGRPCAddr         string
+	JwtPublicKeyPath            string
+	FileServiceGRPCAddr         string
+	NotificaitonServiceGRPCAddr string
 }
 
 func NewConfig(logger *slog.Logger) *Config {
@@ -25,6 +26,7 @@ func NewConfig(logger *slog.Logger) *Config {
 	authServiceGRPCAddr := getEnv("AUTH_SERVICE_GRPC_ADDR", logger)
 	jwtPublicKeyPath := getEnv("JWT_PUBLIC_KEY_PATH", logger)
 	fileServiceGRPCAddr := getEnv("FILE_SERVICE_GRPC_ADDR", logger)
+	notifServiceGRPCAddr := getEnv("NOTIFICATION_SERVICE_GRPC_ADDR", logger)
 
 	res, err := strconv.Atoi(os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"))
 	if err != nil || res == 0 {
@@ -34,13 +36,14 @@ func NewConfig(logger *slog.Logger) *Config {
 	gracefulShutdownTimeout := time.Second * time.Duration(res)
 
 	return &Config{
-		GrpcServerPort:          grpcPort,
-		RestServerPort:          restPort,
-		GracefulShutdownTimeout: gracefulShutdownTimeout,
-		UserServiceGRPCAddr:     userServiceGRPCAddr,
-		AuthServiceGRPCAddr:     authServiceGRPCAddr,
-		JwtPublicKeyPath:        jwtPublicKeyPath,
-		FileServiceGRPCAddr:     fileServiceGRPCAddr,
+		GrpcServerPort:              grpcPort,
+		RestServerPort:              restPort,
+		GracefulShutdownTimeout:     gracefulShutdownTimeout,
+		UserServiceGRPCAddr:         userServiceGRPCAddr,
+		AuthServiceGRPCAddr:         authServiceGRPCAddr,
+		JwtPublicKeyPath:            jwtPublicKeyPath,
+		FileServiceGRPCAddr:         fileServiceGRPCAddr,
+		NotificaitonServiceGRPCAddr: notifServiceGRPCAddr,
 	}
 }
 
