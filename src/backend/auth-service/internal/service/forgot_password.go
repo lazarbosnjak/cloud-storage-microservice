@@ -13,22 +13,33 @@ import (
 func (s *AuthService) ForgotPassword(ctx context.Context, email string) error {
 	email = normalizeEmail(email)
 	if s.validateEmail(email) != nil {
+		s.wasteTime()
 		return nil // you can also return 'domain.ErrInvalidCredentials', but there is no point since client won't see this message
 	}
 
 	cred, err := s.store.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("forgot password lookup", "error", err)
+		s.wasteTime()
 		return nil
 	}
 
-	tokenID, err := s.createVerificationToken(ctx, cred.ID, domain.PasswordReset)
+	err = s.verificationTokenStore.DeleteUnusedByUserAndReason(ctx, cred.ID, domain.PasswordReset)
+	if err != nil {
+		return err
+	}
+
+	tokenID, err := s.createVerificationToken(ctx, cred.ID, domain.PasswordReset, s.config.VerificationToken.ExpiresInFor(domain.PasswordReset))
 	if err != nil {
 		return err
 	}
 
 	link := fmt.Sprintf("%s/password/reset/%s", s.config.Service.FrontendAddr, tokenID)
 	return s.EmailSender.SendPasswordResetMail([]string{cred.Email}, link)
+}
+
+func (s *AuthService) wasteTime() {
+	_, _ = argon2id.ComparePasswordAndHash("pouch-dummy-password", s.dummyHash)
 }
 
 func (s *AuthService) ResetPassword(ctx context.Context, tokenID, newPassword, repeatedPassword string) error {

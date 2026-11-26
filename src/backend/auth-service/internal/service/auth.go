@@ -304,12 +304,13 @@ func (s *AuthService) createVerificationToken(
 	ctx context.Context,
 	userID string,
 	reason domain.VerificationTokenReason,
+	expiresIn time.Duration,
 ) (string, error) {
 	token := &domain.VerificationToken{
 		ID:        "",
 		UserID:    userID,
 		CreatedAt: time.Now(),
-		ExpiresAt: time.Now().Add(s.config.VerificationToken.ExpiresIn),
+		ExpiresAt: time.Now().Add(expiresIn),
 		UsedAt:    nil,
 		Reason:    reason,
 	}
@@ -326,7 +327,7 @@ func (s *AuthService) constructRegistrationVerificationLink(
 	ctx context.Context,
 	userID string,
 ) (string, error) {
-	token, err := s.createVerificationToken(ctx, userID, domain.VerificationTokenReason(0))
+	token, err := s.createVerificationToken(ctx, userID, domain.VerificationTokenReason(0), s.config.VerificationToken.ExpiresInFor(domain.Registration))
 	if err != nil {
 		return "", err
 	}
