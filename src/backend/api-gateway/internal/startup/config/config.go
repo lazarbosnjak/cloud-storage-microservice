@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 	"strconv"
@@ -17,16 +16,24 @@ type Config struct {
 	JwtPublicKeyPath            string
 	FileServiceGRPCAddr         string
 	NotificaitonServiceGRPCAddr string
+
+	RateLimitRPS        uint
+	RateLimitBucketSize uint
+	RateLimitIdleTTL    time.Duration
 }
 
 func NewConfig(logger *slog.Logger) *Config {
-	grpcPort := getEnv("GRPC_PORT", logger)
-	restPort := getEnv("REST_PORT", logger)
-	userServiceGRPCAddr := getEnv("USER_SERVICE_GRPC_ADDR", logger)
-	authServiceGRPCAddr := getEnv("AUTH_SERVICE_GRPC_ADDR", logger)
-	jwtPublicKeyPath := getEnv("JWT_PUBLIC_KEY_PATH", logger)
-	fileServiceGRPCAddr := getEnv("FILE_SERVICE_GRPC_ADDR", logger)
-	notifServiceGRPCAddr := getEnv("NOTIFICATION_SERVICE_GRPC_ADDR", logger)
+	grpcPort := getString("GRPC_PORT")
+	restPort := getString("REST_PORT")
+	userServiceGRPCAddr := getString("USER_SERVICE_GRPC_ADDR")
+	authServiceGRPCAddr := getString("AUTH_SERVICE_GRPC_ADDR")
+	jwtPublicKeyPath := getString("JWT_PUBLIC_KEY_PATH")
+	fileServiceGRPCAddr := getString("FILE_SERVICE_GRPC_ADDR")
+	notifServiceGRPCAddr := getString("NOTIFICATION_SERVICE_GRPC_ADDR")
+
+	rateLimitRPS := getUInt("RATE_LIMIT_RPS")
+	rateLimitBucketSize := getUInt("RATE_LIMIT_BUCKET_SIZE")
+	rateLimitIdleTTL := getDuration("RATE_LIMIT_IDLE_TTL")
 
 	res, err := strconv.Atoi(os.Getenv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"))
 	if err != nil || res == 0 {
@@ -44,15 +51,9 @@ func NewConfig(logger *slog.Logger) *Config {
 		JwtPublicKeyPath:            jwtPublicKeyPath,
 		FileServiceGRPCAddr:         fileServiceGRPCAddr,
 		NotificaitonServiceGRPCAddr: notifServiceGRPCAddr,
-	}
-}
 
-func getEnv(name string, logger *slog.Logger) string {
-	env := os.Getenv(name)
-	if env == "" {
-		logger.Error(fmt.Sprintf("%s env missing", name))
-		os.Exit(1)
+		RateLimitRPS:        uint(rateLimitRPS),
+		RateLimitBucketSize: uint(rateLimitBucketSize),
+		RateLimitIdleTTL:    rateLimitIdleTTL,
 	}
-
-	return env
 }
