@@ -26,7 +26,6 @@ type CreateFileInput struct {
 	Name        string
 	Size        uint64
 	ContentType string
-	StorageKey  string
 	ParentID    string
 	OwnerID     string
 }

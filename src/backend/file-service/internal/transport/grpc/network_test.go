@@ -29,7 +29,7 @@ func newNetworkTestClient(
 
 	server := NewServer(
 		ping.NewHandler(0),
-		file.NewCreateHandler(fileRepo, folderRepo),
+		file.NewUploadHandler(fileRepo, folderRepo, newFakeQuotaClient()),
 		folder.NewCreateHandler(folderRepo),
 		file.NewRenameHandler(fileRepo),
 		folder.NewRenameHandler(folderRepo),

@@ -74,14 +74,17 @@ func (c *GRPCClient) CreateFile(
 	ctx context.Context,
 	input appfile.CreateFileInput,
 ) (*appfile.CreatedFile, error) {
-	reply, err := c.client.CreateFile(ctx, &filePb.CreateFileRequest{
-		Name:        input.Name,
-		Size:        input.Size,
-		ContentType: input.ContentType,
-		StorageKey:  input.StorageKey,
-		ParentId:    input.ParentID,
-		OwnerId:     input.OwnerID,
-	})
+	reply, err := c.client.CreateFile(
+		ctx,
+		&filePb.CreateFileRequest{
+			Name:        input.Name,
+			Size:        input.Size,
+			ContentType: input.ContentType,
+			ParentId:    input.ParentID,
+			OwnerId:     input.OwnerID,
+		},
+	)
+
 	if err != nil {
 		c.logger.Error("create file failed", "err", err)
 		return nil, err

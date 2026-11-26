@@ -596,7 +596,6 @@ type GatewayCreateFileRequest struct {
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Size          uint64                 `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
 	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
-	StorageKey    string                 `protobuf:"bytes,4,opt,name=storage_key,json=storageKey,proto3" json:"storage_key,omitempty"`
 	ParentId      string                 `protobuf:"bytes,5,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -649,13 +648,6 @@ func (x *GatewayCreateFileRequest) GetSize() uint64 {
 func (x *GatewayCreateFileRequest) GetContentType() string {
 	if x != nil {
 		return x.ContentType
-	}
-	return ""
-}
-
-func (x *GatewayCreateFileRequest) GetStorageKey() string {
-	if x != nil {
-		return x.StorageKey
 	}
 	return ""
 }
@@ -1203,14 +1195,12 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\tR\tupdatedAt\"\xa3\x01\n" +
+	"updated_at\x18\x06 \x01(\tR\tupdatedAt\"\x95\x01\n" +
 	"\x18GatewayCreateFileRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04size\x18\x02 \x01(\x04R\x04size\x12!\n" +
-	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1f\n" +
-	"\vstorage_key\x18\x04 \x01(\tR\n" +
-	"storageKey\x12\x1b\n" +
-	"\tparent_id\x18\x05 \x01(\tR\bparentId\"\xea\x01\n" +
+	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\x12\x1b\n" +
+	"\tparent_id\x18\x05 \x01(\tR\bparentIdJ\x04\b\x04\x10\x05R\vstorage_key\"\xea\x01\n" +
 	"\x17GatewayCreatedFileReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
