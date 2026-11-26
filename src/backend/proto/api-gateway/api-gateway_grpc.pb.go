@@ -26,6 +26,7 @@ const (
 	ApiGateway_AuthRegister_FullMethodName              = "/api_gateway.ApiGateway/AuthRegister"
 	ApiGateway_AuthVerifyRegistration_FullMethodName    = "/api_gateway.ApiGateway/AuthVerifyRegistration"
 	ApiGateway_AuthSignIn_FullMethodName                = "/api_gateway.ApiGateway/AuthSignIn"
+	ApiGateway_AuthSignOut_FullMethodName               = "/api_gateway.ApiGateway/AuthSignOut"
 	ApiGateway_AuthVerifyOtp_FullMethodName             = "/api_gateway.ApiGateway/AuthVerifyOtp"
 	ApiGateway_AuthChangePassword_FullMethodName        = "/api_gateway.ApiGateway/AuthChangePassword"
 	ApiGateway_AuthRefresh_FullMethodName               = "/api_gateway.ApiGateway/AuthRefresh"
@@ -51,6 +52,7 @@ type ApiGatewayClient interface {
 	AuthRegister(ctx context.Context, in *auth.RegisterRequest, opts ...grpc.CallOption) (*auth.RegisterResponse, error)
 	AuthVerifyRegistration(ctx context.Context, in *AuthVerifyRegistrationRequest, opts ...grpc.CallOption) (*AuthVerifyRegistrationResponse, error)
 	AuthSignIn(ctx context.Context, in *auth.SignInRequest, opts ...grpc.CallOption) (*AuthSignInResponse, error)
+	AuthSignOut(ctx context.Context, in *AuthSignOutRequest, opts ...grpc.CallOption) (*AuthSignOutResponse, error)
 	AuthVerifyOtp(ctx context.Context, in *auth.VerifyOtpRequest, opts ...grpc.CallOption) (*AuthVerifyOtpResponse, error)
 	AuthChangePassword(ctx context.Context, in *auth.ChangePasswordRequest, opts ...grpc.CallOption) (*auth.ChangePasswordResponse, error)
 	AuthRefresh(ctx context.Context, in *AuthRefreshRequest, opts ...grpc.CallOption) (*AuthRefreshResponse, error)
@@ -119,6 +121,16 @@ func (c *apiGatewayClient) AuthSignIn(ctx context.Context, in *auth.SignInReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AuthSignInResponse)
 	err := c.cc.Invoke(ctx, ApiGateway_AuthSignIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) AuthSignOut(ctx context.Context, in *AuthSignOutRequest, opts ...grpc.CallOption) (*AuthSignOutResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthSignOutResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthSignOut_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -274,6 +286,7 @@ type ApiGatewayServer interface {
 	AuthRegister(context.Context, *auth.RegisterRequest) (*auth.RegisterResponse, error)
 	AuthVerifyRegistration(context.Context, *AuthVerifyRegistrationRequest) (*AuthVerifyRegistrationResponse, error)
 	AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error)
+	AuthSignOut(context.Context, *AuthSignOutRequest) (*AuthSignOutResponse, error)
 	AuthVerifyOtp(context.Context, *auth.VerifyOtpRequest) (*AuthVerifyOtpResponse, error)
 	AuthChangePassword(context.Context, *auth.ChangePasswordRequest) (*auth.ChangePasswordResponse, error)
 	AuthRefresh(context.Context, *AuthRefreshRequest) (*AuthRefreshResponse, error)
@@ -312,6 +325,9 @@ func (UnimplementedApiGatewayServer) AuthVerifyRegistration(context.Context, *Au
 }
 func (UnimplementedApiGatewayServer) AuthSignIn(context.Context, *auth.SignInRequest) (*AuthSignInResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthSignIn not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthSignOut(context.Context, *AuthSignOutRequest) (*AuthSignOutResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthSignOut not implemented")
 }
 func (UnimplementedApiGatewayServer) AuthVerifyOtp(context.Context, *auth.VerifyOtpRequest) (*AuthVerifyOtpResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthVerifyOtp not implemented")
@@ -462,6 +478,24 @@ func _ApiGateway_AuthSignIn_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiGatewayServer).AuthSignIn(ctx, req.(*auth.SignInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_AuthSignOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthSignOutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthSignOut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthSignOut_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthSignOut(ctx, req.(*AuthSignOutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -744,6 +778,10 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthSignIn",
 			Handler:    _ApiGateway_AuthSignIn_Handler,
+		},
+		{
+			MethodName: "AuthSignOut",
+			Handler:    _ApiGateway_AuthSignOut_Handler,
 		},
 		{
 			MethodName: "AuthVerifyOtp",

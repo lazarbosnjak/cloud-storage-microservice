@@ -42,6 +42,13 @@ service ApiGateway {
     };
   }
 
+  rpc AuthSignOut (AuthSignOutRequest) returns (AuthSignOutResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/logout"
+      body: "*"
+    };
+  }
+
   rpc AuthVerifyOtp (auth.VerifyOtpRequest) returns (AuthVerifyOtpResponse) {
     option (google.api.http) = {
       post: "/api/auth/otp/verify"
@@ -150,6 +157,12 @@ message AuthSignInResponse {
   string otp_challenge = 4;
   bool must_change_password = 5;
 }
+
+message AuthSignOutRequest {
+  string refresh_token = 1;
+}
+
+message AuthSignOutResponse {}
 
 message AuthVerifyOtpResponse {
   string access_token = 1;
