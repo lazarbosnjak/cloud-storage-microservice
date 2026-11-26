@@ -12,13 +12,22 @@ import (
 )
 
 func NewClient(ctx context.Context, cfg *config.Config) (*mongo.Client, error) {
-	mongoURI := fmt.Sprintf(
-		"mongodb://%s:%s@%s:%s/?authSource=admin",
-		url.QueryEscape(cfg.Mongo.InitDBRootUsername),
-		url.QueryEscape(cfg.Mongo.InitDBRootPassword),
-		cfg.Mongo.Host,
-		cfg.Mongo.Port,
-	)
+	var mongoURI string
+	if cfg.Mongo.InitDBRootUsername != "" {
+		mongoURI = fmt.Sprintf(
+			"mongodb://%s:%s@%s:%s/?authSource=admin",
+			url.QueryEscape(cfg.Mongo.InitDBRootUsername),
+			url.QueryEscape(cfg.Mongo.InitDBRootPassword),
+			cfg.Mongo.Host,
+			cfg.Mongo.Port,
+		)
+	} else {
+		mongoURI = fmt.Sprintf(
+			"mongodb://%s:%s",
+			cfg.Mongo.Host,
+			cfg.Mongo.Port,
+		)
+	}
 
 	client, err := mongo.Connect(
 		options.Client().ApplyURI(mongoURI),

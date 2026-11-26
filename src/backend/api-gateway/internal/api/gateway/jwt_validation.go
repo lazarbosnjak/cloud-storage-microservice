@@ -51,7 +51,9 @@ var publicPaths = map[string]struct{}{
 	"/api/auth/login":           {},
 	"/api/auth/register":        {},
 	"/api/auth/register/verify": {},
+	"/api/auth/otp/verify":      {},
 	"/api/auth/refresh":         {},
+	"/api/auth/change-password": {},
 }
 
 func (h *JwtHandler) loadECPublicKey() (*ecdsa.PublicKey, error) {

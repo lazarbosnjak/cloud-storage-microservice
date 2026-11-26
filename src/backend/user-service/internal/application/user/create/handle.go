@@ -18,21 +18,25 @@ type Query struct {
 }
 
 type Handler struct {
-	repository RegisterUser
+	repository          RegisterUser
+	defaultStorageQuota int64
 }
 
-func NewHandler(repository RegisterUser) *Handler {
+func NewHandler(repository RegisterUser, defaultStorageQuota int64) *Handler {
 	return &Handler{
-		repository: repository,
+		repository:          repository,
+		defaultStorageQuota: defaultStorageQuota,
 	}
 }
 
 func (h *Handler) Register(ctx context.Context, query Query) error {
 	user := domain.User{
-		ID:        query.ID,
-		Email:     query.Email,
-		FirstName: query.FirstName,
-		LastName:  query.LastName,
+		ID:           query.ID,
+		Email:        query.Email,
+		FirstName:    query.FirstName,
+		LastName:     query.LastName,
+		StorageQuota: h.defaultStorageQuota,
+		StorageUsed:  0,
 	}
 
 	return h.repository.Create(ctx, user)

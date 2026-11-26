@@ -8,6 +8,7 @@ service Auth{
     rpc Ping (PingRequest) returns (PingReply) {}
     rpc Register (RegisterRequest) returns (RegisterResponse);
     rpc SignIn (SignInRequest) returns (SignInResponse);
+    rpc VerifyOtp (VerifyOtpRequest) returns (VerifyOtpResponse);
     rpc Refresh (RefreshRequest) returns (RefreshResponse);
     rpc SignOut (SignOutRequest) returns (SignOutResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
@@ -36,10 +37,26 @@ message SignInRequest {
 }
 
 message SignInResponse {
+    bool otp_required = 1;
+    string otp_challenge = 2;
+    string access_token = 3;
+    int64 expires_in_seconds = 4;
+    bool must_change_password = 5;
+    string refresh_token = 6;
+}
+
+message VerifyOtpRequest {
+    string otp_challenge = 1;
+    string code = 2;
+}
+
+message VerifyOtpResponse {
     string access_token = 1;
     int64 expires_in_seconds = 2;
     bool must_change_password = 3;
     string refresh_token = 4;
+    bool otp_required = 5;
+    string otp_challenge = 6;
 }
 
 message RefreshRequest {

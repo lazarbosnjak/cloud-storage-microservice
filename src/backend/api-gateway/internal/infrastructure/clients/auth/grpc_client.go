@@ -62,10 +62,24 @@ func (c *GRPCClient) Login(ctx context.Context, dto auth.LoginDTO) (*auth.LoginR
 		return nil, err
 	}
 
+	if res.MustChangePassword {
+		return &auth.LoginResponseDTO{
+			AccessToken:        "",
+			ExpiresInSeconds:   0,
+			RefreshToken:       "",
+			OtpRequired:        false,
+			OtpChallenge:       "",
+			MustChangePassword: true,
+		}, nil
+	}
+
 	return &auth.LoginResponseDTO{
-		AccessToken:      res.GetAccessToken(),
-		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
-		RefreshToken:     res.GetRefreshToken(),
+		AccessToken:        res.GetAccessToken(),
+		ExpiresInSeconds:   int(res.GetExpiresInSeconds()),
+		RefreshToken:       res.GetRefreshToken(),
+		OtpRequired:        res.GetOtpRequired(),
+		OtpChallenge:       res.GetOtpChallenge(),
+		MustChangePassword: false,
 	}, nil
 }
 
@@ -92,6 +106,41 @@ func (c *GRPCClient) VerifyRegistration(ctx context.Context, dto auth.VerifyRegi
 	}
 
 	_, err := c.client.VerifyRegistration(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *GRPCClient) VerifyOtp(ctx context.Context, dto auth.VerifyOtpDTO) (*auth.VerifyOtpResponseDTO, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	res, err := c.client.VerifyOtp(ctx, &authPb.VerifyOtpRequest{
+		OtpChallenge: dto.ChallengeID,
+		Code:         dto.Code,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth.VerifyOtpResponseDTO{
+		AccessToken:      res.GetAccessToken(),
+		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
+		RefreshToken:     res.GetRefreshToken(),
+	}, nil
+}
+
+func (c *GRPCClient) ChangePassword(ctx context.Context, dto auth.ChangePasswordDTO) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	_, err := c.client.ChangePassword(ctx, &authPb.ChangePasswordRequest{
+		Email:           dto.Email,
+		CurrentPassword: dto.CurrentPassword,
+		NewPassword:     dto.NewPassword,
+	})
 	if err != nil {
 		return err
 	}

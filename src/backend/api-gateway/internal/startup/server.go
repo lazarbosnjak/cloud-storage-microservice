@@ -13,9 +13,11 @@ import (
 
 	"api-gateway/internal/api/gateway"
 	gatewaygrpc "api-gateway/internal/api/grpc"
+	changePassword "api-gateway/internal/application/auth/change_password"
 	"api-gateway/internal/application/auth/login"
 	"api-gateway/internal/application/auth/refresh"
 	"api-gateway/internal/application/auth/register"
+	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
 	"api-gateway/internal/application/user/ping"
 	"api-gateway/internal/infrastructure/clients/auth"
@@ -33,6 +35,11 @@ import (
 	pb "proto/api-gateway"
 	authPb "proto/auth"
 	userPb "proto/user"
+
+	filehandler "api-gateway/internal/application/file/file"
+	folderhandler "api-gateway/internal/application/file/folder"
+	fileclient "api-gateway/internal/infrastructure/clients/file"
+	filePb "proto/file"
 )
 
 type Server struct {
@@ -83,7 +90,20 @@ func (s *Server) run() error {
 		}
 	}()
 
-	grpcAPIServer := s.newAPIServer(userConn, authConn)
+	fileConn, err := grpc.NewClient(
+		s.config.FileServiceGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("create file gRPC connection: %w", err)
+	}
+	defer func() {
+		if err := fileConn.Close(); err != nil {
+			s.logger.Error("close connection ")
+		}
+	}()
+
+	grpcAPIServer := s.newAPIServer(userConn, authConn, fileConn)
 
 	// gRPC server
 	grpcServer := grpc.NewServer()
@@ -190,6 +210,7 @@ func (s *Server) shutdown(gwServer *http.Server, grpcServer *grpc.Server) {
 func (s *Server) newAPIServer(
 	userConn *grpc.ClientConn,
 	authConn *grpc.ClientConn,
+	fileConn *grpc.ClientConn,
 ) pb.ApiGatewayServer {
 	userClient := user.NewGRPCClient(userPb.NewUserClient(userConn), s.logger)
 	userPingHandler := ping.NewHandler(userClient)
@@ -199,6 +220,12 @@ func (s *Server) newAPIServer(
 	authLoginHandler := login.NewHandler(authClient)
 	authRefreshHandler := refresh.NewHandler(authClient)
 	authVerifyRegistrationHandler := verifyregistration.NewHandler(authClient)
+	authVerifyOtpHandler := verifyotp.NewHandler(authClient)
+	authChangePasswordHandler := changePassword.NewHandler(authClient)
+
+	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
+	fileHandler := filehandler.NewHandler(fileClient)
+	folderHandler := folderhandler.NewHandler(fileClient)
 
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
 		UserPingHandler:               userPingHandler,
@@ -206,5 +233,9 @@ func (s *Server) newAPIServer(
 		AuthLoginHandler:              authLoginHandler,
 		AuthRefreshHandler:            authRefreshHandler,
 		AuthVerifyRegistrationHandler: authVerifyRegistrationHandler,
+		AuthVerifyOtpHandler:          authVerifyOtpHandler,
+		AuthChangePasswordHandler:     authChangePasswordHandler,
+		FileHandler:                   fileHandler,
+		FolderHandler:                 folderHandler,
 	})
 }

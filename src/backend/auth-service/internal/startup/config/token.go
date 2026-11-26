@@ -1,18 +1,9 @@
 package config
 
-import "time"
-
-type Token struct {
-	PrivateKeyPath     string
-	KeyID              string
-	Issuer             string
-	Audience           string
-	AccessTTL          time.Duration
-	RefreshIdleTTL     time.Duration
-	RefreshAbsoluteTTL time.Duration
-	RefreshReuseGrace  time.Duration
-	CleanupInterval    time.Duration
-}
+import (
+	"auth-service/internal/domain"
+	"time"
+)
 
 type Lockout struct {
 	Treshold     int
@@ -21,8 +12,8 @@ type Lockout struct {
 	ResetWindow  time.Duration
 }
 
-func loadToken(l *loader) Token {
-	t := Token{
+func loadToken(l *loader) domain.Token {
+	t := domain.Token{
 		PrivateKeyPath:     l.required("JWT_PRIVATE_KEY_PATH"),
 		KeyID:              l.str("JWT_KEY_ID", "dev-1"),
 		Issuer:             l.str("JWT_ISSUER", "auth-service"),

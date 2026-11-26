@@ -26,9 +26,10 @@ func TestGRPCCreateFileSuccess(t *testing.T) {
 	}
 
 	server := &Server{
-		createFileHandler: file.NewCreateHandler(
+		createFileHandler: file.NewUploadHandler(
 			fileRepo,
 			folderRepo,
+			newFakeQuotaClient(),
 		),
 	}
 
@@ -76,7 +77,7 @@ func TestGRPCCreateFileSuccess(t *testing.T) {
 		t.Fatal("file metadata was not saved")
 	}
 
-	if saved.StorageKey != "files/report.pdf" {
+	if saved.StorageKey != "placeholder/"+reply.GetId() {
 		t.Fatal("incorrect storage key")
 	}
 }
@@ -142,9 +143,10 @@ func TestGRPCCreateFileInvalidRequests(t *testing.T) {
 			folderRepo := newFakeFolderRepository()
 
 			server := &Server{
-				createFileHandler: file.NewCreateHandler(
+				createFileHandler: file.NewUploadHandler(
 					fileRepo,
 					folderRepo,
+					newFakeQuotaClient(),
 				),
 			}
 
@@ -179,9 +181,10 @@ func TestGRPCCreateFileDifferentOwner(t *testing.T) {
 	}
 
 	server := &Server{
-		createFileHandler: file.NewCreateHandler(
+		createFileHandler: file.NewUploadHandler(
 			fileRepo,
 			folderRepo,
+			newFakeQuotaClient(),
 		),
 	}
 
@@ -211,9 +214,10 @@ func TestGRPCCreateFileCanceledContext(t *testing.T) {
 	folderRepo := newFakeFolderRepository()
 
 	server := &Server{
-		createFileHandler: file.NewCreateHandler(
+		createFileHandler: file.NewUploadHandler(
 			fileRepo,
 			folderRepo,
+			newFakeQuotaClient(),
 		),
 	}
 
@@ -241,9 +245,10 @@ func TestGRPCCreateFileTimestampFormat(t *testing.T) {
 	folderRepo := newFakeFolderRepository()
 
 	server := &Server{
-		createFileHandler: file.NewCreateHandler(
+		createFileHandler: file.NewUploadHandler(
 			fileRepo,
 			folderRepo,
+			newFakeQuotaClient(),
 		),
 	}
 
@@ -274,3 +279,122 @@ func TestGRPCCreateFileTimestampFormat(t *testing.T) {
 
 // Ensure the existing folder handler remains available.
 var _ = folder.CreateCommand{}
+
+func TestGRPCCreateFileVersioning(t *testing.T) {
+	fileRepo := newFakeGRPCFileRepository()
+	folderRepo := newFakeFolderRepository()
+	quotaClient := newFakeQuotaClient()
+
+	server := &Server{
+		createFileHandler: file.NewUploadHandler(
+			fileRepo,
+			folderRepo,
+			quotaClient,
+		),
+	}
+
+	ctx := context.Background()
+
+	request := &pb.CreateFileRequest{
+		Name:        "report.pdf",
+		Size:        1000,
+		ContentType: "application/pdf",
+		OwnerId:     "user-1",
+	}
+
+	first, err := server.CreateFile(ctx, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	request.Size = 1500
+
+	second, err := server.CreateFile(ctx, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if first.GetId() != second.GetId() {
+		t.Fatal("file ID must remain unchanged")
+	}
+
+	if first.GetCreatedAt() != second.GetCreatedAt() {
+		t.Fatal("creation timestamp must remain unchanged")
+	}
+
+	if first.GetUpdatedAt() == second.GetUpdatedAt() {
+		t.Fatal("expected updated timestamp")
+	}
+
+	if second.GetSize() != 1500 {
+		t.Fatal("incorrect updated file size")
+	}
+
+	if len(fileRepo.files) != 1 {
+		t.Fatal("expected exactly one file")
+	}
+
+	storage, err := quotaClient.GetStorage(ctx, "user-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if storage.Used != 1500 {
+		t.Fatalf("expected usage 1500, got %d", storage.Used)
+	}
+}
+
+func TestGRPCCreateFileQuotaExceeded(t *testing.T) {
+	fileRepo := newFakeGRPCFileRepository()
+	folderRepo := newFakeFolderRepository()
+	quotaClient := newFakeQuotaClient()
+
+	quotaClient.limit = 1000
+
+	server := &Server{
+		createFileHandler: file.NewUploadHandler(
+			fileRepo,
+			folderRepo,
+			quotaClient,
+		),
+	}
+
+	ctx := context.Background()
+
+	request := &pb.CreateFileRequest{
+		Name:        "report.pdf",
+		Size:        800,
+		ContentType: "application/pdf",
+		OwnerId:     "user-1",
+	}
+
+	first, err := server.CreateFile(ctx, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	request.Size = 1200
+
+	_, err = server.CreateFile(ctx, request)
+
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("expected ResourceExhausted, got %v", err)
+	}
+
+	if len(fileRepo.files) != 1 {
+		t.Fatal("unexpected number of files")
+	}
+
+	if fileRepo.files[first.GetId()].Size != 800 {
+		t.Fatal("original file must remain unchanged")
+	}
+
+	storage, err := quotaClient.GetStorage(ctx, "user-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if storage.Used != 800 {
+		t.Fatalf("expected usage 800, got %d", storage.Used)
+	}
+}

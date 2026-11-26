@@ -19,6 +19,9 @@ type Config struct {
 	MongoPingTimeout       time.Duration
 	MongoDisconnectTimeout time.Duration
 
+	UserServiceAddress string
+	UserServiceTimeout time.Duration
+
 	PingDelay time.Duration
 }
 
@@ -28,9 +31,7 @@ func NewConfig() (*Config, error) {
 		return nil, fmt.Errorf("GRPC_PORT is missing")
 	}
 
-	gracefulTimeout, err := readPositiveDuration(
-		"GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS",
-	)
+	gracefulTimeout, err := readPositiveDuration("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS")
 	if err != nil {
 		return nil, err
 	}
@@ -60,23 +61,27 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 
-	mongoPingTimeout, err := readPositiveDuration(
-		"MONGO_PING_TIMEOUT_SECONDS",
-	)
+	mongoPingTimeout, err := readPositiveDuration("MONGO_PING_TIMEOUT_SECONDS")
 	if err != nil {
 		return nil, err
 	}
 
-	mongoDisconnectTimeout, err := readPositiveDuration(
-		"MONGO_DISCONNECT_TIMEOUT_SECONDS",
-	)
+	mongoDisconnectTimeout, err := readPositiveDuration("MONGO_DISCONNECT_TIMEOUT_SECONDS")
 	if err != nil {
 		return nil, err
 	}
 
-	pingDelay, err := readPositiveDuration(
-		"PING_DELAY_SECONDS",
-	)
+	pingDelay, err := readPositiveDuration("PING_DELAY_SECONDS")
+	if err != nil {
+		return nil, err
+	}
+
+	userServiceAddress, err := readRequired("USER_SERVICE_ADDRESS")
+	if err != nil {
+		return nil, err
+	}
+
+	userServiceTimeout, err := readPositiveDuration("USER_SERVICE_TIMEOUT_SECONDS")
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +98,9 @@ func NewConfig() (*Config, error) {
 		MongoPingTimeout:       mongoPingTimeout,
 		MongoDisconnectTimeout: mongoDisconnectTimeout,
 
-		PingDelay: pingDelay,
+		UserServiceAddress: userServiceAddress,
+		UserServiceTimeout: userServiceTimeout,
+		PingDelay:          pingDelay,
 	}, nil
 }
 

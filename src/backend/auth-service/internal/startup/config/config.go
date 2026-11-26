@@ -1,6 +1,7 @@
 package config
 
 import (
+	"auth-service/internal/domain"
 	"fmt"
 	"log/slog"
 	"net/url"
@@ -54,14 +55,21 @@ type Service struct {
 	FrontendAddr        string
 }
 
+type OTPPolicy struct {
+	OtpTTL             time.Duration
+	OtpMaxAttempts     uint8
+	OtpChallengeLength uint8
+}
+
 type Config struct {
 	Postgres          Postgres
 	Argon2id          Argon2id
 	CredentialPolicy  CredentialPolicy
 	Service           Service
 	SMTP              SMTP
-	Token             Token
+	Token             domain.Token
 	Lockout           Lockout
+	OTPPolicy         OTPPolicy
 	VerificationToken VerificationToken
 }
 
@@ -114,6 +122,11 @@ func Load() (Config, error) {
 		Lockout: loadLockout(l),
 		VerificationToken: VerificationToken{
 			ExpiresIn: l.duration("VERIFICATION_TOKEN_EXPIRATION", time.Minute*15),
+		},
+		OTPPolicy: OTPPolicy{
+			OtpTTL:             l.duration("OTP_TTL", 5*time.Minute),
+			OtpMaxAttempts:     uint8(l.integer("OTP_MAX_ATTEMPTS", 5)),
+			OtpChallengeLength: uint8(l.integer("OTP_CHALLENGE_LENGTH", 43)),
 		},
 	}
 

@@ -1,0 +1,97 @@
+
+<div class="max-w-md mx-auto mt-16 p-6 border rounded-lg">
+
+  @if (stage() === 'credentials') {
+    <h1 class="text-center mb-6">Sign in</h1>
+
+    <form (submit)="submitCredentials($event)">
+
+      <div class="mb-4">
+        <label for="email">Email</label>
+        <input id="email" type="email" [formField]="credentialsForm.email"
+          class="w-full border rounded p-2 mt-1">
+
+        @if (credentialsForm.email().touched() && credentialsForm.email().invalid()) {
+          <p class="text-red-600 text-sm">Enter a valid email.</p>
+        }
+      </div>
+
+      <div class="mb-4">
+        <label for="password">Password</label>
+        <input id="password" type="password" [formField]="credentialsForm.password"
+          class="w-full border rounded p-2 mt-1">
+
+        @if (credentialsForm.password().touched() && credentialsForm.password().invalid()) {
+          <p class="text-red-600 text-sm">Password is required.</p>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <p class="text-red-600 mb-3">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" [disabled]="loading()"
+        class="w-full bg-brand-primary text-white p-2 rounded disabled:opacity-50">
+        {{ loading() ? 'Signing in...' : 'Sign in' }}
+      </button>
+
+    </form>
+
+    <p class="mt-4">
+      No account yet? <a routerLink="/register" class="text-brand-primary underline">Register</a>
+    </p>
+  }
+
+  @if (stage() === 'otp') {
+    <h1 class="text-center mb-6">One-time password</h1>
+
+    <p class="mb-4">
+      We sent a 6-digit code to your email. Enter it below to finish signing in.
+    </p>
+
+    <form (submit)="submitOtp($event)">
+
+      <div class="mb-4">
+        <label for="code">Code</label>
+        <input id="code" type="text" [formField]="otpForm.code" inputmode="numeric"
+          autocomplete="one-time-code"
+          class="w-full border rounded p-2 mt-1">
+
+        @if (otpForm.code().touched() && otpForm.code().invalid()) {
+          <p class="text-red-600 text-sm">Enter the 6-digit code.</p>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <p class="text-red-600 mb-3">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" [disabled]="loading()"
+        class="w-full bg-brand-primary text-white p-2 rounded disabled:opacity-50">
+        {{ loading() ? 'Verifying...' : 'Verify code' }}
+      </button>
+
+    </form>
+
+    <button type="button" (click)="backToCredentials()"
+      class="mt-4 text-brand-primary underline">
+      Back to sign in
+    </button>
+  }
+
+  @if (stage() === 'done') {
+    <h1 class="text-center mb-6">Signed in</h1>
+
+    <p class="mb-3">
+      You are signed in. The access token is stored in sessionStorage and the
+      refresh token was set as a cookie by the gateway.
+    </p>
+
+    @if (expiresInSeconds() !== null) {
+      <p class="mb-3">
+        Access token expires in {{ expiresInSeconds() }} seconds.
+      </p>
+    }
+  }
+
+</div>

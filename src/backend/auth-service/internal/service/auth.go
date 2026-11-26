@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"strings"
 	"time"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/alexedwards/argon2id"
@@ -35,6 +36,7 @@ type CredentialStore interface {
 	ResetFailedAttempts(ctx context.Context, userID string) error
 	ChangePassword(ctx context.Context, userID string, passwordHash string) error
 	UpdateIsEnabled(ctx context.Context, userID string, enabled bool) error
+	GetByID(ctx context.Context, userID string) (*domain.Credential, error)
 }
 
 type RegisterUserDTO struct {
@@ -59,6 +61,7 @@ type UserClient interface {
 // TODO: Move to separate file
 type EmailSender interface {
 	SendVerifyRegistrationMail(to []string, verificationLink string) error
+	SendOtpMail(to []string, code string, expiresIn time.Duration) error
 }
 
 // FIXME: move cfg to struct instead of constructor func
@@ -79,6 +82,8 @@ type AuthService struct {
 
 	UserClient  UserClient
 	EmailSender EmailSender
+
+	otp OtpStore
 }
 
 func (s *AuthService) Ping(ctx context.Context) (string, error) {
@@ -88,6 +93,7 @@ func (s *AuthService) Ping(ctx context.Context) (string, error) {
 func NewAuthService(
 	store CredentialStore,
 	refresh RefreshTokenStore,
+	otp OtpStore,
 	verificationTokenStore VerificationTokenStore,
 	cfg config.Config,
 	tokens TokenIssuer,
@@ -127,6 +133,7 @@ func NewAuthService(
 		refreshReuseGrace:  cfg.Token.RefreshReuseGrace,
 		UserClient:         userClient,
 		EmailSender:        emailSender,
+		otp:                otp,
 	}, nil
 }
 
@@ -140,17 +147,22 @@ func (s *AuthService) Register(ctx context.Context, user RegisterUserDTO) (strin
 		switch {
 		case errors.Is(err, domain.ErrInvalidEmail):
 			slog.Error("invalid email")
-			return "", status.Errorf(codes.InvalidArgument, "invalid email")
+			return "", err
 		case errors.Is(err, domain.ErrEmailTaken):
 			slog.Error("email already registered")
-			return "", status.Errorf(codes.AlreadyExists, "email already registered")
+			return "", err
 		case errors.Is(err, domain.ErrPassword):
 			slog.Error("password does not meet the requirements")
-			return "", status.Errorf(codes.InvalidArgument, "password does not meet the requirements")
+			return "", err
 		default:
 			slog.Error("register failed", "error", err)
-			return "", status.Error(codes.Internal, "internal error")
+			return "", err
 		}
+	}
+
+	err = s.validateFirstLastName(user.FirstName, user.LastName)
+	if err != nil {
+		return "", err
 	}
 
 	createUserDTO := &CreateUserDTO{
@@ -236,6 +248,17 @@ func normalizeEmail(email string) string {
 	return strings.ToLower(strings.TrimSpace(email))
 }
 
+func (s *AuthService) validateFirstLastName(firstName string, lastName string) error {
+	if strings.Trim(firstName, " ") == "" {
+		return domain.ErrFirstName
+	}
+	if strings.Trim(lastName, " ") == "" {
+		return domain.ErrLastName
+	}
+
+	return nil
+}
+
 func (s *AuthService) validateEmail(email string) error {
 	if len(email) > int(s.policy.MaxEmailLength) {
 		return domain.ErrInvalidEmail
@@ -252,6 +275,24 @@ func (s *AuthService) validateEmail(email string) error {
 func (s *AuthService) validatePassword(password string) error {
 	n := utf8.RuneCountInString(password)
 	if n < int(s.policy.MinPasswordLength) || n > int(s.policy.MaxPasswordLength) {
+		return domain.ErrPassword
+	}
+
+	var hasUpper, hasLower, hasNumber, hasSymbol bool
+	for _, r := range password {
+		switch {
+		case unicode.IsUpper(r):
+			hasUpper = true
+		case unicode.IsLower(r):
+			hasLower = true
+		case unicode.IsNumber(r):
+			hasNumber = true
+		case unicode.IsPunct(r) || unicode.IsSymbol(r):
+			hasSymbol = true
+		}
+	}
+
+	if !hasUpper || !hasLower || !hasNumber || !hasSymbol {
 		return domain.ErrPassword
 	}
 
