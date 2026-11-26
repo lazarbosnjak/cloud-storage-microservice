@@ -22,6 +22,7 @@ import (
 	"api-gateway/internal/application/user/ping"
 	"api-gateway/internal/application/user/storage"
 	"api-gateway/internal/infrastructure/clients/auth"
+	"api-gateway/internal/infrastructure/clients/notification"
 	"api-gateway/internal/infrastructure/clients/user"
 	"api-gateway/internal/startup/config"
 
@@ -35,6 +36,7 @@ import (
 
 	pb "proto/api-gateway"
 	authPb "proto/auth"
+	notifPb "proto/notification"
 	userPb "proto/user"
 
 	filehandler "api-gateway/internal/application/file/file"
@@ -104,7 +106,20 @@ func (s *Server) run() error {
 		}
 	}()
 
-	grpcAPIServer := s.newAPIServer(userConn, authConn, fileConn)
+	notifConn, err := grpc.NewClient(
+		s.config.NotificaitonServiceGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("create file gRPC connection: %w", err)
+	}
+	defer func() {
+		if err := fileConn.Close(); err != nil {
+			s.logger.Error("close connection ")
+		}
+	}()
+
+	grpcAPIServer := s.newAPIServer(userConn, authConn, fileConn, notifConn)
 
 	// gRPC server
 	grpcServer := grpc.NewServer()
@@ -212,6 +227,7 @@ func (s *Server) newAPIServer(
 	userConn *grpc.ClientConn,
 	authConn *grpc.ClientConn,
 	fileConn *grpc.ClientConn,
+	notifConn *grpc.ClientConn,
 ) pb.ApiGatewayServer {
 	userClient := user.NewGRPCClient(userPb.NewUserClient(userConn), s.logger)
 	userPingHandler := ping.NewHandler(userClient)
@@ -229,6 +245,8 @@ func (s *Server) newAPIServer(
 	fileHandler := filehandler.NewHandler(fileClient)
 	folderHandler := folderhandler.NewHandler(fileClient)
 
+	notifClient := notification.NewGRPCClient(notifPb.NewNotificationClient(notifConn))
+
 	return gatewaygrpc.NewServer(&gatewaygrpc.Handlers{
 		UserPingHandler:               userPingHandler,
 		AuthRegisterHandler:           authRegisterHandler,
@@ -240,5 +258,6 @@ func (s *Server) newAPIServer(
 		FileHandler:                   fileHandler,
 		FolderHandler:                 folderHandler,
 		UserStorageHandler:            userStorageHandler,
+		NotificationClient:            notifClient,
 	})
 }
