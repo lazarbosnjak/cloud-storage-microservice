@@ -14,6 +14,9 @@ import (
 	folderhandler "api-gateway/internal/application/file/folder"
 	userping "api-gateway/internal/application/user/ping"
 	userstorage "api-gateway/internal/application/user/storage"
+
+	forgotPassword "api-gateway/internal/application/auth/forgot_password"
+	resetPassword "api-gateway/internal/application/auth/reset_password"
 )
 
 type Server struct {
@@ -32,6 +35,8 @@ type Handlers struct {
 	FileHandler                   *filehandler.Handler
 	FolderHandler                 *folderhandler.Handler
 	UserStorageHandler            *userstorage.Handler
+	AuthForgotPasswordHandler     *forgotPassword.Handler
+	AuthResetPasswordHandler      *resetPassword.Handler
 }
 
 func NewServer(handlers *Handlers) *Server {

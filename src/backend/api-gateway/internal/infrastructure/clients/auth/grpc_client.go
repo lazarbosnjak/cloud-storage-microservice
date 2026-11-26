@@ -147,3 +147,30 @@ func (c *GRPCClient) ChangePassword(ctx context.Context, dto auth.ChangePassword
 
 	return nil
 }
+
+func (c *GRPCClient) ForgotPassword(ctx context.Context, dto auth.ForgotPasswordDTO) error {
+	_, err := c.client.ForgotPassword(ctx, &authPb.ForgotPasswordRequest{
+		Email: dto.Email,
+	})
+	if err != nil {
+		c.logger.Error(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (c *GRPCClient) ResetPassword(ctx context.Context, dto auth.ResetPasswordDTO) error {
+	_, err := c.client.ResetPassword(ctx, &authPb.ResetPasswordRequest{
+		TokenId:          dto.TokenID,
+		NewPassword:      dto.NewPassword,
+		RepeatedPassword: dto.RepeatedPassword,
+	})
+
+	if err != nil {
+		c.logger.Error(err.Error())
+		return err
+	}
+
+	return nil
+}

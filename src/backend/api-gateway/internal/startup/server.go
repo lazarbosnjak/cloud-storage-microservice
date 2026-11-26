@@ -14,9 +14,11 @@ import (
 	"api-gateway/internal/api/gateway"
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	changePassword "api-gateway/internal/application/auth/change_password"
+	forgotPassword "api-gateway/internal/application/auth/forgot_password"
 	"api-gateway/internal/application/auth/login"
 	"api-gateway/internal/application/auth/refresh"
-	"api-gateway/internal/application/auth/register"
+	register "api-gateway/internal/application/auth/register"
+	resetPassword "api-gateway/internal/application/auth/reset_password"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
 	"api-gateway/internal/application/user/ping"
@@ -224,6 +226,8 @@ func (s *Server) newAPIServer(
 	authVerifyRegistrationHandler := verifyregistration.NewHandler(authClient)
 	authVerifyOtpHandler := verifyotp.NewHandler(authClient)
 	authChangePasswordHandler := changePassword.NewHandler(authClient)
+	authForgotPasswordHandler := forgotPassword.NewHandler(authClient)
+	authResetPasswordHandler := resetPassword.NewHandler(authClient)
 
 	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
 	fileHandler := filehandler.NewHandler(fileClient)
@@ -240,5 +244,7 @@ func (s *Server) newAPIServer(
 		FileHandler:                   fileHandler,
 		FolderHandler:                 folderHandler,
 		UserStorageHandler:            userStorageHandler,
+		AuthForgotPasswordHandler:     authForgotPasswordHandler,
+		AuthResetPasswordHandler:      authResetPasswordHandler,
 	})
 }
