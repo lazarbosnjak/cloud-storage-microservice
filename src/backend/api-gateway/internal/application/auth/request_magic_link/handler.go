@@ -19,7 +19,7 @@ func NewHandler(client auth.Client) *Handler {
 	}
 }
 
-func (h *Handler) Handler(ctx context.Context, command Command) error {
+func (h *Handler) Handle(ctx context.Context, command Command) error {
 	return h.client.RequestMagicLink(ctx, auth.RequestMagicLinkDTO{
 		Email: command.Email,
 	})

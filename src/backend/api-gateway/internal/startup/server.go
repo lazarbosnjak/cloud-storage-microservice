@@ -19,6 +19,8 @@ import (
 	"api-gateway/internal/application/auth/refresh"
 	register "api-gateway/internal/application/auth/register"
 	resetPassword "api-gateway/internal/application/auth/reset_password"
+	magiclinksignin "api-gateway/internal/application/auth/magic_link_sign_in"
+	requestmagiclink "api-gateway/internal/application/auth/request_magic_link"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
 	"api-gateway/internal/application/user/ping"
@@ -228,6 +230,8 @@ func (s *Server) newAPIServer(
 	authChangePasswordHandler := changePassword.NewHandler(authClient)
 	authForgotPasswordHandler := forgotPassword.NewHandler(authClient)
 	authResetPasswordHandler := resetPassword.NewHandler(authClient)
+	authRequestMagicLinkHandler := requestmagiclink.NewHandler(authClient)
+	authMagicLinkSignInHandler := magiclinksignin.NewHandler(authClient)
 
 	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
 	fileHandler := filehandler.NewHandler(fileClient)
@@ -246,5 +250,7 @@ func (s *Server) newAPIServer(
 		UserStorageHandler:            userStorageHandler,
 		AuthForgotPasswordHandler:     authForgotPasswordHandler,
 		AuthResetPasswordHandler:      authResetPasswordHandler,
+		AuthRequestMagicLinkHandler:   authRequestMagicLinkHandler,
+		AuthMagicLinkSignInHandler:    authMagicLinkSignInHandler,
 	})
 }

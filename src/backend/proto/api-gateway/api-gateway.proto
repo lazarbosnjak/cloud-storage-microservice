@@ -135,7 +135,7 @@ service ApiGateway {
     };
   }
 
-  rpc AuthMagicLinkSignIn (auth.MagicLinkSignInRequest) returns (auth.MagicLinkSignInResponse) {
+  rpc AuthMagicLinkSignIn (auth.MagicLinkSignInRequest) returns (AuthMagicLinkSignInResponse) {
     option (google.api.http) = {
       post: "/api/auth/magic-link/sign-in"
       body: "*"
@@ -159,6 +159,11 @@ message AuthSignInResponse {
 }
 
 message AuthVerifyOtpResponse {
+  string access_token = 1;
+  int32 expires_in_seconds = 2;
+}
+
+message AuthMagicLinkSignInResponse {
   string access_token = 1;
   int32 expires_in_seconds = 2;
 }

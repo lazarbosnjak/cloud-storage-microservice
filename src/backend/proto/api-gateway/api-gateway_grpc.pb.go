@@ -65,7 +65,7 @@ type ApiGatewayClient interface {
 	AuthForgotPassword(ctx context.Context, in *auth.ForgotPasswordRequest, opts ...grpc.CallOption) (*auth.ForgotPasswordResponse, error)
 	AuthResetPassword(ctx context.Context, in *auth.ResetPasswordRequest, opts ...grpc.CallOption) (*auth.ResetPasswordResponse, error)
 	AuthRequestMagicLink(ctx context.Context, in *auth.RequestMagicLinkRequest, opts ...grpc.CallOption) (*auth.RequestMagicLinkResponse, error)
-	AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*auth.MagicLinkSignInResponse, error)
+	AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*AuthMagicLinkSignInResponse, error)
 }
 
 type apiGatewayClient struct {
@@ -266,9 +266,9 @@ func (c *apiGatewayClient) AuthRequestMagicLink(ctx context.Context, in *auth.Re
 	return out, nil
 }
 
-func (c *apiGatewayClient) AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*auth.MagicLinkSignInResponse, error) {
+func (c *apiGatewayClient) AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*AuthMagicLinkSignInResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(auth.MagicLinkSignInResponse)
+	out := new(AuthMagicLinkSignInResponse)
 	err := c.cc.Invoke(ctx, ApiGateway_AuthMagicLinkSignIn_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -299,7 +299,7 @@ type ApiGatewayServer interface {
 	AuthForgotPassword(context.Context, *auth.ForgotPasswordRequest) (*auth.ForgotPasswordResponse, error)
 	AuthResetPassword(context.Context, *auth.ResetPasswordRequest) (*auth.ResetPasswordResponse, error)
 	AuthRequestMagicLink(context.Context, *auth.RequestMagicLinkRequest) (*auth.RequestMagicLinkResponse, error)
-	AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*auth.MagicLinkSignInResponse, error)
+	AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*AuthMagicLinkSignInResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
 
@@ -367,7 +367,7 @@ func (UnimplementedApiGatewayServer) AuthResetPassword(context.Context, *auth.Re
 func (UnimplementedApiGatewayServer) AuthRequestMagicLink(context.Context, *auth.RequestMagicLinkRequest) (*auth.RequestMagicLinkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthRequestMagicLink not implemented")
 }
-func (UnimplementedApiGatewayServer) AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*auth.MagicLinkSignInResponse, error) {
+func (UnimplementedApiGatewayServer) AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*AuthMagicLinkSignInResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthMagicLinkSignIn not implemented")
 }
 func (UnimplementedApiGatewayServer) mustEmbedUnimplementedApiGatewayServer() {}
