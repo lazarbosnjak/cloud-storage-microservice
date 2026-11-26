@@ -7,6 +7,7 @@ type VerificationTokenReason int
 const (
 	Registration VerificationTokenReason = iota
 	MagicLink
+	PasswordReset
 )
 
 type VerificationToken struct {

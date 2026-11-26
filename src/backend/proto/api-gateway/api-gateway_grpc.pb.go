@@ -37,6 +37,8 @@ const (
 	ApiGateway_RenameFolder_FullMethodName              = "/api_gateway.ApiGateway/RenameFolder"
 	ApiGateway_ListFolderContents_FullMethodName        = "/api_gateway.ApiGateway/ListFolderContents"
 	ApiGateway_GetStorage_FullMethodName                = "/api_gateway.ApiGateway/GetStorage"
+	ApiGateway_AuthForgotPassword_FullMethodName        = "/api_gateway.ApiGateway/AuthForgotPassword"
+	ApiGateway_AuthResetPassword_FullMethodName         = "/api_gateway.ApiGateway/AuthResetPassword"
 	ApiGateway_NotificationsGetAllByUser_FullMethodName = "/api_gateway.ApiGateway/NotificationsGetAllByUser"
 )
 
@@ -60,6 +62,8 @@ type ApiGatewayClient interface {
 	RenameFolder(ctx context.Context, in *GatewayRenameRequest, opts ...grpc.CallOption) (*GatewayEmptyReply, error)
 	ListFolderContents(ctx context.Context, in *GatewayListFolderContentsRequest, opts ...grpc.CallOption) (*GatewayFolderContentsReply, error)
 	GetStorage(ctx context.Context, in *GatewayGetStorageRequest, opts ...grpc.CallOption) (*GatewayStorageReply, error)
+	AuthForgotPassword(ctx context.Context, in *auth.ForgotPasswordRequest, opts ...grpc.CallOption) (*auth.ForgotPasswordResponse, error)
+	AuthResetPassword(ctx context.Context, in *auth.ResetPasswordRequest, opts ...grpc.CallOption) (*auth.ResetPasswordResponse, error)
 	NotificationsGetAllByUser(ctx context.Context, in *NotificationsGetAllByUserRequest, opts ...grpc.CallOption) (*notification.GetAllByUserResponse, error)
 }
 
@@ -231,6 +235,26 @@ func (c *apiGatewayClient) GetStorage(ctx context.Context, in *GatewayGetStorage
 	return out, nil
 }
 
+func (c *apiGatewayClient) AuthForgotPassword(ctx context.Context, in *auth.ForgotPasswordRequest, opts ...grpc.CallOption) (*auth.ForgotPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(auth.ForgotPasswordResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthForgotPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) AuthResetPassword(ctx context.Context, in *auth.ResetPasswordRequest, opts ...grpc.CallOption) (*auth.ResetPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(auth.ResetPasswordResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthResetPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiGatewayClient) NotificationsGetAllByUser(ctx context.Context, in *NotificationsGetAllByUserRequest, opts ...grpc.CallOption) (*notification.GetAllByUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(notification.GetAllByUserResponse)
@@ -261,6 +285,8 @@ type ApiGatewayServer interface {
 	RenameFolder(context.Context, *GatewayRenameRequest) (*GatewayEmptyReply, error)
 	ListFolderContents(context.Context, *GatewayListFolderContentsRequest) (*GatewayFolderContentsReply, error)
 	GetStorage(context.Context, *GatewayGetStorageRequest) (*GatewayStorageReply, error)
+	AuthForgotPassword(context.Context, *auth.ForgotPasswordRequest) (*auth.ForgotPasswordResponse, error)
+	AuthResetPassword(context.Context, *auth.ResetPasswordRequest) (*auth.ResetPasswordResponse, error)
 	NotificationsGetAllByUser(context.Context, *NotificationsGetAllByUserRequest) (*notification.GetAllByUserResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
@@ -319,6 +345,12 @@ func (UnimplementedApiGatewayServer) ListFolderContents(context.Context, *Gatewa
 }
 func (UnimplementedApiGatewayServer) GetStorage(context.Context, *GatewayGetStorageRequest) (*GatewayStorageReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetStorage not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthForgotPassword(context.Context, *auth.ForgotPasswordRequest) (*auth.ForgotPasswordResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthForgotPassword not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthResetPassword(context.Context, *auth.ResetPasswordRequest) (*auth.ResetPasswordResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthResetPassword not implemented")
 }
 func (UnimplementedApiGatewayServer) NotificationsGetAllByUser(context.Context, *NotificationsGetAllByUserRequest) (*notification.GetAllByUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method NotificationsGetAllByUser not implemented")
@@ -632,6 +664,42 @@ func _ApiGateway_GetStorage_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_AuthForgotPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(auth.ForgotPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthForgotPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthForgotPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthForgotPassword(ctx, req.(*auth.ForgotPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_AuthResetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(auth.ResetPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthResetPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthResetPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthResetPassword(ctx, req.(*auth.ResetPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiGateway_NotificationsGetAllByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NotificationsGetAllByUserRequest)
 	if err := dec(in); err != nil {
@@ -720,6 +788,14 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetStorage",
 			Handler:    _ApiGateway_GetStorage_Handler,
+		},
+		{
+			MethodName: "AuthForgotPassword",
+			Handler:    _ApiGateway_AuthForgotPassword_Handler,
+		},
+		{
+			MethodName: "AuthResetPassword",
+			Handler:    _ApiGateway_AuthResetPassword_Handler,
 		},
 		{
 			MethodName: "NotificationsGetAllByUser",

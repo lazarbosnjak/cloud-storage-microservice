@@ -197,6 +197,10 @@ func (s *AuthService) issueSession(ctx context.Context, cred *domain.Credential)
 	rt.ExpiresAt = now.Add(s.refreshIdleTTL)
 	rt.FamilyExpiresAt = now.Add(s.refreshAbsoluteTTL)
 
+	if err = s.refresh.Create(ctx, &rt); err != nil {
+		return SignInResult{}, err
+	}
+
 	at, err := s.tokens.IssueAccessToken(cred.ID, cred.UserRole, rt.FamilyID)
 	if err != nil {
 		return SignInResult{}, fmt.Errorf("issue access token: %w", err)

@@ -1,6 +1,15 @@
 package startup
 
 import (
+	"api-gateway/internal/api/gateway"
+	"api-gateway/internal/application/auth/login"
+	"api-gateway/internal/application/auth/refresh"
+	"api-gateway/internal/application/user/ping"
+	"api-gateway/internal/application/user/storage"
+	"api-gateway/internal/infrastructure/clients/auth"
+	"api-gateway/internal/infrastructure/clients/notification"
+	"api-gateway/internal/infrastructure/clients/user"
+	"api-gateway/internal/startup/config"
 	"context"
 	"errors"
 	"fmt"
@@ -11,20 +20,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"api-gateway/internal/api/gateway"
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	changePassword "api-gateway/internal/application/auth/change_password"
-	"api-gateway/internal/application/auth/login"
-	"api-gateway/internal/application/auth/refresh"
-	"api-gateway/internal/application/auth/register"
+	forgotPassword "api-gateway/internal/application/auth/forgot_password"
+	register "api-gateway/internal/application/auth/register"
+	resetPassword "api-gateway/internal/application/auth/reset_password"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
-	"api-gateway/internal/application/user/ping"
-	"api-gateway/internal/application/user/storage"
-	"api-gateway/internal/infrastructure/clients/auth"
-	"api-gateway/internal/infrastructure/clients/notification"
-	"api-gateway/internal/infrastructure/clients/user"
-	"api-gateway/internal/startup/config"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/sync/errgroup"
@@ -254,6 +256,8 @@ func (s *Server) newAPIServer(
 	authVerifyRegistrationHandler := verifyregistration.NewHandler(authClient)
 	authVerifyOtpHandler := verifyotp.NewHandler(authClient)
 	authChangePasswordHandler := changePassword.NewHandler(authClient)
+	authForgotPasswordHandler := forgotPassword.NewHandler(authClient)
+	authResetPasswordHandler := resetPassword.NewHandler(authClient)
 
 	fileClient := fileclient.NewGRPCClient(filePb.NewFileClient(fileConn), s.logger)
 	fileHandler := filehandler.NewHandler(fileClient)
@@ -272,6 +276,8 @@ func (s *Server) newAPIServer(
 		FileHandler:                   fileHandler,
 		FolderHandler:                 folderHandler,
 		UserStorageHandler:            userStorageHandler,
+		AuthForgotPasswordHandler:     authForgotPasswordHandler,
+		AuthResetPasswordHandler:      authResetPasswordHandler,
 		NotificationClient:            notifClient,
 	})
 }

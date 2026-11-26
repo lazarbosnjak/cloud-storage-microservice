@@ -115,6 +115,20 @@ service ApiGateway {
     };
   }
 
+  rpc AuthForgotPassword (auth.ForgotPasswordRequest) returns (auth.ForgotPasswordResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/forgot-password"
+      body: "*"
+    };
+  }
+
+  rpc AuthResetPassword (auth.ResetPasswordRequest) returns (auth.ResetPasswordResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/reset-password"
+      body: "*"
+    };
+  }
+
   rpc NotificationsGetAllByUser (NotificationsGetAllByUserRequest) returns (notification.GetAllByUserResponse) {
     option (google.api.http) = {
       get: "/api/notifications"

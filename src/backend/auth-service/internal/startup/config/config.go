@@ -41,7 +41,15 @@ type CredentialPolicy struct {
 }
 
 type VerificationToken struct {
-	ExpiresIn time.Duration
+	ExpiresIn              time.Duration
+	PasswordResetExpiresIn time.Duration
+}
+
+func (v VerificationToken) ExpiresInFor(reason domain.VerificationTokenReason) time.Duration {
+	if reason == domain.PasswordReset {
+		return v.PasswordResetExpiresIn
+	}
+	return v.ExpiresIn
 }
 
 type Service struct {
@@ -121,7 +129,8 @@ func Load() (Config, error) {
 		Token:   loadToken(l),
 		Lockout: loadLockout(l),
 		VerificationToken: VerificationToken{
-			ExpiresIn: l.duration("VERIFICATION_TOKEN_EXPIRATION", time.Minute*15),
+			ExpiresIn:              l.duration("VERIFICATION_TOKEN_EXPIRATION", time.Minute*15),
+			PasswordResetExpiresIn: l.duration("PASSWORD_RESET_TOKEN_EXPIRATION", time.Minute*10),
 		},
 		OTPPolicy: OTPPolicy{
 			OtpTTL:             l.duration("OTP_TTL", 5*time.Minute),

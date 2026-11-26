@@ -1372,7 +1372,7 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x05quota\x18\x01 \x01(\x03R\x05quota\x12\x12\n" +
 	"\x04used\x18\x02 \x01(\x03R\x04used\x12\x1c\n" +
 	"\tavailable\x18\x03 \x01(\x03R\tavailable\"\"\n" +
-	" NotificationsGetAllByUserRequest2\x9c\x0f\n" +
+	" NotificationsGetAllByUserRequest2\x86\x11\n" +
 	"\n" +
 	"ApiGateway\x12C\n" +
 	"\x04Ping\x12\x18.api_gateway.PingRequest\x1a\x16.api_gateway.PingReply\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/\x12K\n" +
@@ -1395,7 +1395,9 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\fRenameFolder\x12!.api_gateway.GatewayRenameRequest\x1a\x1e.api_gateway.GatewayEmptyReply\"!\x82\xd3\xe4\x93\x02\x1b:\x01*2\x16/api/folders/{id}/name\x12\x97\x01\n" +
 	"\x12ListFolderContents\x12-.api_gateway.GatewayListFolderContentsRequest\x1a'.api_gateway.GatewayFolderContentsReply\")\x82\xd3\xe4\x93\x02#\x12!/api/folders/{folder_id}/contents\x12q\n" +
 	"\n" +
-	"GetStorage\x12%.api_gateway.GatewayGetStorageRequest\x1a .api_gateway.GatewayStorageReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/users/storage\x12\x8a\x01\n" +
+	"GetStorage\x12%.api_gateway.GatewayGetStorageRequest\x1a .api_gateway.GatewayStorageReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/users/storage\x12u\n" +
+	"\x12AuthForgotPassword\x12\x1b.auth.ForgotPasswordRequest\x1a\x1c.auth.ForgotPasswordResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/auth/forgot-password\x12q\n" +
+	"\x11AuthResetPassword\x12\x1a.auth.ResetPasswordRequest\x1a\x1b.auth.ResetPasswordResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/api/auth/reset-password\x12\x8a\x01\n" +
 	"\x19NotificationsGetAllByUser\x12-.api_gateway.NotificationsGetAllByUserRequest\x1a\".notification.GetAllByUserResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/notificationsB\x1fZ\x1dproto/api-gateway;api_gatewayb\x06proto3"
 
 var (
@@ -1439,9 +1441,13 @@ var file_api_gateway_proto_goTypes = []any{
 	(*auth.SignInRequest)(nil),                // 24: auth.SignInRequest
 	(*auth.VerifyOtpRequest)(nil),             // 25: auth.VerifyOtpRequest
 	(*auth.ChangePasswordRequest)(nil),        // 26: auth.ChangePasswordRequest
-	(*auth.RegisterResponse)(nil),             // 27: auth.RegisterResponse
-	(*auth.ChangePasswordResponse)(nil),       // 28: auth.ChangePasswordResponse
-	(*notification.GetAllByUserResponse)(nil), // 29: notification.GetAllByUserResponse
+	(*auth.ForgotPasswordRequest)(nil),        // 27: auth.ForgotPasswordRequest
+	(*auth.ResetPasswordRequest)(nil),         // 28: auth.ResetPasswordRequest
+	(*auth.RegisterResponse)(nil),             // 29: auth.RegisterResponse
+	(*auth.ChangePasswordResponse)(nil),       // 30: auth.ChangePasswordResponse
+	(*auth.ForgotPasswordResponse)(nil),       // 31: auth.ForgotPasswordResponse
+	(*auth.ResetPasswordResponse)(nil),        // 32: auth.ResetPasswordResponse
+	(*notification.GetAllByUserResponse)(nil), // 33: notification.GetAllByUserResponse
 }
 var file_api_gateway_proto_depIdxs = []int32{
 	8,  // 0: api_gateway.GatewayFolderContentsReply.files:type_name -> api_gateway.GatewayFileMetadataReply
@@ -1462,26 +1468,30 @@ var file_api_gateway_proto_depIdxs = []int32{
 	14, // 15: api_gateway.ApiGateway.RenameFolder:input_type -> api_gateway.GatewayRenameRequest
 	16, // 16: api_gateway.ApiGateway.ListFolderContents:input_type -> api_gateway.GatewayListFolderContentsRequest
 	20, // 17: api_gateway.ApiGateway.GetStorage:input_type -> api_gateway.GatewayGetStorageRequest
-	22, // 18: api_gateway.ApiGateway.NotificationsGetAllByUser:input_type -> api_gateway.NotificationsGetAllByUserRequest
-	1,  // 19: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
-	1,  // 20: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
-	27, // 21: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
-	19, // 22: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
-	2,  // 23: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
-	3,  // 24: api_gateway.ApiGateway.AuthVerifyOtp:output_type -> api_gateway.AuthVerifyOtpResponse
-	28, // 25: api_gateway.ApiGateway.AuthChangePassword:output_type -> auth.ChangePasswordResponse
-	5,  // 26: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
-	8,  // 27: api_gateway.ApiGateway.GetFile:output_type -> api_gateway.GatewayFileMetadataReply
-	9,  // 28: api_gateway.ApiGateway.GetFolder:output_type -> api_gateway.GatewayFolderMetadataReply
-	11, // 29: api_gateway.ApiGateway.CreateFile:output_type -> api_gateway.GatewayCreatedFileReply
-	15, // 30: api_gateway.ApiGateway.RenameFile:output_type -> api_gateway.GatewayEmptyReply
-	13, // 31: api_gateway.ApiGateway.CreateFolder:output_type -> api_gateway.GatewayCreatedFolderReply
-	15, // 32: api_gateway.ApiGateway.RenameFolder:output_type -> api_gateway.GatewayEmptyReply
-	17, // 33: api_gateway.ApiGateway.ListFolderContents:output_type -> api_gateway.GatewayFolderContentsReply
-	21, // 34: api_gateway.ApiGateway.GetStorage:output_type -> api_gateway.GatewayStorageReply
-	29, // 35: api_gateway.ApiGateway.NotificationsGetAllByUser:output_type -> notification.GetAllByUserResponse
-	19, // [19:36] is the sub-list for method output_type
-	2,  // [2:19] is the sub-list for method input_type
+	27, // 18: api_gateway.ApiGateway.AuthForgotPassword:input_type -> auth.ForgotPasswordRequest
+	28, // 19: api_gateway.ApiGateway.AuthResetPassword:input_type -> auth.ResetPasswordRequest
+	22, // 20: api_gateway.ApiGateway.NotificationsGetAllByUser:input_type -> api_gateway.NotificationsGetAllByUserRequest
+	1,  // 21: api_gateway.ApiGateway.Ping:output_type -> api_gateway.PingReply
+	1,  // 22: api_gateway.ApiGateway.PingUser:output_type -> api_gateway.PingReply
+	29, // 23: api_gateway.ApiGateway.AuthRegister:output_type -> auth.RegisterResponse
+	19, // 24: api_gateway.ApiGateway.AuthVerifyRegistration:output_type -> api_gateway.AuthVerifyRegistrationResponse
+	2,  // 25: api_gateway.ApiGateway.AuthSignIn:output_type -> api_gateway.AuthSignInResponse
+	3,  // 26: api_gateway.ApiGateway.AuthVerifyOtp:output_type -> api_gateway.AuthVerifyOtpResponse
+	30, // 27: api_gateway.ApiGateway.AuthChangePassword:output_type -> auth.ChangePasswordResponse
+	5,  // 28: api_gateway.ApiGateway.AuthRefresh:output_type -> api_gateway.AuthRefreshResponse
+	8,  // 29: api_gateway.ApiGateway.GetFile:output_type -> api_gateway.GatewayFileMetadataReply
+	9,  // 30: api_gateway.ApiGateway.GetFolder:output_type -> api_gateway.GatewayFolderMetadataReply
+	11, // 31: api_gateway.ApiGateway.CreateFile:output_type -> api_gateway.GatewayCreatedFileReply
+	15, // 32: api_gateway.ApiGateway.RenameFile:output_type -> api_gateway.GatewayEmptyReply
+	13, // 33: api_gateway.ApiGateway.CreateFolder:output_type -> api_gateway.GatewayCreatedFolderReply
+	15, // 34: api_gateway.ApiGateway.RenameFolder:output_type -> api_gateway.GatewayEmptyReply
+	17, // 35: api_gateway.ApiGateway.ListFolderContents:output_type -> api_gateway.GatewayFolderContentsReply
+	21, // 36: api_gateway.ApiGateway.GetStorage:output_type -> api_gateway.GatewayStorageReply
+	31, // 37: api_gateway.ApiGateway.AuthForgotPassword:output_type -> auth.ForgotPasswordResponse
+	32, // 38: api_gateway.ApiGateway.AuthResetPassword:output_type -> auth.ResetPasswordResponse
+	33, // 39: api_gateway.ApiGateway.NotificationsGetAllByUser:output_type -> notification.GetAllByUserResponse
+	21, // [21:40] is the sub-list for method output_type
+	2,  // [2:21] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name
 	2,  // [2:2] is the sub-list for extension extendee
 	0,  // [0:2] is the sub-list for field type_name

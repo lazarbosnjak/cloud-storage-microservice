@@ -57,6 +57,16 @@ type VerifyOtpResponseDTO struct {
 	RefreshToken     string
 }
 
+type ForgotPasswordDTO struct {
+	Email string
+}
+
+type ResetPasswordDTO struct {
+	TokenID          string
+	NewPassword      string
+	RepeatedPassword string
+}
+
 type Client interface {
 	Register(context.Context, RegisterUserDTO) error
 	Login(context.Context, LoginDTO) (*LoginResponseDTO, error)
@@ -64,4 +74,6 @@ type Client interface {
 	VerifyRegistration(context.Context, VerifyRegistrationRequestDTO) error
 	VerifyOtp(context.Context, VerifyOtpDTO) (*VerifyOtpResponseDTO, error)
 	ChangePassword(context.Context, ChangePasswordDTO) error
+	ForgotPassword(context.Context, ForgotPasswordDTO) error
+	ResetPassword(context.Context, ResetPasswordDTO) error
 }

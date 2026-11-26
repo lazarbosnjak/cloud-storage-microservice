@@ -22,6 +22,8 @@ type AuthService interface {
 	Refresh(ctx context.Context, refreshToken string) (service.RefreshResult, error)
 	SignOut(ctx context.Context, refreshToken string) error
 	VerifyRegistration(ctx context.Context, tokenID string) error
+	ForgotPassword(ctx context.Context, email string) error
+	ResetPassword(ctx context.Context, tokenID string, newPassword string, repeatedPassword string) error
 }
 
 type AuthHandler struct {
@@ -63,8 +65,6 @@ func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 
-		// Errors that already carry a gRPC status (e.g. user-service being
-		// unavailable) must keep their code instead of appearing as 500s.
 		if _, ok := status.FromError(err); ok {
 			return nil, err
 		}
@@ -163,6 +163,42 @@ func (h *AuthHandler) VerifyRegistration(
 	}
 
 	return &pb.VerifyRegistrationResponse{}, nil
+}
+
+func (h *AuthHandler) ForgotPassword(
+	ctx context.Context,
+	req *pb.ForgotPasswordRequest,
+) (*pb.ForgotPasswordResponse, error) {
+	err := h.service.ForgotPassword(ctx, req.GetEmail())
+	if err != nil {
+		// Swallowed on purpose: the response must never reveal whether the
+		// email exists or why the flow failed internally.
+		slog.ErrorContext(ctx, "forgot password failed", "error", err)
+	}
+
+	return &pb.ForgotPasswordResponse{}, nil
+}
+
+func (h *AuthHandler) ResetPassword(
+	ctx context.Context,
+	req *pb.ResetPasswordRequest,
+) (*pb.ResetPasswordResponse, error) {
+	err := h.service.ResetPassword(ctx, req.GetTokenId(), req.GetNewPassword(), req.GetRepeatedPassword())
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrPasswordMismatch), errors.Is(err, domain.ErrPassword):
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		case errors.Is(err, domain.ErrVerificationTokenNotFound),
+			errors.Is(err, domain.ErrInvalidVerificationToken),
+			errors.Is(err, domain.ErrVerificationTokenExpired):
+			return nil, status.Error(codes.InvalidArgument, "invalid or expired reset link")
+		default:
+			slog.ErrorContext(ctx, "reset password failed", "error", err)
+			return nil, status.Error(codes.Internal, "internal error")
+		}
+	}
+
+	return &pb.ResetPasswordResponse{}, nil
 }
 
 func (h *AuthHandler) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest) (*pb.VerifyOtpResponse, error) {

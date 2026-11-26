@@ -104,3 +104,22 @@ func (r *VerificationTokenRepository) Update(
 
 	return nil
 }
+
+func (r *VerificationTokenRepository) DeleteUnusedByUserAndReason(
+	ctx context.Context,
+	userID string,
+	reason domain.VerificationTokenReason,
+) error {
+	const query = `
+		DELETE FROM verification_token
+		WHERE user_id = $1 AND reason = $2 AND used_at IS NULL
+	`
+
+	_, err := r.pool.Exec(ctx, query, userID, reason)
+	if err != nil {
+		slog.Error("delete unused verification tokens", "error", err)
+		return fmt.Errorf("error deleting unused verification tokens: %w", err)
+	}
+
+	return nil
+}

@@ -11,6 +11,7 @@ type VerificationTokenStore interface {
 	Create(ctx context.Context, token *domain.VerificationToken) error
 	GetByID(ctx context.Context, id string) (*domain.VerificationToken, error)
 	Update(ctx context.Context, token *domain.VerificationToken) error
+	DeleteUnusedByUserAndReason(ctx context.Context, userID string, reason domain.VerificationTokenReason) error
 }
 
 func (s *AuthService) VerifyRegistration(
