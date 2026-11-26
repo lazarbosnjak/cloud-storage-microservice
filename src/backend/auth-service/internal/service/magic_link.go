@@ -57,6 +57,15 @@ func (s *AuthService) MagicLinkSignIn(ctx context.Context, tokenID string) (Sign
 		return SignInResult{}, domain.ErrInvalidVerificationToken
 	}
 
+	if token.UsedAt != nil {
+		slog.Warn("magic link sign in: token already used", "token_id", tokenID, "used_at", *token.UsedAt)
+		return SignInResult{}, domain.ErrInvalidVerificationToken
+	}
+	if token.ExpiresAt.Before(time.Now()) {
+		slog.Warn("magic link sign in: token expired", "token_id", tokenID, "expires_at", token.ExpiresAt)
+		return SignInResult{}, domain.ErrVerificationTokenExpired
+	}
+
 	now := time.Now()
 	token.UsedAt = &now
 	if err := s.verificationTokenStore.Update(ctx, token); err != nil {
