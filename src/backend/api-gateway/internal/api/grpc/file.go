@@ -100,17 +100,23 @@ func (s *Server) CreateFile(
 	}
 
 	if req == nil || req.GetName() == "" {
-		return nil, status.Error(codes.InvalidArgument, "file name is required")
+		return nil, status.Error(
+			codes.InvalidArgument,
+			"file name is required",
+		)
 	}
 
-	result, err := s.Handlers.FileHandler.CreateFile(ctx, appfile.CreateFileInput{
-		Name:        req.GetName(),
-		Size:        req.GetSize(),
-		ContentType: req.GetContentType(),
-		StorageKey:  req.GetStorageKey(),
-		ParentID:    req.GetParentId(),
-		OwnerID:     ownerID,
-	})
+	result, err := s.Handlers.FileHandler.CreateFile(
+		ctx,
+		appfile.CreateFileInput{
+			Name:        req.GetName(),
+			Size:        req.GetSize(),
+			ContentType: req.GetContentType(),
+			ParentID:    req.GetParentId(),
+			OwnerID:     ownerID,
+		},
+	)
+
 	if err != nil {
 		return nil, err
 	}

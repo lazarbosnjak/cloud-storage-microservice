@@ -22,6 +22,7 @@ type Config struct {
 	GrpcPort                string
 	GracefulShutdownTimeout time.Duration
 	Mongo                   mongoConfig
+	DefaultStorageQuota     int64
 
 	logger *slog.Logger
 }
@@ -32,11 +33,9 @@ func NewConfig(logger *slog.Logger) *Config {
 		getEnv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
 		time.Second)
 
-	// Root credentials are optional: a MongoDB container initialized without
-	// MONGO_INITDB_ROOT_* values has no root user and accepts anonymous
-	// connections from local development environments.
-	mongoInitDBRootUsername := getOptionalEnv("MONGO_INITDB_ROOT_USERNAME")
-	mongoInitDBRootPassword := getOptionalEnv("MONGO_INITDB_ROOT_PASSWORD")
+	defaultStorageQuota := toPositiveInt64(getEnv("DEFAULT_STORAGE_QUOTA_BYTES"))
+	mongoInitDBRootUsername := getEnv("MONGO_INITDB_ROOT_USERNAME")
+	mongoInitDBRootPassword := getEnv("MONGO_INITDB_ROOT_PASSWORD")
 	mongoHost := getEnv("MONGO_HOST")
 	mongoPort := getEnv("MONGO_PORT")
 	mongoDatabase := getEnv("MONGO_DB")
@@ -61,6 +60,7 @@ func NewConfig(logger *slog.Logger) *Config {
 		GrpcPort:                grpcPort,
 		GracefulShutdownTimeout: gracefulShutdownTimeout,
 		Mongo:                   mongo,
+		DefaultStorageQuota:     defaultStorageQuota,
 		logger:                  logger,
 	}
 }
@@ -87,4 +87,14 @@ func toTimeDuration(s string, unit time.Duration) time.Duration {
 	}
 
 	return time.Duration(res) * unit
+}
+
+func toPositiveInt64(s string) int64 {
+	res, err := strconv.ParseInt(s, 10, 64)
+	if err != nil || res <= 0 {
+		slog.Error("invalid positive integer configuration value")
+		os.Exit(1)
+	}
+
+	return res
 }

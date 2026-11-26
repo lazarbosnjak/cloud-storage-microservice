@@ -165,10 +165,12 @@ message GatewayFolderMetadataReply {
 }
 
 message GatewayCreateFileRequest {
+  reserved 4;
+  reserved "storage_key";
+
   string name = 1;
   uint64 size = 2;
   string content_type = 3;
-  string storage_key = 4;
   string parent_id = 5;
 }
 

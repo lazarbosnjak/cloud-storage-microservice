@@ -19,6 +19,7 @@ import (
 
 	pb "proto/user"
 	usergrpc "user-service/internal/api/grpc"
+	storageapp "user-service/internal/application/user/storage"
 )
 
 type Server struct {
@@ -107,7 +108,8 @@ func (s *Server) newAPIServer(ctx context.Context) pb.UserServer {
 		s.logger)
 
 	// Handlers
-	createUserHandler := createuser.NewHandler(userRepo)
+	createUserHandler := createuser.NewHandler(userRepo, s.config.DefaultStorageQuota)
+	storageHandler := storageapp.NewHandler(userRepo)
 
-	return usergrpc.NewServer(createUserHandler)
+	return usergrpc.NewServer(createUserHandler, storageHandler)
 }

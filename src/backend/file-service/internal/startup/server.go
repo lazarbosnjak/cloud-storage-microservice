@@ -13,6 +13,7 @@ import (
 	"file-service/internal/application/file"
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
+	userclient "file-service/internal/infrastructure/clients/user"
 	"file-service/internal/infrastructure/database"
 	infrarepo "file-service/internal/infrastructure/repository"
 	"file-service/internal/startup/config"
@@ -78,11 +79,32 @@ func (s *Server) run() error {
 	grpcServer := grpc.NewServer()
 	db := mongoClient.Database(s.config.MongoDB)
 
+	indexCtx, indexCancel := context.WithTimeout(ctx, s.config.MongoPingTimeout)
+	err = infrarepo.EnsureFileIndexes(indexCtx, db)
+	indexCancel()
+	if err != nil {
+		return fmt.Errorf("initialize file indexes: %w", err)
+	}
+
+	s.logger.Info("file indexes initialized successfully")
+	quotaClient, err := userclient.NewClient(s.config.UserServiceAddress, s.config.UserServiceTimeout)
+	if err != nil {
+		return fmt.Errorf("initialize user service client: %w", err)
+	}
+
+	defer func() {
+		if err := quotaClient.Close(); err != nil {
+			s.logger.Error("failed to close user service client", "err", err)
+		}
+	}()
+
+	s.logger.Info("user service gRPC client initialized")
+
 	folderRepository := infrarepo.NewFolderRepository(db)
 	fileRepository := infrarepo.NewFileRepository(db)
 
 	pingHandler := ping.NewHandler(s.config.PingDelay)
-	createFileHandler := file.NewCreateHandler(fileRepository, folderRepository)
+	createFileHandler := file.NewUploadHandler(fileRepository, folderRepository, quotaClient)
 	createFolderHandler := folder.NewCreateHandler(folderRepository)
 
 	renameFileHandler := file.NewRenameHandler(fileRepository)

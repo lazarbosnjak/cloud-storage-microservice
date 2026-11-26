@@ -10,6 +10,7 @@ import (
 	"file-service/internal/application/folder"
 	"file-service/internal/application/ping"
 	"file-service/internal/domain/models"
+	"file-service/internal/domain/quota"
 	"file-service/internal/domain/repository"
 
 	pb "proto/file"
@@ -22,7 +23,7 @@ type Server struct {
 	pb.UnimplementedFileServer
 
 	pingHandler         *ping.Handler
-	createFileHandler   *file.CreateHandler
+	createFileHandler   *file.UploadHandler
 	createFolderHandler *folder.CreateHandler
 	renameFileHandler   *file.RenameHandler
 	renameFolderHandler *folder.RenameHandler
@@ -33,7 +34,7 @@ type Server struct {
 
 func NewServer(
 	pingHandler *ping.Handler,
-	createFileHandler *file.CreateHandler,
+	createFileHandler *file.UploadHandler,
 	createFolderHandler *folder.CreateHandler,
 	renameFileHandler *file.RenameHandler,
 	renameFolderHandler *folder.RenameHandler,
@@ -55,6 +56,28 @@ func NewServer(
 
 func mapError(err error) error {
 	switch {
+	case errors.Is(err, quota.ErrInsufficientStorage):
+		slog.Warn("file upload rejected: insufficient storage")
+		return status.Error(codes.ResourceExhausted, "insufficient storage")
+
+	case errors.Is(err, quota.ErrUserNotFound):
+		return status.Error(codes.NotFound, "user not found")
+
+	case errors.Is(err, quota.ErrInvalidStorageUsage):
+		slog.Warn("invalid storage usage")
+		return status.Error(codes.FailedPrecondition, "invalid storage usage")
+
+	case errors.Is(err, quota.ErrStorageUnavailable):
+		slog.Error("user storage unavailable", "err", err)
+		return status.Error(codes.Unavailable, "user storage unavailable")
+
+	case errors.Is(err, repository.ErrFileAlreadyExists):
+		return status.Error(codes.AlreadyExists, "file with the same name already exists")
+
+	case errors.Is(err, repository.ErrVersionConflict):
+		slog.Warn("file version conflict")
+		return status.Error(codes.Aborted, "file version conflict")
+
 	case errors.Is(err, repository.ErrNotFound),
 		errors.Is(err, folder.ErrInvalidParent),
 		errors.Is(err, file.ErrInvalidParent):
@@ -144,11 +167,10 @@ func (s *Server) CreateFile(
 
 	result, err := s.createFileHandler.Handle(
 		ctx,
-		file.CreateCommand{
+		file.UploadCommand{
 			Name:        req.GetName(),
 			Size:        req.GetSize(),
 			ContentType: req.GetContentType(),
-			StorageKey:  req.GetStorageKey(),
 			ParentID:    req.GetParentId(),
 			OwnerID:     req.GetOwnerId(),
 		},
