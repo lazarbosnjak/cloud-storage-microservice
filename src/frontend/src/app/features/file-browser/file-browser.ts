@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { FileService } from '../../core/services/file';
+import { Auth } from '../../core/services/auth';
 import {
   FileMetadata,
   FolderMetadata,
@@ -20,6 +21,7 @@ import { isTokenExpired } from '../../core/utils/jwt';
 export class FileBrowser implements OnInit {
   private readonly fileService = inject(FileService);
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
   readonly files = signal<FileMetadata[]>([]);
   readonly folders = signal<FolderMetadata[]>([]);
@@ -125,6 +127,18 @@ export class FileBrowser implements OnInit {
     this.successMessage.set('');
     void this.loadContents(this.path());
     void this.loadStorage();
+  }
+
+  async signOut(): Promise<void> {
+    sessionStorage.removeItem('access_token');
+
+    try {
+      await firstValueFrom(this.auth.logout());
+    } catch {
+      // Sign out locally even if the backend call fails.
+    }
+
+    void this.router.navigate(['/sign-in']);
   }
 
   async createFolder(): Promise<void> {

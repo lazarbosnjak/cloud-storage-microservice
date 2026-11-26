@@ -92,4 +92,10 @@ export class Auth {
   resetPassword(data: ResetPasswordRequest): Observable<unknown> {
     return this.http.post('/api/auth/reset-password', data);
   }
+
+  logout(): Observable<unknown> {
+    return this.http.post('/api/auth/logout', null, {
+      withCredentials: true,
+    });
+  }
 }
