@@ -16,3 +16,9 @@ export interface FolderContents {
   files?: FileMetadata[];
   folders?: FolderMetadata[];
 }
+
+export interface StorageMetadata {
+  quota: string;
+  used: string;
+  available: string;
+}

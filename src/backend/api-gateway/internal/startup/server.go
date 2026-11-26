@@ -20,6 +20,7 @@ import (
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
 	verifyregistration "api-gateway/internal/application/auth/verify_registration"
 	"api-gateway/internal/application/user/ping"
+	"api-gateway/internal/application/user/storage"
 	"api-gateway/internal/infrastructure/clients/auth"
 	"api-gateway/internal/infrastructure/clients/user"
 	"api-gateway/internal/startup/config"
@@ -214,6 +215,7 @@ func (s *Server) newAPIServer(
 ) pb.ApiGatewayServer {
 	userClient := user.NewGRPCClient(userPb.NewUserClient(userConn), s.logger)
 	userPingHandler := ping.NewHandler(userClient)
+	userStorageHandler := storage.NewHandler(userClient)
 
 	authClient := auth.NewGRPCClient(authPb.NewAuthClient(authConn), s.logger)
 	authRegisterHandler := register.NewHandler(authClient)
@@ -237,5 +239,6 @@ func (s *Server) newAPIServer(
 		AuthChangePasswordHandler:     authChangePasswordHandler,
 		FileHandler:                   fileHandler,
 		FolderHandler:                 folderHandler,
+		UserStorageHandler:            userStorageHandler,
 	})
 }

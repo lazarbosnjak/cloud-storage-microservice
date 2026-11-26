@@ -108,6 +108,12 @@ service ApiGateway {
     };
   }
 
+  rpc GetStorage (GatewayGetStorageRequest) returns (GatewayStorageReply) {
+    option (google.api.http) = {
+      get: "/api/users/storage"
+    };
+  }
+
 }
 
 message PingRequest {}
@@ -218,3 +224,11 @@ message AuthVerifyRegistrationRequest {
 }
 
 message AuthVerifyRegistrationResponse {}
+
+message GatewayGetStorageRequest {}
+
+message GatewayStorageReply {
+  int64 quota = 1;
+  int64 used = 2;
+  int64 available = 3;
+}
