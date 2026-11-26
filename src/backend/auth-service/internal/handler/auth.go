@@ -63,8 +63,6 @@ func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 
-		// Errors that already carry a gRPC status (e.g. user-service being
-		// unavailable) must keep their code instead of appearing as 500s.
 		if _, ok := status.FromError(err); ok {
 			return nil, err
 		}

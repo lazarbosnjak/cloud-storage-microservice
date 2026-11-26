@@ -8,6 +8,8 @@ CREATE TABLE verification_token (
 );
 
 COMMENT ON COLUMN verification_token.reason 
-    IS '0 - Registration verification; 1 - Magic Link';
+    IS '0 - Registration verification; 1 - Magic Link; 2 - Password Reset';
 
 CREATE INDEX idx_verification_token_user_id ON verification_token (user_id);
+
+CREATE INDEX idx_verification_token_reason ON verification_token (reason);

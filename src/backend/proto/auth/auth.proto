@@ -13,6 +13,8 @@ service Auth{
     rpc SignOut (SignOutRequest) returns (SignOutResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
     rpc VerifyRegistration (VerifyRegistrationRequest) returns (VerifyRegistrationResponse);
+    rpc ForgotPassword (ForgotPasswordRequest) returns (ForgotPasswordResponse);
+    rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
 }
 
 message PingRequest {}
@@ -24,9 +26,9 @@ message PingReply {
 message RegisterRequest {
     string email = 1;
     string password = 2;
-    string repeatedPassword = 3;
-    string firstName = 4;
-    string lastName = 5;
+    string repeated_password = 3;
+    string first_name = 4;
+    string last_name = 5;
 }
 
 message RegisterResponse {}
@@ -84,7 +86,21 @@ message ChangePasswordRequest {
 message ChangePasswordResponse {}
 
 message VerifyRegistrationRequest {
-    string tokenId = 1;
+    string token_id = 1;
 }
 
 message VerifyRegistrationResponse {}
+
+message ForgotPasswordRequest {
+    string email = 1;
+}
+
+message ForgotPasswordResponse {}
+
+message ResetPasswordRequest {
+    string token_id = 1;
+    string new_password = 2;
+    string repeated_password = 3;
+}
+
+message ResetPasswordResponse {}
