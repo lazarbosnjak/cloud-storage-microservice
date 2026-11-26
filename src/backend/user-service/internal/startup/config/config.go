@@ -32,8 +32,11 @@ func NewConfig(logger *slog.Logger) *Config {
 		getEnv("GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"),
 		time.Second)
 
-	mongoInitDBRootUsername := getEnv("MONGO_INITDB_ROOT_USERNAME")
-	mongoInitDBRootPassword := getEnv("MONGO_INITDB_ROOT_PASSWORD")
+	// Root credentials are optional: a MongoDB container initialized without
+	// MONGO_INITDB_ROOT_* values has no root user and accepts anonymous
+	// connections from local development environments.
+	mongoInitDBRootUsername := getOptionalEnv("MONGO_INITDB_ROOT_USERNAME")
+	mongoInitDBRootPassword := getOptionalEnv("MONGO_INITDB_ROOT_PASSWORD")
 	mongoHost := getEnv("MONGO_HOST")
 	mongoPort := getEnv("MONGO_PORT")
 	mongoDatabase := getEnv("MONGO_DB")
@@ -70,6 +73,10 @@ func getEnv(name string) string {
 	}
 
 	return env
+}
+
+func getOptionalEnv(name string) string {
+	return os.Getenv(name)
 }
 
 func toTimeDuration(s string, unit time.Duration) time.Duration {

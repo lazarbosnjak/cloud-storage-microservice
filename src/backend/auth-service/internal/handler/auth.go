@@ -54,9 +54,21 @@ func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 
 	_, err := h.service.Register(ctx, user)
 	if err != nil {
-		if errors.Is(err, domain.ErrEmailTaken) {
+		switch {
+		case errors.Is(err, domain.ErrEmailTaken):
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
+		case errors.Is(err, domain.ErrInvalidEmail), errors.Is(err, domain.ErrPassword):
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		case errors.Is(err, domain.ErrFirstName), errors.Is(err, domain.ErrLastName):
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
+
+		// Errors that already carry a gRPC status (e.g. user-service being
+		// unavailable) must keep their code instead of appearing as 500s.
+		if _, ok := status.FromError(err); ok {
+			return nil, err
+		}
+
 		slog.Error("register credential", "error", err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
