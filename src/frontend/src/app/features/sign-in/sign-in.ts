@@ -1,13 +1,17 @@
 
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
+import {
+  FormField,
+  email,
+  form,
+  maxLength,
+  pattern,
+  required,
+  submit,
+} from '@angular/forms/signals';
+import { firstValueFrom } from 'rxjs';
 
 import { Auth } from '../../core/services/auth';
 import { decodeJwtPayload, isTokenExpired } from '../../core/utils/jwt';
@@ -16,13 +20,13 @@ type Stage = 'credentials' | 'otp' | 'done';
 
 @Component({
   selector: 'app-sign-in',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [FormField, RouterLink],
   templateUrl: './sign-in.html',
   styleUrl: './sign-in.css',
 })
 export class SignIn {
-  private readonly fb = inject(FormBuilder);
   private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
 
   readonly stage = signal<Stage>('credentials');
   readonly loading = signal(false);
@@ -31,65 +35,89 @@ export class SignIn {
 
   private otpChallenge = '';
 
-  readonly credentialsForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+  readonly credentialsModel = signal({ email: '', password: '' });
+  readonly credentialsForm = form(this.credentialsModel, (f) => {
+    required(f.email);
+    email(f.email);
+    required(f.password);
   });
 
-  readonly otpForm = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+  readonly otpModel = signal({ code: '' });
+  readonly otpForm = form(this.otpModel, (f) => {
+    required(f.code);
+    pattern(f.code, /^\d{6}$/);
+    maxLength(f.code, 6);
   });
 
-  submitCredentials(): void {
+  async submitCredentials(event: Event): Promise<void> {
+    event.preventDefault();
     this.errorMessage.set('');
-
-    if (this.credentialsForm.invalid) {
-      this.credentialsForm.markAllAsTouched();
-      return;
-    }
 
     this.loading.set(true);
 
-    this.auth.signIn(this.credentialsForm.getRawValue())
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (response) => {
-          if (response.otpRequired) {
-            this.otpChallenge = response.otpChallenge;
-            this.stage.set('otp');
-          } else {
-            this.completeSignIn(response.accessToken, response.expiresInSeconds);
-          }
-        },
-        error: (error: HttpErrorResponse) => this.showError(error),
-      });
+    await submit(this.credentialsForm, async () => {
+      try {
+        const response = await firstValueFrom(
+          this.auth.signIn(this.credentialsModel()),
+        );
+
+        if (response.mustChangePassword) {
+          this.router.navigate(['/change-password'], {
+            state: { email: this.credentialsModel().email },
+          });
+        } else if (response.otpRequired) {
+          this.otpChallenge = response.otpChallenge;
+          this.stage.set('otp');
+        } else {
+          this.completeSignIn(response.accessToken, response.expiresInSeconds);
+        }
+      } catch (error) {
+        if (error instanceof HttpErrorResponse) {
+          this.showError(error);
+        } else {
+          throw error;
+        }
+      } finally {
+        this.loading.set(false);
+      }
+
+      return [];
+    });
   }
 
-  submitOtp(): void {
+  async submitOtp(event: Event): Promise<void> {
+    event.preventDefault();
     this.errorMessage.set('');
-
-    if (this.otpForm.invalid) {
-      this.otpForm.markAllAsTouched();
-      return;
-    }
 
     this.loading.set(true);
 
-    this.auth.verifyOtp({
-      otpChallenge: this.otpChallenge,
-      code: this.otpForm.controls.code.value,
-    })
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (response) =>
-          this.completeSignIn(response.accessToken, response.expiresInSeconds),
-        error: (error: HttpErrorResponse) => this.showError(error),
-      });
+    await submit(this.otpForm, async () => {
+      try {
+        const response = await firstValueFrom(
+          this.auth.verifyOtp({
+            otpChallenge: this.otpChallenge,
+            code: this.otpModel().code,
+          }),
+        );
+
+        this.completeSignIn(response.accessToken, response.expiresInSeconds);
+      } catch (error) {
+        if (error instanceof HttpErrorResponse) {
+          this.showError(error);
+        } else {
+          throw error;
+        }
+      } finally {
+        this.loading.set(false);
+      }
+
+      return [];
+    });
   }
 
   backToCredentials(): void {
     this.otpChallenge = '';
-    this.otpForm.reset();
+    this.otpForm().reset();
     this.errorMessage.set('');
     this.stage.set('credentials');
   }

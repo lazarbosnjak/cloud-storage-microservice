@@ -4,24 +4,24 @@
   @if (stage() === 'credentials') {
     <h1 class="text-center mb-6">Sign in</h1>
 
-    <form [formGroup]="credentialsForm" (ngSubmit)="submitCredentials()">
+    <form (submit)="submitCredentials($event)">
 
       <div class="mb-4">
         <label for="email">Email</label>
-        <input id="email" type="email" formControlName="email"
+        <input id="email" type="email" [formField]="credentialsForm.email"
           class="w-full border rounded p-2 mt-1">
 
-        @if (credentialsForm.controls.email.touched && credentialsForm.controls.email.invalid) {
+        @if (credentialsForm.email().touched() && credentialsForm.email().invalid()) {
           <p class="text-red-600 text-sm">Enter a valid email.</p>
         }
       </div>
 
       <div class="mb-4">
         <label for="password">Password</label>
-        <input id="password" type="password" formControlName="password"
+        <input id="password" type="password" [formField]="credentialsForm.password"
           class="w-full border rounded p-2 mt-1">
 
-        @if (credentialsForm.controls.password.touched && credentialsForm.controls.password.invalid) {
+        @if (credentialsForm.password().touched() && credentialsForm.password().invalid()) {
           <p class="text-red-600 text-sm">Password is required.</p>
         }
       </div>
@@ -49,15 +49,15 @@
       We sent a 6-digit code to your email. Enter it below to finish signing in.
     </p>
 
-    <form [formGroup]="otpForm" (ngSubmit)="submitOtp()">
+    <form (submit)="submitOtp($event)">
 
       <div class="mb-4">
         <label for="code">Code</label>
-        <input id="code" type="text" formControlName="code" inputmode="numeric"
-          maxlength="6" autocomplete="one-time-code"
+        <input id="code" type="text" [formField]="otpForm.code" inputmode="numeric"
+          autocomplete="one-time-code"
           class="w-full border rounded p-2 mt-1">
 
-        @if (otpForm.controls.code.touched && otpForm.controls.code.invalid) {
+        @if (otpForm.code().touched() && otpForm.code().invalid()) {
           <p class="text-red-600 text-sm">Enter the 6-digit code.</p>
         }
       </div>

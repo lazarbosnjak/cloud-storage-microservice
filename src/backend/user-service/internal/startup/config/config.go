@@ -75,6 +75,10 @@ func getEnv(name string) string {
 	return env
 }
 
+func getOptionalEnv(name string) string {
+	return os.Getenv(name)
+}
+
 func toTimeDuration(s string, unit time.Duration) time.Duration {
 	res, err := strconv.Atoi(s)
 	if err != nil || res == 0 {

@@ -1,59 +1,58 @@
-
 <div class="max-w-md mx-auto mt-16 p-6 border rounded-lg">
   <h1 class="text-center mb-6">Register</h1>
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
+  <form (submit)="submit($event)">
 
     <div class="mb-4">
       <label for="firstName">First name</label>
-      <input id="firstName" type="text" formControlName="firstName"
+      <input id="firstName" type="text" [formField]="form.firstName"
         class="w-full border rounded p-2 mt-1">
 
-      @if (form.controls.firstName.touched && form.controls.firstName.invalid) {
+      @if (form.firstName().touched() && form.firstName().invalid()) {
         <p class="text-red-600 text-sm">First name is required.</p>
       }
     </div>
 
     <div class="mb-4">
       <label for="lastName">Last name</label>
-      <input id="lastName" type="text" formControlName="lastName"
+      <input id="lastName" type="text" [formField]="form.lastName"
         class="w-full border rounded p-2 mt-1">
 
-      @if (form.controls.lastName.touched && form.controls.lastName.invalid) {
+      @if (form.lastName().touched() && form.lastName().invalid()) {
         <p class="text-red-600 text-sm">Last name is required.</p>
       }
     </div>
 
     <div class="mb-4">
       <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email"
+      <input id="email" type="email" [formField]="form.email"
         class="w-full border rounded p-2 mt-1">
 
-      @if (form.controls.email.touched && form.controls.email.invalid) {
+      @if (form.email().touched() && form.email().invalid()) {
         <p class="text-red-600 text-sm">Enter a valid email.</p>
       }
     </div>
 
     <div class="mb-4">
       <label for="password">Password</label>
-      <input id="password" type="password" formControlName="password"
+      <input id="password" type="password" [formField]="form.password"
         class="w-full border rounded p-2 mt-1">
 
-      @if (form.controls.password.touched && form.controls.password.invalid) {
+      @if (form.password().touched() && form.password().invalid()) {
         <p class="text-red-600 text-sm">Password must have at least 8 characters.</p>
       }
     </div>
 
     <div class="mb-4">
       <label for="repeatedPassword">Confirm password</label>
-      <input id="repeatedPassword" type="password" formControlName="repeatedPassword"
+      <input id="repeatedPassword" type="password" [formField]="form.repeatedPassword"
         class="w-full border rounded p-2 mt-1">
 
-      @if (form.controls.repeatedPassword.touched && form.controls.repeatedPassword.invalid) {
+      @if (form.repeatedPassword().touched() && form.repeatedPassword().invalid()) {
         <p class="text-red-600 text-sm">Confirm your password.</p>
       }
 
-      @if (form.controls.repeatedPassword.touched && passwordsDoNotMatch) {
+      @if (form.repeatedPassword().touched() && passwordsDoNotMatch()) {
         <p class="text-red-600 text-sm">Passwords do not match.</p>
       }
     </div>

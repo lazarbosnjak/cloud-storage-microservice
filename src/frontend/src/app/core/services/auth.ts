@@ -20,6 +20,7 @@ export interface SignInResponse {
   expiresInSeconds: number;
   otpRequired: boolean;
   otpChallenge: string;
+  mustChangePassword: boolean;
 }
 
 export interface VerifyOtpRequest {
@@ -31,6 +32,12 @@ export interface VerifyOtpResponse {
   accessToken: string;
   expiresInSeconds: number;
   mustChangePassword: boolean;
+}
+
+export interface ChangePasswordRequest {
+  email: string;
+  currentPassword: string;
+  newPassword: string;
 }
 
 @Injectable({
@@ -58,6 +65,12 @@ export class Auth {
 
   verifyOtp(data: VerifyOtpRequest): Observable<VerifyOtpResponse> {
     return this.http.post<VerifyOtpResponse>('/api/auth/otp/verify', data, {
+      withCredentials: true,
+    });
+  }
+
+  changePassword(data: ChangePasswordRequest): Observable<unknown> {
+    return this.http.post('/api/auth/change-password', data, {
       withCredentials: true,
     });
   }

@@ -18,11 +18,12 @@ type LoginDTO struct {
 }
 
 type LoginResponseDTO struct {
-	AccessToken      string
-	ExpiresInSeconds int
-	RefreshToken     string
-	OtpRequired      bool
-	OtpChallenge     string
+	AccessToken        string
+	ExpiresInSeconds   int
+	RefreshToken       string
+	OtpRequired        bool
+	OtpChallenge       string
+	MustChangePassword bool
 }
 
 type RefreshRequestDTO struct {
@@ -37,6 +38,12 @@ type RefreshResponseDTO struct {
 
 type VerifyRegistrationRequestDTO struct {
 	VerificationToken string
+}
+
+type ChangePasswordDTO struct {
+	Email           string
+	CurrentPassword string
+	NewPassword     string
 }
 
 type VerifyOtpDTO struct {
@@ -56,4 +63,5 @@ type Client interface {
 	Refresh(context.Context, RefreshRequestDTO) (*RefreshResponseDTO, error)
 	VerifyRegistration(context.Context, VerifyRegistrationRequestDTO) error
 	VerifyOtp(context.Context, VerifyOtpDTO) (*VerifyOtpResponseDTO, error)
+	ChangePassword(context.Context, ChangePasswordDTO) error
 }

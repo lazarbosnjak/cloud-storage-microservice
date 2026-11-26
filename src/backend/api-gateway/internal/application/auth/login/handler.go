@@ -27,10 +27,11 @@ type Query struct {
 }
 
 type Response struct {
-	AccessToken      string
-	ExpiresInSeconds int32
-	OtpRequired      bool
-	OtpChallenge     string
+	AccessToken        string
+	ExpiresInSeconds   int32
+	OtpRequired        bool
+	OtpChallenge       string
+	MustChangePassword bool
 }
 
 func (h *Handler) Handle(ctx context.Context, query Query) (*Response, error) {
@@ -42,6 +43,12 @@ func (h *Handler) Handle(ctx context.Context, query Query) (*Response, error) {
 	res, err := h.authClient.Login(ctx, dto)
 	if err != nil {
 		return nil, err
+	}
+
+	if res.MustChangePassword {
+		return &Response{
+			MustChangePassword: true,
+		}, nil
 	}
 
 	if res.OtpRequired {

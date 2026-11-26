@@ -48,6 +48,13 @@ service ApiGateway {
     };
   }
 
+  rpc AuthChangePassword (auth.ChangePasswordRequest) returns (auth.ChangePasswordResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/change-password"
+      body: "*"
+    };
+  }
+
   rpc AuthRefresh (AuthRefreshRequest) returns (AuthRefreshResponse) {
     option (google.api.http) = {
       post: "/api/auth/refresh"
@@ -114,12 +121,12 @@ message AuthSignInResponse {
   int32 expires_in_seconds = 2;
   bool otp_required = 3;
   string otp_challenge = 4;
+  bool must_change_password = 5;
 }
 
 message AuthVerifyOtpResponse {
   string access_token = 1;
   int32 expires_in_seconds = 2;
-  bool must_change_password = 3;
 }
 
 message AuthRefreshRequest {}
