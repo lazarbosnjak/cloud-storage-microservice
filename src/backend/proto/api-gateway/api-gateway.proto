@@ -128,6 +128,20 @@ service ApiGateway {
     };
   }
 
+  rpc AuthRequestMagicLink (auth.RequestMagicLinkRequest) returns (auth.RequestMagicLinkResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/magic-link"
+      body: "*"
+    };
+  }
+
+  rpc AuthMagicLinkSignIn (auth.MagicLinkSignInRequest) returns (auth.MagicLinkSignInResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/magic-link/sign-in"
+      body: "*"
+    };
+  }
+
 }
 
 message PingRequest {}
