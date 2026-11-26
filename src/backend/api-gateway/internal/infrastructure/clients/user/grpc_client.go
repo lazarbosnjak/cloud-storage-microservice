@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"log/slog"
+
+	appuser "api-gateway/internal/application/user"
 	userPb "proto/user"
 )
 
@@ -26,4 +28,20 @@ func (c *GRPCClient) Ping(ctx context.Context) (string, error) {
 	}
 
 	return reply.Message, nil
+}
+
+func (c *GRPCClient) GetStorage(ctx context.Context, userID string) (*appuser.Storage, error) {
+	reply, err := c.client.GetStorage(ctx, &userPb.GetStorageRequest{
+		UserId: userID,
+	})
+	if err != nil {
+		c.logger.Error(err.Error())
+		return nil, err
+	}
+
+	return &appuser.Storage{
+		Quota:     reply.GetQuota(),
+		Used:      reply.GetUsed(),
+		Available: reply.GetAvailable(),
+	}, nil
 }

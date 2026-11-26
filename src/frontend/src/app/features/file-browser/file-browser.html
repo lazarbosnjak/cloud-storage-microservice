@@ -1,0 +1,298 @@
+<div class="max-w-7xl mx-auto mt-12 p-6">
+
+  <div class="flex flex-wrap justify-between items-start gap-6 mb-6">
+
+    <div>
+
+      <h1 class="mb-6">My Files</h1>
+
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+
+        <input
+          type="file"
+          #fileInput
+          (change)="uploadFile($event)"
+          class="hidden"
+        />
+
+        <button
+          type="button"
+          (click)="fileInput.click()"
+          [disabled]="loading()"
+          class="bg-brand-primary text-white px-4 py-2 rounded disabled:opacity-50">
+          Upload File
+        </button>
+
+        <button
+          type="button"
+          (click)="createFolder()"
+          [disabled]="loading()"
+          class="bg-brand-primary text-white px-4 py-2 rounded disabled:opacity-50">
+          New Folder
+        </button>
+
+        <button
+          type="button"
+          (click)="refresh()"
+          [disabled]="loading()"
+          class="border border-brand-primary text-brand-primary px-4 py-2 rounded disabled:opacity-50">
+          Refresh
+        </button>
+
+      </div>
+
+      <p class="text-sm text-gray-500">
+        Upload currently stores file metadata only.
+      </p>
+
+    </div>
+
+    <div class="w-full sm:w-80 border border-gray-200 rounded-lg p-4 shadow-sm">
+
+      <div class="flex justify-between items-center mb-3">
+
+        <span class="font-semibold">Storage</span>
+
+        @if (storage()) {
+          <span class="text-sm font-semibold">
+            {{ storagePercentage().toFixed(1) }}%
+          </span>
+        }
+
+      </div>
+
+      @if (storage(); as info) {
+
+        <div
+          class="w-full bg-gray-200 rounded-full h-3 overflow-hidden"
+          role="progressbar"
+          aria-label="Storage usage"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="storagePercentage()">
+
+          <div
+            class="h-full rounded-full transition-all duration-300"
+            [class.bg-brand-primary]="storagePercentage() < 90"
+            [class.bg-red-500]="storagePercentage() >= 90"
+            [style.width.%]="storagePercentage()">
+          </div>
+
+        </div>
+
+        <p class="text-sm mt-3">
+          {{ formatBytes(info.used) }}
+          of
+          {{ formatBytes(info.quota) }} used
+        </p>
+
+        <p class="text-xs text-gray-500 mt-1">
+          {{ formatBytes(info.available) }} available
+        </p>
+
+      } @else if (storageError()) {
+
+        <p class="text-sm text-red-600">
+          {{ storageError() }}
+        </p>
+
+      } @else {
+
+        <p class="text-sm text-gray-500">
+          Loading storage...
+        </p>
+
+      }
+
+    </div>
+
+  </div>
+
+  <div class="flex items-center gap-4 mb-6">
+
+    <button
+      type="button"
+      (click)="goBack()"
+      [disabled]="path().length === 1 || loading()"
+      class="bg-brand-primary text-white px-4 py-2 rounded disabled:opacity-50">
+      Back
+    </button>
+
+    <div>
+      @for (folder of path(); track folder.id) {
+        <span>/ {{ folder.name }} </span>
+      }
+    </div>
+
+  </div>
+
+  @if (successMessage()) {
+
+    <p class="text-green-700 bg-green-50 border border-green-200 p-3 rounded mb-4">
+      {{ successMessage() }}
+    </p>
+
+  }
+
+  @if (errorMessage()) {
+
+    <p class="text-red-600 bg-red-50 border border-red-200 p-3 rounded mb-4">
+      {{ errorMessage() }}
+    </p>
+
+  }
+
+  @if (loading()) {
+
+    <p>Loading...</p>
+
+  } @else {
+
+    <div class="overflow-x-auto border rounded-lg">
+
+      <table class="w-full text-left">
+
+        <thead class="bg-brand-primary text-white">
+
+          <tr>
+            <th class="p-3">Name</th>
+            <th class="p-3">Type</th>
+            <th class="p-3">Size (bytes)</th>
+            <th class="p-3">Created at</th>
+            <th class="p-3">Updated at</th>
+            <th class="p-3">ID</th>
+            <th class="p-3">Parent ID</th>
+            <th class="p-3">Owner ID</th>
+            <th class="p-3">Actions</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (folder of folders(); track folder.id) {
+
+            <tr class="border-b hover:bg-gray-100">
+
+              <td class="p-3">
+
+                <button
+                  type="button"
+                  (click)="openFolder(folder)"
+                  class="text-brand-primary font-semibold underline">
+                  📁 {{ folder.name }}
+                </button>
+
+              </td>
+
+              <td class="p-3">Folder</td>
+
+              <td class="p-3">—</td>
+
+              <td class="p-3">
+                {{ folder.createdAt | date:'medium' }}
+              </td>
+
+              <td class="p-3">
+                {{ (folder.updatedAt | date:'medium') || '—' }}
+              </td>
+
+              <td class="p-3 text-xs">
+                {{ folder.id }}
+              </td>
+
+              <td class="p-3 text-xs">
+                {{ folder.parentId || 'Root' }}
+              </td>
+
+              <td class="p-3 text-xs">
+                {{ folder.ownerId }}
+              </td>
+
+              <td class="p-3">
+
+                <button
+                  type="button"
+                  (click)="renameFolder(folder)"
+                  class="border border-brand-primary text-brand-primary px-3 py-1 rounded">
+                  Rename
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+          @for (file of files(); track file.id) {
+
+            <tr class="border-b hover:bg-gray-100">
+
+              <td class="p-3">
+                📄 {{ file.name }}
+              </td>
+
+              <td class="p-3">
+                {{ file.contentType }}
+              </td>
+
+              <td class="p-3">
+                {{ file.size }}
+              </td>
+
+              <td class="p-3">
+                {{ file.createdAt | date:'medium' }}
+              </td>
+
+              <td class="p-3">
+                {{ (file.updatedAt | date:'medium') || '—' }}
+              </td>
+
+              <td class="p-3 text-xs">
+                {{ file.id }}
+              </td>
+
+              <td class="p-3 text-xs">
+                {{ file.parentId || 'Root' }}
+              </td>
+
+              <td class="p-3 text-xs">
+                {{ file.ownerId }}
+              </td>
+
+              <td class="p-3">
+
+                <button
+                  type="button"
+                  (click)="renameFile(file)"
+                  class="border border-brand-primary text-brand-primary px-3 py-1 rounded">
+                  Rename
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+          @if (files().length === 0 && folders().length === 0) {
+
+            <tr>
+
+              <td colspan="9" class="p-6 text-center">
+                This folder is empty.
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>
