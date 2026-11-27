@@ -5,6 +5,7 @@ import (
 
 	changePassword "api-gateway/internal/application/auth/change_password"
 	authlogin "api-gateway/internal/application/auth/login"
+	authlogout "api-gateway/internal/application/auth/logout"
 	authrefresh "api-gateway/internal/application/auth/refresh"
 	authregister "api-gateway/internal/application/auth/register"
 	verifyotp "api-gateway/internal/application/auth/verify-otp"
@@ -38,6 +39,7 @@ type Handlers struct {
 	UserStorageHandler            *userstorage.Handler
 	AuthForgotPasswordHandler     *forgotPassword.Handler
 	AuthResetPasswordHandler      *resetPassword.Handler
+	AuthSignOutHandler            *authlogout.Handler
 
 	// TODO: will figure out better way to handle notifications...
 	// For now they skip the application layer and just get forwarded to frontend

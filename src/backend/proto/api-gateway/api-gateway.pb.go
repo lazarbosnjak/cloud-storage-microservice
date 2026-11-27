@@ -182,7 +182,6 @@ func (x *AuthSignInResponse) GetMustChangePassword() bool {
 
 type AuthSignOutRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -215,13 +214,6 @@ func (x *AuthSignOutRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use AuthSignOutRequest.ProtoReflect.Descriptor instead.
 func (*AuthSignOutRequest) Descriptor() ([]byte, []int) {
 	return file_api_gateway_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *AuthSignOutRequest) GetRefreshToken() string {
-	if x != nil {
-		return x.RefreshToken
-	}
-	return ""
 }
 
 type AuthSignOutResponse struct {
@@ -1377,9 +1369,8 @@ const file_api_gateway_proto_rawDesc = "" +
 	"\x12expires_in_seconds\x18\x02 \x01(\x05R\x10expiresInSeconds\x12!\n" +
 	"\fotp_required\x18\x03 \x01(\bR\votpRequired\x12#\n" +
 	"\rotp_challenge\x18\x04 \x01(\tR\fotpChallenge\x120\n" +
-	"\x14must_change_password\x18\x05 \x01(\bR\x12mustChangePassword\"9\n" +
-	"\x12AuthSignOutRequest\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"\x15\n" +
+	"\x14must_change_password\x18\x05 \x01(\bR\x12mustChangePassword\"\x14\n" +
+	"\x12AuthSignOutRequest\"\x15\n" +
 	"\x13AuthSignOutResponse\"h\n" +
 	"\x15AuthVerifyOtpResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12,\n" +

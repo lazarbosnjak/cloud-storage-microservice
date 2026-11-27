@@ -49,6 +49,7 @@ type Identity struct {
 
 var publicPaths = map[string]struct{}{
 	"/api/auth/login":           {},
+	"/api/auth/logout":          {},
 	"/api/auth/register":        {},
 	"/api/auth/register/verify": {},
 	"/api/auth/otp/verify":      {},

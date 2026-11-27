@@ -158,9 +158,7 @@ message AuthSignInResponse {
   bool must_change_password = 5;
 }
 
-message AuthSignOutRequest {
-  string refresh_token = 1;
-}
+message AuthSignOutRequest {}
 
 message AuthSignOutResponse {}
 
