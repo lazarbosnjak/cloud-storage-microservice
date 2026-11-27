@@ -40,6 +40,8 @@ const (
 	ApiGateway_GetStorage_FullMethodName                = "/api_gateway.ApiGateway/GetStorage"
 	ApiGateway_AuthForgotPassword_FullMethodName        = "/api_gateway.ApiGateway/AuthForgotPassword"
 	ApiGateway_AuthResetPassword_FullMethodName         = "/api_gateway.ApiGateway/AuthResetPassword"
+	ApiGateway_AuthRequestMagicLink_FullMethodName      = "/api_gateway.ApiGateway/AuthRequestMagicLink"
+	ApiGateway_AuthMagicLinkSignIn_FullMethodName       = "/api_gateway.ApiGateway/AuthMagicLinkSignIn"
 	ApiGateway_NotificationsGetAllByUser_FullMethodName = "/api_gateway.ApiGateway/NotificationsGetAllByUser"
 )
 
@@ -66,6 +68,8 @@ type ApiGatewayClient interface {
 	GetStorage(ctx context.Context, in *GatewayGetStorageRequest, opts ...grpc.CallOption) (*GatewayStorageReply, error)
 	AuthForgotPassword(ctx context.Context, in *auth.ForgotPasswordRequest, opts ...grpc.CallOption) (*auth.ForgotPasswordResponse, error)
 	AuthResetPassword(ctx context.Context, in *auth.ResetPasswordRequest, opts ...grpc.CallOption) (*auth.ResetPasswordResponse, error)
+	AuthRequestMagicLink(ctx context.Context, in *auth.RequestMagicLinkRequest, opts ...grpc.CallOption) (*auth.RequestMagicLinkResponse, error)
+	AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*AuthMagicLinkSignInResponse, error)
 	NotificationsGetAllByUser(ctx context.Context, in *NotificationsGetAllByUserRequest, opts ...grpc.CallOption) (*notification.GetAllByUserResponse, error)
 }
 
@@ -267,6 +271,26 @@ func (c *apiGatewayClient) AuthResetPassword(ctx context.Context, in *auth.Reset
 	return out, nil
 }
 
+func (c *apiGatewayClient) AuthRequestMagicLink(ctx context.Context, in *auth.RequestMagicLinkRequest, opts ...grpc.CallOption) (*auth.RequestMagicLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(auth.RequestMagicLinkResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthRequestMagicLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiGatewayClient) AuthMagicLinkSignIn(ctx context.Context, in *auth.MagicLinkSignInRequest, opts ...grpc.CallOption) (*AuthMagicLinkSignInResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthMagicLinkSignInResponse)
+	err := c.cc.Invoke(ctx, ApiGateway_AuthMagicLinkSignIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiGatewayClient) NotificationsGetAllByUser(ctx context.Context, in *NotificationsGetAllByUserRequest, opts ...grpc.CallOption) (*notification.GetAllByUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(notification.GetAllByUserResponse)
@@ -300,6 +324,8 @@ type ApiGatewayServer interface {
 	GetStorage(context.Context, *GatewayGetStorageRequest) (*GatewayStorageReply, error)
 	AuthForgotPassword(context.Context, *auth.ForgotPasswordRequest) (*auth.ForgotPasswordResponse, error)
 	AuthResetPassword(context.Context, *auth.ResetPasswordRequest) (*auth.ResetPasswordResponse, error)
+	AuthRequestMagicLink(context.Context, *auth.RequestMagicLinkRequest) (*auth.RequestMagicLinkResponse, error)
+	AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*AuthMagicLinkSignInResponse, error)
 	NotificationsGetAllByUser(context.Context, *NotificationsGetAllByUserRequest) (*notification.GetAllByUserResponse, error)
 	mustEmbedUnimplementedApiGatewayServer()
 }
@@ -367,6 +393,12 @@ func (UnimplementedApiGatewayServer) AuthForgotPassword(context.Context, *auth.F
 }
 func (UnimplementedApiGatewayServer) AuthResetPassword(context.Context, *auth.ResetPasswordRequest) (*auth.ResetPasswordResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuthResetPassword not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthRequestMagicLink(context.Context, *auth.RequestMagicLinkRequest) (*auth.RequestMagicLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthRequestMagicLink not implemented")
+}
+func (UnimplementedApiGatewayServer) AuthMagicLinkSignIn(context.Context, *auth.MagicLinkSignInRequest) (*AuthMagicLinkSignInResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthMagicLinkSignIn not implemented")
 }
 func (UnimplementedApiGatewayServer) NotificationsGetAllByUser(context.Context, *NotificationsGetAllByUserRequest) (*notification.GetAllByUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method NotificationsGetAllByUser not implemented")
@@ -734,6 +766,42 @@ func _ApiGateway_AuthResetPassword_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiGateway_AuthRequestMagicLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(auth.RequestMagicLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthRequestMagicLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthRequestMagicLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthRequestMagicLink(ctx, req.(*auth.RequestMagicLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiGateway_AuthMagicLinkSignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(auth.MagicLinkSignInRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiGatewayServer).AuthMagicLinkSignIn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiGateway_AuthMagicLinkSignIn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiGatewayServer).AuthMagicLinkSignIn(ctx, req.(*auth.MagicLinkSignInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiGateway_NotificationsGetAllByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NotificationsGetAllByUserRequest)
 	if err := dec(in); err != nil {
@@ -834,6 +902,14 @@ var ApiGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthResetPassword",
 			Handler:    _ApiGateway_AuthResetPassword_Handler,
+		},
+		{
+			MethodName: "AuthRequestMagicLink",
+			Handler:    _ApiGateway_AuthRequestMagicLink_Handler,
+		},
+		{
+			MethodName: "AuthMagicLinkSignIn",
+			Handler:    _ApiGateway_AuthMagicLinkSignIn_Handler,
 		},
 		{
 			MethodName: "NotificationsGetAllByUser",

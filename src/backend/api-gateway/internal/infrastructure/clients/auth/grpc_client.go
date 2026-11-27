@@ -186,3 +186,31 @@ func (c *GRPCClient) SignOut(
 
 	return err
 }
+
+func (c *GRPCClient) RequestMagicLink(ctx context.Context, dto auth.RequestMagicLinkDTO) error {
+	_, err := c.client.RequestMagicLink(ctx, &authPb.RequestMagicLinkRequest{
+		Email: dto.Email,
+	})
+	if err != nil {
+		c.logger.Error(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (c *GRPCClient) MagicLinkSignIn(ctx context.Context, dto auth.MagicLinkSignInDTO) (*auth.MagicLinkSignInResponseDTO, error) {
+	res, err := c.client.MagicLinkSignIn(ctx, &authPb.MagicLinkSignInRequest{
+		TokenId: dto.TokenID,
+	})
+	if err != nil {
+		c.logger.Error(err.Error())
+		return nil, err
+	}
+
+	return &auth.MagicLinkSignInResponseDTO{
+		AccessToken:      res.GetAccessToken(),
+		ExpiresInSeconds: int(res.GetExpiresInSeconds()),
+		RefreshToken:     res.GetRefreshToken(),
+	}, nil
+}

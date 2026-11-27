@@ -24,6 +24,8 @@ type AuthService interface {
 	VerifyRegistration(ctx context.Context, tokenID string) error
 	ForgotPassword(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, tokenID string, newPassword string, repeatedPassword string) error
+	RequestMagicLink(ctx context.Context, email string) error
+	MagicLinkSignIn(ctx context.Context, tokenID string) (service.SignInResult, error)
 }
 
 type AuthHandler struct {
@@ -226,4 +228,36 @@ func (h *AuthHandler) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest) (
 		RefreshToken:       res.RefreshToken,
 	}, nil
 
+}
+
+func (h *AuthHandler) RequestMagicLink(ctx context.Context, req *pb.RequestMagicLinkRequest) (*pb.RequestMagicLinkResponse, error) {
+	err := h.service.RequestMagicLink(ctx, req.GetEmail())
+	if err != nil {
+		slog.ErrorContext(ctx, "magic link request failed", "error", err)
+	}
+
+	return &pb.RequestMagicLinkResponse{}, nil
+}
+
+func (h *AuthHandler) MagicLinkSignIn(ctx context.Context, req *pb.MagicLinkSignInRequest) (*pb.MagicLinkSignInResponse, error) {
+	res, err := h.service.MagicLinkSignIn(ctx, req.GetTokenId())
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrInvalidVerificationToken):
+			return nil, status.Error(codes.Unauthenticated, "invalid sign-in link")
+		case errors.Is(err, domain.ErrVerificationTokenExpired):
+			return nil, status.Error(codes.DeadlineExceeded, "sign-in link expired, request a new one")
+		case errors.Is(err, domain.ErrVerificationTokenNotFound):
+			return nil, status.Error(codes.NotFound, "sign-in link not found")
+		default:
+			slog.ErrorContext(ctx, "magic link sign in failed", "error", err)
+			return nil, status.Error(codes.Internal, "internal error")
+		}
+	}
+
+	return &pb.MagicLinkSignInResponse{
+		AccessToken:      res.AccessToken,
+		ExpiresInSeconds: int64(res.ExpiresIn.Seconds()),
+		RefreshToken:     res.RefreshToken,
+	}, nil
 }

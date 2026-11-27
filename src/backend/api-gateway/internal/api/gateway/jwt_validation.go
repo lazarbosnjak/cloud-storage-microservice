@@ -48,15 +48,17 @@ type Identity struct {
 }
 
 var publicPaths = map[string]struct{}{
-	"/api/auth/login":           {},
-	"/api/auth/logout":          {},
-	"/api/auth/register":        {},
-	"/api/auth/register/verify": {},
-	"/api/auth/otp/verify":      {},
-	"/api/auth/refresh":         {},
-	"/api/auth/change-password": {},
-	"/api/auth/forgot-password": {},
-	"/api/auth/reset-password":  {},
+	"/api/auth/login":              {},
+	"/api/auth/logout":             {},
+	"/api/auth/register":           {},
+	"/api/auth/register/verify":    {},
+	"/api/auth/otp/verify":         {},
+	"/api/auth/refresh":            {},
+	"/api/auth/change-password":    {},
+	"/api/auth/forgot-password":    {},
+	"/api/auth/reset-password":     {},
+	"/api/auth/magic-link":         {},
+	"/api/auth/magic-link/sign-in": {},
 }
 
 func (h *JwtHandler) loadECPublicKey() (*ecdsa.PublicKey, error) {
