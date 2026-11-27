@@ -166,13 +166,25 @@ func (c *GRPCClient) ResetPassword(ctx context.Context, dto auth.ResetPasswordDT
 		NewPassword:      dto.NewPassword,
 		RepeatedPassword: dto.RepeatedPassword,
 	})
-
 	if err != nil {
 		c.logger.Error(err.Error())
 		return err
 	}
 
 	return nil
+}
+
+func (c *GRPCClient) SignOut(
+	ctx context.Context,
+	dto auth.SignOutRequestDTO,
+) error {
+	req := &authPb.SignOutRequest{
+		RefreshToken: dto.RefreshToken,
+	}
+
+	_, err := c.client.SignOut(ctx, req)
+
+	return err
 }
 
 func (c *GRPCClient) RequestMagicLink(ctx context.Context, dto auth.RequestMagicLinkDTO) error {

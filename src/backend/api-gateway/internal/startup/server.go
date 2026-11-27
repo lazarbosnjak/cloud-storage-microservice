@@ -1,15 +1,6 @@
 package startup
 
 import (
-	"api-gateway/internal/api/gateway"
-	"api-gateway/internal/application/auth/login"
-	"api-gateway/internal/application/auth/refresh"
-	"api-gateway/internal/application/user/ping"
-	"api-gateway/internal/application/user/storage"
-	"api-gateway/internal/infrastructure/clients/auth"
-	"api-gateway/internal/infrastructure/clients/notification"
-	"api-gateway/internal/infrastructure/clients/user"
-	"api-gateway/internal/startup/config"
 	"context"
 	"errors"
 	"fmt"
@@ -19,6 +10,17 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"api-gateway/internal/api/gateway"
+	"api-gateway/internal/application/auth/login"
+	"api-gateway/internal/application/auth/logout"
+	"api-gateway/internal/application/auth/refresh"
+	"api-gateway/internal/application/user/ping"
+	"api-gateway/internal/application/user/storage"
+	"api-gateway/internal/infrastructure/clients/auth"
+	"api-gateway/internal/infrastructure/clients/notification"
+	"api-gateway/internal/infrastructure/clients/user"
+	"api-gateway/internal/startup/config"
 
 	gatewaygrpc "api-gateway/internal/api/grpc"
 	changePassword "api-gateway/internal/application/auth/change_password"
@@ -260,6 +262,7 @@ func (s *Server) newAPIServer(
 	authChangePasswordHandler := changePassword.NewHandler(authClient)
 	authForgotPasswordHandler := forgotPassword.NewHandler(authClient)
 	authResetPasswordHandler := resetPassword.NewHandler(authClient)
+	authSignOutHandler := logout.NewHandler(authClient)
 	authRequestMagicLinkHandler := requestmagiclink.NewHandler(authClient)
 	authMagicLinkSignInHandler := magiclinksignin.NewHandler(authClient)
 
@@ -282,6 +285,7 @@ func (s *Server) newAPIServer(
 		UserStorageHandler:            userStorageHandler,
 		AuthForgotPasswordHandler:     authForgotPasswordHandler,
 		AuthResetPasswordHandler:      authResetPasswordHandler,
+		AuthSignOutHandler:            authSignOutHandler,
 		AuthRequestMagicLinkHandler:   authRequestMagicLinkHandler,
 		AuthMagicLinkSignInHandler:    authMagicLinkSignInHandler,
 		NotificationClient:            notifClient,

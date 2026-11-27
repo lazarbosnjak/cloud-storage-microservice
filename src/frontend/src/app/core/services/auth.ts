@@ -71,7 +71,7 @@ export class Auth {
     };
     return this.http.post('/api/auth/register/verify', body);
   }
-  
+
   signIn(data: SignInRequest): Observable<SignInResponse> {
     return this.http.post<SignInResponse>('/api/auth/login', data, {
       withCredentials: true,
@@ -96,6 +96,12 @@ export class Auth {
 
   resetPassword(data: ResetPasswordRequest): Observable<unknown> {
     return this.http.post('/api/auth/reset-password', data);
+  }
+
+  logout(): Observable<unknown> {
+    return this.http.post('/api/auth/logout', null, {
+      withCredentials: true,
+    });
   }
 
   requestMagicLink(data: ForgotPasswordRequest): Observable<unknown> {

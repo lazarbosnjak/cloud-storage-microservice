@@ -67,6 +67,10 @@ type ResetPasswordDTO struct {
 	RepeatedPassword string
 }
 
+type SignOutRequestDTO struct {
+	RefreshToken string
+}
+
 type RequestMagicLinkDTO struct {
 	Email string
 }
@@ -90,6 +94,7 @@ type Client interface {
 	ChangePassword(context.Context, ChangePasswordDTO) error
 	ForgotPassword(context.Context, ForgotPasswordDTO) error
 	ResetPassword(context.Context, ResetPasswordDTO) error
+	SignOut(context.Context, SignOutRequestDTO) error
 	RequestMagicLink(context.Context, RequestMagicLinkDTO) error
 	MagicLinkSignIn(context.Context, MagicLinkSignInDTO) (*MagicLinkSignInResponseDTO, error)
 }
