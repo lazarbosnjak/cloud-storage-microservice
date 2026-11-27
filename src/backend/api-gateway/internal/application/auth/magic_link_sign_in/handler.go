@@ -1,10 +1,11 @@
 package magiclinksignin
 
 import (
-	"api-gateway/internal/application/auth"
 	"context"
 	"net/http"
 	"time"
+
+	"api-gateway/internal/application/auth"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -38,7 +39,7 @@ func (h *Handler) Handle(ctx context.Context, command Command) (*Response, error
 	cookie := &http.Cookie{
 		Name:     "refresh_token",
 		Value:    res.RefreshToken,
-		Path:     "/api/auth/refresh",
+		Path:     "/api/auth",
 		MaxAge:   int(time.Hour * 24 * 7),
 		Secure:   true,
 		HttpOnly: true,
