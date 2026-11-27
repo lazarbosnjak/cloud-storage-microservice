@@ -1,0 +1,114 @@
+﻿
+syntax = "proto3";
+
+option go_package = "proto/file";
+
+service File {
+  rpc Ping (PingRequest) returns (PingReply) {}
+  rpc CreateFile (CreateFileRequest) returns (CreateFileReply) {}
+  rpc CreateFolder (CreateFolderRequest) returns (CreateFolderReply) {}
+  rpc RenameFile (RenameFileRequest) returns (RenameFileReply) {}
+  rpc RenameFolder (RenameFolderRequest) returns (RenameFolderReply) {}
+  rpc ListFolderContents (ListFolderContentsRequest) returns (ListFolderContentsReply) {}
+  rpc GetFile (GetFileRequest) returns (FileMetadataReply) {}
+  rpc GetFolder (GetFolderRequest) returns (FolderMetadataReply) {}
+}
+
+message PingRequest {}
+
+message PingReply {
+  string message = 1;
+}
+
+
+message CreateFileRequest {
+  string name = 1;
+  uint64 size = 2;
+  string content_type = 3;
+  string storage_key = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+}
+
+message CreateFileReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string storage_key = 5;
+  string parent_id = 6;
+  string owner_id = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+
+message CreateFolderRequest {
+  string name = 1;
+  string parent_id = 2;
+  string owner_id = 3;
+}
+
+message CreateFolderReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+}
+
+message RenameFileRequest {
+  string id = 1;
+  string owner_id = 2;
+  string name = 3;
+}
+
+message RenameFileReply {}
+
+message RenameFolderRequest {
+  string id = 1;
+  string owner_id = 2;
+  string name = 3;
+}
+
+message RenameFolderReply {}
+
+message ListFolderContentsRequest {
+  string folder_id = 1;
+  string owner_id = 2;
+}
+
+message ListFolderContentsReply {
+  repeated FolderMetadataReply folders = 1;
+  repeated FileMetadataReply files = 2;
+}
+
+message GetFileRequest {
+  string id = 1;
+  string owner_id = 2;
+}
+
+message GetFolderRequest {
+  string id = 1;
+  string owner_id = 2;
+}
+
+message FileMetadataReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message FolderMetadataReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}

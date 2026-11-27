@@ -1,0 +1,79 @@
+<div class="max-w-md mx-auto mt-16 p-6 border rounded-lg">
+  <h1 class="text-center mb-6">Register</h1>
+
+  <form (submit)="submit($event)">
+
+    <div class="mb-4">
+      <label for="firstName">First name</label>
+      <input id="firstName" type="text" [formField]="form.firstName"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.firstName().touched() && form.firstName().invalid()) {
+        <p class="text-red-600 text-sm">First name is required.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="lastName">Last name</label>
+      <input id="lastName" type="text" [formField]="form.lastName"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.lastName().touched() && form.lastName().invalid()) {
+        <p class="text-red-600 text-sm">Last name is required.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="email">Email</label>
+      <input id="email" type="email" [formField]="form.email"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.email().touched() && form.email().invalid()) {
+        <p class="text-red-600 text-sm">Enter a valid email.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="password">Password</label>
+      <input id="password" type="password" [formField]="form.password"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.password().touched() && form.password().invalid()) {
+        <p class="text-red-600 text-sm">Password must have at least 8 characters.</p>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label for="repeatedPassword">Confirm password</label>
+      <input id="repeatedPassword" type="password" [formField]="form.repeatedPassword"
+        class="w-full border rounded p-2 mt-1">
+
+      @if (form.repeatedPassword().touched() && form.repeatedPassword().invalid()) {
+        <p class="text-red-600 text-sm">Confirm your password.</p>
+      }
+
+      @if (form.repeatedPassword().touched() && passwordsDoNotMatch()) {
+        <p class="text-red-600 text-sm">Passwords do not match.</p>
+      }
+    </div>
+
+    @if (successMessage()) {
+      <p class="text-green-600 mb-3">{{ successMessage() }}</p>
+    }
+
+    @if (errorMessage()) {
+      <p class="text-red-600 mb-3">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" [disabled]="loading()"
+      class="w-full bg-brand-primary text-white p-2 rounded disabled:opacity-50">
+      {{ loading() ? 'Registering...' : 'Register' }}
+    </button>
+
+  </form>
+
+  <p class="mt-4">
+    Already have an account?
+    <a routerLink="/sign-in" class="text-brand-primary underline">Sign in</a>
+  </p>
+</div>

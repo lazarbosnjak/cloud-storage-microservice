@@ -1,0 +1,159 @@
+name: pouch
+
+services:
+  api-gateway:
+    image: api-gateway
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    env_file: ./api-gateway/.env
+    secrets:
+      - jwt_public_key
+    ports:
+      - "${API_GATEWAY_REST_PORT}:${API_GATEWAY_REST_PORT}"
+
+  auth-service:
+    image: auth-service
+    container_name: auth-service
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    env_file: ./auth-service/.env
+    depends_on:
+      postgres-auth-service:
+        condition: service_healthy
+    secrets:
+      - jwt_private_key
+    ports:
+      - "50057:50057"
+
+  auth-service-mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: auth-service-mailhog
+    ports:
+      - "${AUTH_SERVICE_MAILHOG_UI_PORT}:${AUTH_SERVICE_MAILHOG_UI_PORT}"
+
+  user-service:
+    image: user-service
+    container_name: user-service
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    env_file: ./user-service/.env
+    depends_on:
+      mongo-user-service:
+        condition: service_healthy
+
+  file-service:
+    image: file-service
+    container_name: file-service
+    build:
+      context: .
+      dockerfile: ./file-service/Dockerfile
+    env_file: ./file-service/.env
+    depends_on:
+      mongo-file-service:
+        condition: service_healthy
+
+  mongo-file-service:
+    image: mongo:9.0
+    container_name: mongodb-file-service
+    restart: unless-stopped
+    env_file: ./file-service/.env
+    ports:
+      - 27018:27017
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: ${MONGO_HEALTH_INTERVAL:-10s}
+      timeout: ${MONGO_HEALTH_TIMEOUT:-10s}
+      retries: ${MONGO_HEALTH_RETRIES:-10}
+    volumes:
+      - file_mongo_data:/data/db
+
+  sharing-service:
+    image: sharing-service
+    container_name: sharing-service
+    build:
+      context: .
+      dockerfile: ./sharing-service/Dockerfile
+    env_file: ./sharing-service/.env
+
+  notification-service:
+    image: notification-service
+    container_name: notification-service
+    build:
+      context: .
+      dockerfile: ./notification-service/Dockerfile
+    env_file: ./notification-service/.env
+    ports:
+      - 50055:50055
+    depends_on:
+      notification-service-cassandra:
+        condition: service_healthy
+
+  notification-service-cassandra:
+    image: cassandra:6.0
+    container_name: notification-service-cassandra
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 15s
+      timeout: 5s
+      retries: 15
+    environment:
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    volumes:
+      - notification_service_cass_store:/var/lib/cassandra/data
+
+  analytics-service:
+    image: analytics-service
+    container_name: analytics-service
+    build:
+      context: .
+      dockerfile: ./analytics-service/Dockerfile
+    env_file: ./analytics-service/.env
+
+  mongo-user-service:
+    image: mongo:9.0
+    container_name: mongodb-user-service
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file: ./user-service/.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - user_mongo_data:/data/db
+
+  postgres-auth-service:
+    image: postgres:18
+    container_name: postgres-auth-service
+    restart: always
+    ports:
+      - "5433:5432"
+    env_file: ./auth-service/.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql
+
+secrets:
+  jwt_public_key:
+    file: ./secrets/jwt_public.pem
+  jwt_private_key:
+    file: ./secrets/jwt_private.pem
+
+volumes:
+  auth_postgres_data:
+  user_mongo_data:
+  file_mongo_data:
+  notification_service_cass_store:

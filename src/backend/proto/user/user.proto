@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "proto/user";
+
+service User {
+  rpc Ping (PingRequest) returns (PingReply) {}
+
+  rpc CreateUser (CreateUserRequest) returns (CreateUserReply) {}
+
+  rpc GetStorage (GetStorageRequest) returns (StorageReply) {}
+
+  rpc AdjustStorageUsage (AdjustStorageUsageRequest) returns (StorageReply) {}
+}
+
+message PingRequest {
+  string fromName = 1;
+}
+
+message PingReply {
+  string message = 1;
+}
+
+message CreateUserReply {}
+
+message CreateUserRequest {
+  string id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+}
+
+message GetStorageRequest {
+  string user_id = 1;
+}
+
+message AdjustStorageUsageRequest {
+  string user_id = 1;
+  int64 delta = 2;
+}
+
+message StorageReply {
+  int64 quota = 1;
+  int64 used = 2;
+  int64 available = 3;
+}

@@ -1,0 +1,26 @@
+package domain
+
+import "errors"
+
+var (
+	ErrNotFound           = errors.New("credential not found")
+	ErrEmailTaken         = errors.New("email already registered")
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidToken       = errors.New("invalid token")
+	ErrAccountLocked      = errors.New("account temporarly locked")
+	ErrPasswordUnchanged  = errors.New("new password must differ from the current one")
+	ErrInvalidEmail       = errors.New("invalid email address")
+	ErrPassword           = errors.New("password does not meet requirements")
+	ErrDefault            = errors.New("there was an error")
+	ErrConcurrentRefresh  = errors.New("refresh token already consumed")
+	ErrPasswordMismatch   = errors.New("password and repeated password do not match")
+
+	ErrInvalidVerificationToken  = errors.New("invalid verification token")
+	ErrVerificationTokenExpired  = errors.New("verification token expired")
+	ErrVerificationTokenNotFound = errors.New("verification token not found")
+	ErrFirstName                 = errors.New("first name is invalid")
+	ErrLastName                  = errors.New("last name is invalid")
+	ErrOtpInvalid                = errors.New("invalid verification code")
+	ErrOtpExpired                = errors.New("verification code expired")
+	ErrOtpTooMany                = errors.New("too many incorrect verification codes")
+)

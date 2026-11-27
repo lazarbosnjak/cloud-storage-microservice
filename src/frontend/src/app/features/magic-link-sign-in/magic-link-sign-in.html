@@ -1,0 +1,35 @@
+<div class="max-w-md mx-auto mt-16 p-6 border rounded-lg">
+
+  @if (stage() === 'loading') {
+    <h1 class="text-center mb-4">Signing you in...</h1>
+  }
+
+  @if (stage() === 'done') {
+    <h1 class="text-center mb-6">You are signed in</h1>
+
+    @if (expiresInSeconds() !== null) {
+      <p class="mb-3">
+        Access token expires in {{ expiresInSeconds() }} seconds.
+      </p>
+    }
+
+    <a routerLink="/files"
+      class="block mt-4 bg-brand-primary text-white text-center p-2 rounded">My Files</a>
+  }
+
+  @if (stage() === 'error') {
+    <h1 class="text-center mb-4">Sign-in link problem</h1>
+
+    <p class="text-red-600 mb-4">{{ errorMessage() }}</p>
+
+    <a routerLink="/recover-account"
+      class="block w-full text-center bg-brand-primary text-white p-2 rounded">
+      Request a new link
+    </a>
+
+    <p class="mt-4">
+      <a routerLink="/sign-in" class="text-brand-primary underline">Back to sign in</a>
+    </p>
+  }
+
+</div>

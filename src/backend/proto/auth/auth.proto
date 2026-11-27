@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "proto/auth";
+
+service Auth{
+    rpc Ping (PingRequest) returns (PingReply) {}
+    rpc Register (RegisterRequest) returns (RegisterResponse);
+    rpc SignIn (SignInRequest) returns (SignInResponse);
+    rpc VerifyOtp (VerifyOtpRequest) returns (VerifyOtpResponse);
+    rpc Refresh (RefreshRequest) returns (RefreshResponse);
+    rpc SignOut (SignOutRequest) returns (SignOutResponse);
+    rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
+    rpc VerifyRegistration (VerifyRegistrationRequest) returns (VerifyRegistrationResponse);
+    rpc ForgotPassword (ForgotPasswordRequest) returns (ForgotPasswordResponse);
+    rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
+    rpc RequestMagicLink (RequestMagicLinkRequest) returns (RequestMagicLinkResponse);
+    rpc MagicLinkSignIn (MagicLinkSignInRequest) returns (MagicLinkSignInResponse);
+}
+
+message PingRequest {}
+
+message PingReply {
+    string message = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+    string repeated_password = 3;
+    string first_name = 4;
+    string last_name = 5;
+}
+
+message RegisterResponse {}
+
+message SignInRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message SignInResponse {
+    bool otp_required = 1;
+    string otp_challenge = 2;
+    string access_token = 3;
+    int64 expires_in_seconds = 4;
+    bool must_change_password = 5;
+    string refresh_token = 6;
+}
+
+message VerifyOtpRequest {
+    string otp_challenge = 1;
+    string code = 2;
+}
+
+message VerifyOtpResponse {
+    string access_token = 1;
+    int64 expires_in_seconds = 2;
+    bool must_change_password = 3;
+    string refresh_token = 4;
+    bool otp_required = 5;
+    string otp_challenge = 6;
+}
+
+message RefreshRequest {
+    string refresh_token = 1;
+}
+
+message RefreshResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+    int64 expires_in_seconds = 3;
+}
+
+message SignOutRequest {
+    string refresh_token = 1;
+}
+
+message SignOutResponse {}
+
+message ChangePasswordRequest {
+    string email = 1;
+    string current_password = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordResponse {}
+
+message VerifyRegistrationRequest {
+    string token_id = 1;
+}
+
+message VerifyRegistrationResponse {}
+
+message ForgotPasswordRequest {
+    string email = 1;
+}
+
+message ForgotPasswordResponse {}
+
+message ResetPasswordRequest {
+    string token_id = 1;
+    string new_password = 2;
+    string repeated_password = 3;
+}
+
+message ResetPasswordResponse {}
+
+message RequestMagicLinkRequest {
+    string email = 1;
+}
+
+message RequestMagicLinkResponse {}
+
+message MagicLinkSignInRequest {
+    string token_id = 1;
+}
+
+message MagicLinkSignInResponse {
+    string access_token = 1;
+    int64 expires_in_seconds = 2;
+    string refresh_token = 3;
+}

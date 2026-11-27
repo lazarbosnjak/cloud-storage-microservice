@@ -1,0 +1,287 @@
+syntax = "proto3";
+
+package api_gateway;
+
+option go_package = "proto/api-gateway;api_gateway";
+
+import "google/api/annotations.proto";
+import "auth/auth.proto";
+import "notification/notification.proto";
+
+service ApiGateway {
+  rpc Ping (PingRequest) returns (PingReply) {
+    option (google.api.http) = {
+      get: "/"
+    };
+  }
+
+  rpc PingUser (PingRequest) returns (PingReply) {
+    option (google.api.http) = {
+      get: "/user"
+    };
+  }
+
+  rpc AuthRegister (auth.RegisterRequest) returns (auth.RegisterResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/register"
+      body: "*"
+    };
+  }
+
+  rpc AuthVerifyRegistration (AuthVerifyRegistrationRequest) returns (AuthVerifyRegistrationResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/register/verify"
+      body: "*"
+    };
+  }
+
+  rpc AuthSignIn (auth.SignInRequest) returns (AuthSignInResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/login"
+      body: "*"
+    };
+  }
+
+  rpc AuthSignOut (AuthSignOutRequest) returns (AuthSignOutResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/logout"
+      body: "*"
+    };
+  }
+
+  rpc AuthVerifyOtp (auth.VerifyOtpRequest) returns (AuthVerifyOtpResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/otp/verify"
+      body: "*"
+    };
+  }
+
+  rpc AuthChangePassword (auth.ChangePasswordRequest) returns (auth.ChangePasswordResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/change-password"
+      body: "*"
+    };
+  }
+
+  rpc AuthRefresh (AuthRefreshRequest) returns (AuthRefreshResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/refresh"
+    };
+  }
+
+  rpc GetFile (GatewayGetFileRequest) returns (GatewayFileMetadataReply) {
+    option (google.api.http) = {
+      get: "/api/files/{id}"
+    };
+  }
+
+  rpc GetFolder (GatewayGetFolderRequest) returns (GatewayFolderMetadataReply) {
+    option (google.api.http) = {
+      get: "/api/folders/{id}"
+    };
+  }
+
+
+  rpc CreateFile (GatewayCreateFileRequest) returns (GatewayCreatedFileReply) {
+    option (google.api.http) = {
+      post: "/api/files"
+      body: "*"
+    };
+  }
+
+  rpc RenameFile (GatewayRenameRequest) returns (GatewayEmptyReply) {
+    option (google.api.http) = {
+      patch: "/api/files/{id}/name"
+      body: "*"
+    };
+  }
+
+  rpc CreateFolder (GatewayCreateFolderRequest) returns (GatewayCreatedFolderReply) {
+    option (google.api.http) = {
+      post: "/api/folders"
+      body: "*"
+    };
+  }
+
+  rpc RenameFolder (GatewayRenameRequest) returns (GatewayEmptyReply) {
+    option (google.api.http) = {
+      patch: "/api/folders/{id}/name"
+      body: "*"
+    };
+  }
+
+  rpc ListFolderContents (GatewayListFolderContentsRequest) returns (GatewayFolderContentsReply) {
+    option (google.api.http) = {
+      get: "/api/folders/{folder_id}/contents"
+    };
+  }
+
+  rpc GetStorage (GatewayGetStorageRequest) returns (GatewayStorageReply) {
+    option (google.api.http) = {
+      get: "/api/users/storage"
+    };
+  }
+
+  rpc AuthForgotPassword (auth.ForgotPasswordRequest) returns (auth.ForgotPasswordResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/forgot-password"
+      body: "*"
+    };
+  }
+
+  rpc AuthResetPassword (auth.ResetPasswordRequest) returns (auth.ResetPasswordResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/reset-password"
+      body: "*"
+    };
+  }
+
+  rpc AuthRequestMagicLink (auth.RequestMagicLinkRequest) returns (auth.RequestMagicLinkResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/magic-link"
+      body: "*"
+    };
+  }
+
+  rpc AuthMagicLinkSignIn (auth.MagicLinkSignInRequest) returns (AuthMagicLinkSignInResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/magic-link/sign-in"
+      body: "*"
+    };
+  }
+  
+  rpc NotificationsGetAllByUser (NotificationsGetAllByUserRequest) returns (notification.GetAllByUserResponse) {
+    option (google.api.http) = {
+      get: "/api/notifications"
+    };
+  }
+
+}
+
+message PingRequest {}
+
+message PingReply {
+  string message = 1;
+}
+
+message AuthSignInResponse {
+  string access_token = 1;
+  int32 expires_in_seconds = 2;
+  bool otp_required = 3;
+  string otp_challenge = 4;
+  bool must_change_password = 5;
+}
+
+message AuthSignOutRequest {}
+
+message AuthSignOutResponse {}
+
+message AuthVerifyOtpResponse {
+  string access_token = 1;
+  int32 expires_in_seconds = 2;
+}
+
+message AuthMagicLinkSignInResponse {
+  string access_token = 1;
+  int32 expires_in_seconds = 2;
+}
+
+message AuthRefreshRequest {}
+
+message AuthRefreshResponse {
+  string access_token = 1;
+  int64 expires_in_seconds = 2;
+}
+
+message GatewayGetFileRequest {
+  string id = 1;
+}
+
+message GatewayGetFolderRequest {
+  string id = 1;
+}
+
+message GatewayFileMetadataReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message GatewayFolderMetadataReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message GatewayCreateFileRequest {
+  reserved 4;
+  reserved "storage_key";
+
+  string name = 1;
+  uint64 size = 2;
+  string content_type = 3;
+  string parent_id = 5;
+}
+
+message GatewayCreatedFileReply {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string content_type = 4;
+  string parent_id = 5;
+  string owner_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message GatewayCreateFolderRequest {
+  string name = 1;
+  string parent_id = 2;
+}
+
+message GatewayCreatedFolderReply {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+}
+
+message GatewayRenameRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message GatewayEmptyReply {}
+
+message GatewayListFolderContentsRequest {
+  string folder_id = 1;
+}
+
+message GatewayFolderContentsReply {
+  repeated GatewayFileMetadataReply files = 1;
+  repeated GatewayFolderMetadataReply folders = 2;
+}
+message AuthVerifyRegistrationRequest {
+  string verification_token = 1;
+}
+
+message AuthVerifyRegistrationResponse {}
+
+message GatewayGetStorageRequest {}
+
+message GatewayStorageReply {
+  int64 quota = 1;
+  int64 used = 2;
+  int64 available = 3;
+}
+
+message NotificationsGetAllByUserRequest {}

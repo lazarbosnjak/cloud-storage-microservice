@@ -1,0 +1,122 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+@theme {
+
+    /* Regular colors */
+    --color-brand-dark: #050317;
+    --color-brand-light: #FCFCFF;
+
+    /* Primary color hues */
+    --color-brand-primary: #6351D1;
+    --color-brand-primary-500: var(--color-brand-primary);
+    --color-brand-primary-200: #D1D1FE;
+    --color-brand-primary-300: #A9A5FC;
+    --color-brand-primary-400: #8478F3;
+
+    /* Secondary color hues */
+    --color-brand-secondary: #DCFE00;
+    --color-brand-secondary-750: #198187;
+    --color-brand-secondary-500: var(--color-brand-secondary);
+    --color-brand-secondary-250: #D2FCFF;
+
+    /* Accent color hues */
+    --color-brand-accent: #FD532C;
+    --color-brand-accent-750: #830A68;
+    --color-brand-accent-500: var(--color-brand-accent);
+    --color-brand-accent-250: #FEA5E1;
+
+    /* Typography */
+    --font-heading: "ClashDisplay-Medium", sans-serif;
+    --font-body: "Archivo-Regular", sans-serif;
+    --font-handwriting: "Caveat-Regular", cursive;
+
+}
+
+/*
+    FONT FACES
+*/
+
+@layer base{
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        line-height: 1.1; /* 110% */
+        letter-spacing: -0.03em; /* -3% */
+    }
+
+    body{
+        font-family: var(--font-body);
+        line-height: 1.1; /* 110% */
+        letter-spacing: -0.03em; /* -3% */
+        color: var(--color-brand-dark);
+        background-color: var(--color-brand-light);
+    }
+
+
+    /* Note that these values are not yet defined in design */
+    h1 { font-size: 2.25rem; font-weight: 700; }
+    h2 { font-size: 1.875rem; font-weight: 700; }
+    h3 { font-size: 1.5rem; font-weight: 600; }
+    h4 { font-size: 1.25rem; font-weight: 600; }
+
+}
+
+/* Heading typography */
+
+@font-face {
+    font-family: "ClashDisplay-Semibold";
+    src: url("/fonts/clash-display/ClashDisplay-Semibold.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "ClashDisplay-Medium";
+    src: url("/fonts/clash-display/ClashDisplay-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+/* Body typography */
+
+@font-face {
+    font-family: "Archivo-Light";
+    src: url("/fonts/archivo/Archivo-Light.woff2") format("woff2");
+    font-weight: 300;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Archivo-Regular";
+    src: url("/fonts/archivo/Archivo-Regular.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+/* Handwriting typography */
+
+@font-face {
+    font-family: "Caveat-Regular";
+    src: url("/fonts/caveat/Caveat-Regular.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Caveat-Bold";
+    src: url("/fonts/caveat/Caveat-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap;
+    font-style: normal;
+}
+
+/*
+    END OF FONT FACES
+*/
